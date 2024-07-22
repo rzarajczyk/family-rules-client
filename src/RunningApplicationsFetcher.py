@@ -1,16 +1,14 @@
-import os
 import subprocess
+
+from osutils import is_mac
 
 
 class RunningApplicationsFetcher:
     def get_running_apps(self):
-        if self.__is_mac_os():
+        if is_mac():
             return self.__get_running_apps_mac_os()
         else:
-            raise RuntimeError("Unsupported operating system")
-
-    def __is_mac_os(self):
-        return os.uname().sysname == 'Darwin'
+            raise Exception("Unsupported operating system")
 
     def __get_running_apps_mac_os(self):
         user = subprocess.run("whoami", capture_output=True, text=True).stdout.strip()

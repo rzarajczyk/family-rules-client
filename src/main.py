@@ -1,58 +1,31 @@
 import datetime
+import sys
 
-from apscheduler.schedulers.blocking import BlockingScheduler
+from apscheduler.schedulers.background import BackgroundScheduler
 
 from Reporter import Reporter
 from RunningApplicationsFetcher import RunningApplicationsFetcher
 from UptimeDb import UptimeDb
+from gui import Gui
 
-FETCH_INTERVAL = 5
+TICK_INTERVAL_SECONDS = 5
+
+gui = Gui()
+gui.setup()
 
 
-def run():
-    # print(threading.current_thread().name)
+def tick():
     apps = RunningApplicationsFetcher().get_running_apps()
     print(apps)
-    usage = UptimeDb().update(apps, FETCH_INTERVAL)
+    usage = UptimeDb().update(apps, TICK_INTERVAL_SECONDS)
     print(usage)
-    action = Reporter().report(usage)
+    action = Reporter().submit_report_get_action(usage)
     print(action)
-    action.execute()
+    action.execute(gui)
 
 
-# if __name__ == '__main__':
-#     while True:
-#         run()
-#         time.sleep(FETCH_INTERVAL)
-
-import pystray
-
-from PIL import Image, ImageDraw
-
-
-def create_image(width, height, color1, color2):
-    # Generate an image and draw a pattern
-    image = Image.new('RGB', (width, height), color1)
-    dc = ImageDraw.Draw(image)
-    dc.rectangle(
-        (width // 2, 0, width, height // 2),
-        fill=color2)
-    dc.rectangle(
-        (0, height // 2, width // 2, height),
-        fill=color2)
-
-    return image
-
-
-# In order for the icon to be displayed, you must provide an icon
-icon = pystray.Icon(
-    'test name',
-    icon=create_image(64, 64, 'black', 'white'))
-
-
-# To finally show you icon, call run
-icon.run()
-
-s = BlockingScheduler()
-s.add_job(run, trigger='interval', seconds=FETCH_INTERVAL, next_run_time=datetime.datetime.now())
+s = BackgroundScheduler()
+s.add_job(tick, trigger='interval', seconds=TICK_INTERVAL_SECONDS, next_run_time=datetime.datetime.now())
 s.start()
+
+sys.exit(gui.run())

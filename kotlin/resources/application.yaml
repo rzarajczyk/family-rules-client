@@ -1,9 +1,0 @@
-spring:
-  application:
-    name: my-family
-
-usage:
-  check-interval-seconds: 15
-
-report:
-  interval-seconds: 60

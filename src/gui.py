@@ -1,6 +1,6 @@
-from PySide6.QtCore import *
-from PySide6.QtGui import *
-from PySide6.QtWidgets import *
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QIcon, QAction
+from PySide6.QtWidgets import QWidget, QApplication, QSystemTrayIcon, QMenu, QVBoxLayout, QLabel
 
 
 class TopRightWindow(QWidget):
@@ -69,16 +69,11 @@ class Gui:
 
         self.top_right_window = TopRightWindow()
 
-    @Slot()
-    def show_window(self):
-        self.top_right_window.show()
-
     def show_notification(self, title, message):
         self.tray.showMessage(title, message, QSystemTrayIcon.MessageIcon.Information, 5000)
 
     def show_top_right_window(self):
-        show_window_signal = Signal()
-        show_window_signal.emit()
+        self.top_right_window.show()
 
     def run(self):
         return self.app.exec()

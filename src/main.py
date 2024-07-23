@@ -1,7 +1,7 @@
 import datetime
 import sys
 
-from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.schedulers.qt import QtScheduler
 
 from Reporter import Reporter
 from RunningApplicationsFetcher import RunningApplicationsFetcher
@@ -24,7 +24,7 @@ def tick():
     action.execute(gui)
 
 
-s = BackgroundScheduler()
+s = QtScheduler()
 s.add_job(tick, trigger='interval', seconds=TICK_INTERVAL_SECONDS, next_run_time=datetime.datetime.now())
 s.start()
 

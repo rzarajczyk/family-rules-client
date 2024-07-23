@@ -1,21 +1,15 @@
-import datetime
 import sys
 
-from apscheduler.schedulers.qt import QtScheduler
-
 from Reporter import Reporter
-from RunningApplicationsFetcher import RunningApplicationsFetcher
+from RunningApplications import RunningApplications
 from UptimeDb import UptimeDb
 from gui import Gui
 
 TICK_INTERVAL_SECONDS = 5
 
-gui = Gui()
-gui.setup()
 
-
-def tick():
-    apps = RunningApplicationsFetcher().get_running_apps()
+def tick(gui: Gui):
+    apps = RunningApplications().get_running_apps()
     print(apps)
     usage = UptimeDb().update(apps, TICK_INTERVAL_SECONDS)
     print(usage)
@@ -24,8 +18,9 @@ def tick():
     action.execute(gui)
 
 
-s = QtScheduler()
-s.add_job(tick, trigger='interval', seconds=TICK_INTERVAL_SECONDS, next_run_time=datetime.datetime.now())
-s.start()
-
-sys.exit(gui.run())
+if __name__ == "__main__":
+    Gui().run(
+        tick_interval_ms=TICK_INTERVAL_SECONDS * 1000,
+        tick_function=tick,
+        argv=sys.argv
+    )

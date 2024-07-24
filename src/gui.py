@@ -31,43 +31,6 @@ class MainWindow(QMainWindow):
             self.ui.table.setItem(i, 1, item_duration)
 
 
-#
-#
-# class TopRightWindow(QWidget):
-#     def __init__(self):
-#         super().__init__()
-#
-#         self.setWindowTitle("Top Right Window")
-#         self.setWindowIcon(QIcon("../resources/foaf.png"))  # Replace with your icon path
-#         self.setFixedSize(200, 100)  # Set the size of the window
-#
-#         # Center the content inside the window
-#         layout = QVBoxLayout()
-#         label = QLabel("This is a small window")
-#         layout.addWidget(label)
-#         layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
-#         self.setLayout(layout)
-#
-#         self.move_to_top_right()
-#
-#     def move_to_top_right(self):
-#         # Get the screen geometry
-#         screen_geometry = QApplication.primaryScreen().geometry()
-#         screen_width = screen_geometry.width()
-#         screen_height = screen_geometry.height()
-#
-#         # Get the window geometry
-#         window_width = self.frameGeometry().width()
-#         window_height = self.frameGeometry().height()
-#
-#         # Calculate the top-right position
-#         x = screen_width - window_width
-#         y = 0
-#
-#         # Move the window to the top-right corner
-#         self.move(x, y)
-
-
 class BlockAccessWindow(QWidget):
     def __init__(self):
         super().__init__()
@@ -77,7 +40,7 @@ class BlockAccessWindow(QWidget):
         screen_height = screen_geometry.height()
 
         self.setWindowTitle("Blokada ekranu!")
-        self.setWindowIcon(QIcon("../resources/foaf.png"))  # Replace with your icon path
+        self.setWindowIcon(QIcon("resources/foaf.png"))  # Replace with your icon path
         self.setFixedSize(screen_width, screen_height)  # Set the size of the window
         self.setWindowFlags(
             Qt.Window | Qt.CustomizeWindowHint | Qt.WindowTitleHint | Qt.WindowSystemMenuHint | Qt.WindowStaysOnTopHint)
@@ -112,7 +75,7 @@ class Gui:
         self.main_window = MainWindow()
 
         tray_icon = QSystemTrayIcon()
-        tray_icon.setIcon(QIcon("../resources/foaf.png"))
+        tray_icon.setIcon(QIcon("resources/foaf.png"))
 
         tray_menu = QMenu()
 

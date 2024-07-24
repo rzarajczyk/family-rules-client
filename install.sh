@@ -15,6 +15,6 @@ fi
 cd ~/Library/family-rules-client
 git clone https://github.com/rzarajczyk/family-rules-client.git .
 
-/usr/bin/env python -m pip install -r /path/to/requirements.txt
+/usr/bin/env python -m pip install -r ~/Library/family-rules-client/requirements.txt
 
 envsubst < pl.zarajczyk.family-rules-client.plist > ~/Library/LaunchAgents/pl.zarajczyk.family-rules-client.plist

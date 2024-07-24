@@ -12,6 +12,9 @@ fi
 cd ~/Library/family-rules-client
 git clone https://github.com/rzarajczyk/family-rules-client.git .
 
+python3 -m venv venv
+source activate
 python3 -m pip install -r ~/Library/family-rules-client/requirements.txt
+deactivate
 
 envsubst < pl.zarajczyk.family-rules-client.plist > ~/Library/LaunchAgents/pl.zarajczyk.family-rules-client.plist

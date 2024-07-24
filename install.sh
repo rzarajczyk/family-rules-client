@@ -1,9 +1,6 @@
-PYTHON_VERSION=$(/usr/bin/env python -c 'import sys; print(sys.version_info[:][0])')
+command -v python3 >/dev/null 2>&1 || echo Python 3 is not installed
 
-if [[ "$PYTHON_VERSION" -lt "3" ]]; then
-  >&2 echo "Python installed in ≪/usr/bin/env python≫ should be in version at least 3"
-  exit 1
-fi
+echo "Using python in version $(python3 --version)"
 
 mkdir -p ~/Library/family-rules-client
 
@@ -15,6 +12,6 @@ fi
 cd ~/Library/family-rules-client
 git clone https://github.com/rzarajczyk/family-rules-client.git .
 
-/usr/bin/env python -m pip install -r ~/Library/family-rules-client/requirements.txt
+python3 -m pip install -r ~/Library/family-rules-client/requirements.txt
 
 envsubst < pl.zarajczyk.family-rules-client.plist > ~/Library/LaunchAgents/pl.zarajczyk.family-rules-client.plist

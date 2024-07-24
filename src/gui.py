@@ -1,45 +1,71 @@
 import sys
+from datetime import timedelta
 
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QIcon, QAction
-from PySide6.QtWidgets import QWidget, QApplication, QSystemTrayIcon, QMenu, QVBoxLayout, QLabel
+from PySide6.QtWidgets import QWidget, QApplication, QSystemTrayIcon, QMenu, QVBoxLayout, QLabel, QMainWindow, \
+    QTableWidgetItem, QHeaderView
 
-from actions import LockSystem, BlockAccess, KillApplication
+from gen.MainWindow import Ui_MainWindow
 
 
-class TopRightWindow(QWidget):
+class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+        self.ui = Ui_MainWindow()
+        self.ui.setupUi(self)
 
-        self.setWindowTitle("Top Right Window")
-        self.setWindowIcon(QIcon("../resources/foaf.png"))  # Replace with your icon path
-        self.setFixedSize(200, 100)  # Set the size of the window
+    def update_screen_time(self, time: timedelta):
+        self.ui.screen_time_label.setText(str(time))
 
-        # Center the content inside the window
-        layout = QVBoxLayout()
-        label = QLabel("This is a small window")
-        layout.addWidget(label)
-        layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.setLayout(layout)
+    def update_applications_usage(self, apps: dict[str, timedelta]):
+        self.ui.table.setHorizontalHeaderLabels(["Aplikacja", "Czas działania"])
+        self.ui.table.setRowCount(len(apps))
+        self.ui.table.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeMode.Stretch)
+        self.ui.table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.ResizeToContents)
+        for i, app in enumerate(apps):
+            time = apps[app]
+            item_name = QTableWidgetItem(app)
+            item_duration = QTableWidgetItem(str(time))
+            self.ui.table.setItem(i, 0, item_name)
+            self.ui.table.setItem(i, 1, item_duration)
 
-        self.move_to_top_right()
 
-    def move_to_top_right(self):
-        # Get the screen geometry
-        screen_geometry = QApplication.primaryScreen().geometry()
-        screen_width = screen_geometry.width()
-        screen_height = screen_geometry.height()
-
-        # Get the window geometry
-        window_width = self.frameGeometry().width()
-        window_height = self.frameGeometry().height()
-
-        # Calculate the top-right position
-        x = screen_width - window_width
-        y = 0
-
-        # Move the window to the top-right corner
-        self.move(x, y)
+#
+#
+# class TopRightWindow(QWidget):
+#     def __init__(self):
+#         super().__init__()
+#
+#         self.setWindowTitle("Top Right Window")
+#         self.setWindowIcon(QIcon("../resources/foaf.png"))  # Replace with your icon path
+#         self.setFixedSize(200, 100)  # Set the size of the window
+#
+#         # Center the content inside the window
+#         layout = QVBoxLayout()
+#         label = QLabel("This is a small window")
+#         layout.addWidget(label)
+#         layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+#         self.setLayout(layout)
+#
+#         self.move_to_top_right()
+#
+#     def move_to_top_right(self):
+#         # Get the screen geometry
+#         screen_geometry = QApplication.primaryScreen().geometry()
+#         screen_width = screen_geometry.width()
+#         screen_height = screen_geometry.height()
+#
+#         # Get the window geometry
+#         window_width = self.frameGeometry().width()
+#         window_height = self.frameGeometry().height()
+#
+#         # Calculate the top-right position
+#         x = screen_width - window_width
+#         y = 0
+#
+#         # Move the window to the top-right corner
+#         self.move(x, y)
 
 
 class BlockAccessWindow(QWidget):
@@ -81,11 +107,9 @@ class Gui:
         app = QApplication(argv)
         app.setQuitOnLastWindowClosed(False)
 
-        top_right_window = TopRightWindow()
-        self.top_wight_window = top_right_window
-
-        block_access_window = BlockAccessWindow()
-        self.block_access_window = block_access_window
+        # self.top_wight_window = TopRightWindow()
+        self.block_access_window = BlockAccessWindow()
+        self.main_window = MainWindow()
 
         tray_icon = QSystemTrayIcon()
         tray_icon.setIcon(QIcon("../resources/foaf.png"))
@@ -98,10 +122,10 @@ class Gui:
             tray_menu.addAction(action)
             return action
 
-        show_action = add_menu_item("Show", top_right_window.show)
-        lock_action = add_menu_item("Lock screen", lambda: LockSystem().execute(self))
-        block_action = add_menu_item("Block screen", lambda: BlockAccess().execute(self))
-        kill_action = add_menu_item("Kill Notes.ap", lambda: KillApplication("Notes.app").execute(self))
+        show_action = add_menu_item("Show", self.main_window.show)
+        # lock_action = add_menu_item("Lock screen", lambda: LockSystem().execute(self))
+        # block_action = add_menu_item("Block screen", lambda: BlockAccess().execute(self))
+        # kill_action = add_menu_item("Kill Notes.ap", lambda: KillApplication("Notes.app").execute(self))
         quit_action = add_menu_item("Quit", app.quit)
 
         tray_icon.setContextMenu(tray_menu)
@@ -111,6 +135,7 @@ class Gui:
         def tick():
             tick_function(self)
 
+        tick()
         # Set up a timer to show the window every 10 seconds
         timer = QTimer()
         timer.timeout.connect(tick)

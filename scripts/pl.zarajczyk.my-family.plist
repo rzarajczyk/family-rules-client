@@ -3,9 +3,13 @@
 <plist version="1.0">
 	<dict>
 		<key>Label</key>
-		<string>pl.zarajczyk.my-family</string>
-		<key>Program</key>
-		<string>$HOME/Library/my-family/my-family.sh</string>
+		<string>pl.zarajczyk.family-rules-client</string>
+		<key>ProgramArguments</key>
+		<array>
+		    <string>/usr/bin/env</string>
+		    <string>python</string>
+		    <string>$HOME/Library/family-rules-client/</string>
+		</array>
 		<key>RunAtLoad</key>
 		<true/>
 		<key>StandardErrorPath</key>

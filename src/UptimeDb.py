@@ -64,8 +64,8 @@ class UptimeDb:
 
 class Usage:
     def __init__(self, screen_time, applications):
-        self.screen_time = screen_time
-        self.applications = applications
+        self.screen_time: timedelta = screen_time
+        self.applications: dict[str, timedelta] = applications
 
     def __repr__(self):
         return f"Usage(screen_time={self.screen_time}, applications={self.applications})"

@@ -1,2 +1,3 @@
 .idea
-family-rules-client.iml
+*.iml
+src/gen

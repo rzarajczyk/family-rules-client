@@ -1,6 +1,6 @@
 mkdir -p ~/Library/family-rules-client
 cd ~/Library/family-rules-client
-cp /Users/rafal/Developer/my-family/build/libs/my-family-1.0-SNAPSHOT.jar ~/Library/my-family/my-family.jar
-cp my-family.sh ~/Library/my-family
+git clone https://github.com/rzarajczyk/family-rules-client.git
 
-envsubst < pl.zarajczyk.my-family.plist > ~/Library/LaunchAgents/pl.zarajczyk.my-family.plist
+cd scripts
+envsubst < pl.zarajczyk.family-rules-client.plist > ~/Library/LaunchAgents/pl.zarajczyk.family-rules-client.plist

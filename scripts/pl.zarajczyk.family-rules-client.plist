@@ -13,9 +13,9 @@
 		<key>RunAtLoad</key>
 		<true/>
 		<key>StandardErrorPath</key>
-		<string>$HOME/Library/my-family/stderr.log</string>
+		<string>$HOME/Library/family-rules-client/stderr.log</string>
 		<key>StandardOutPath</key>
-		<string>$HOME/Library/my-family/stdout.log</string>
+		<string>$HOME/Library/family-rules-client/stdout.log</string>
 		<key>KeepAlive</key>
 		<true/>
 	</dict>

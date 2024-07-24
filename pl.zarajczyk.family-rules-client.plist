@@ -4,12 +4,8 @@
 	<dict>
 		<key>Label</key>
 		<string>pl.zarajczyk.family-rules-client</string>
-		<key>ProgramArguments</key>
-		<array>
-		    <string>/usr/bin/env</string>
-		    <string>python</string>
-		    <string>$HOME/Library/family-rules-client/</string>
-		</array>
+		<key>Program</key>
+        <string>$HOME/Library/family-rules-client/family-rules-client.sh</string>
 		<key>RunAtLoad</key>
 		<true/>
 		<key>StandardErrorPath</key>

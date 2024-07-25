@@ -15,7 +15,11 @@ chmod u+x *.sh
 
 python3 -m venv venv
 source venv/bin/activate
-python3 -m pip install -r ~/Library/family-rules-client/requirements.txt
+python3 -m pip install \
+  --trusted-host pypi.org \
+  --trusted-host pypi.python.org \
+  --trusted-host files.pythonhosted.org \
+  -r ~/Library/family-rules-client/requirements.txt
 deactivate
 
 envsubst < pl.zarajczyk.family-rules-client.plist > ~/Library/LaunchAgents/pl.zarajczyk.family-rules-client.plist

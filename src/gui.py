@@ -1,3 +1,4 @@
+import os
 import sys
 from datetime import timedelta
 
@@ -6,6 +7,7 @@ from PySide6.QtGui import QIcon, QAction
 from PySide6.QtWidgets import QWidget, QApplication, QSystemTrayIcon, QMenu, QVBoxLayout, QLabel, QMainWindow, \
     QTableWidgetItem, QHeaderView
 
+from actions import LockSystem, BlockAccess, KillApplication
 from gen.MainWindow import Ui_MainWindow
 
 
@@ -40,8 +42,7 @@ class BlockAccessWindow(QWidget):
         screen_height = screen_geometry.height()
 
         self.setWindowTitle("Blokada ekranu!")
-        self.setWindowIcon(QIcon("resources/foaf.png"))  # Replace with your icon path
-        self.setFixedSize(screen_width, screen_height)  # Set the size of the window
+        self.setFixedSize(screen_width, screen_height)
         self.setWindowFlags(
             Qt.Window | Qt.CustomizeWindowHint | Qt.WindowTitleHint | Qt.WindowSystemMenuHint | Qt.WindowStaysOnTopHint)
 
@@ -66,6 +67,9 @@ class BlockAccessWindow(QWidget):
 
 
 class Gui:
+    def __init__(self, basedir):
+        self.basedir = basedir
+
     def run(self, tick_interval_ms: int, tick_function, argv):
         app = QApplication(argv)
         app.setQuitOnLastWindowClosed(False)
@@ -75,7 +79,7 @@ class Gui:
         self.main_window = MainWindow()
 
         tray_icon = QSystemTrayIcon()
-        tray_icon.setIcon(QIcon("resources/foaf.png"))
+        tray_icon.setIcon(QIcon(os.path.join(self.basedir, "resources", "foaf.png")))
 
         tray_menu = QMenu()
 
@@ -86,9 +90,9 @@ class Gui:
             return action
 
         show_action = add_menu_item("Show", self.main_window.show)
-        # lock_action = add_menu_item("Lock screen", lambda: LockSystem().execute(self))
-        # block_action = add_menu_item("Block screen", lambda: BlockAccess().execute(self))
-        # kill_action = add_menu_item("Kill Notes.ap", lambda: KillApplication("Notes.app").execute(self))
+        lock_action = add_menu_item("Lock screen", lambda: LockSystem().execute(self))
+        block_action = add_menu_item("Block screen", lambda: BlockAccess().execute(self))
+        kill_action = add_menu_item("Kill Notes.ap", lambda: KillApplication("Notes.app").execute(self))
         quit_action = add_menu_item("Quit", app.quit)
 
         tray_icon.setContextMenu(tray_menu)

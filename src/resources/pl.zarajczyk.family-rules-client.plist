@@ -9,9 +9,9 @@
 		<key>RunAtLoad</key>
 		<true/>
 		<key>StandardErrorPath</key>
-		<string>/var/log/family-rules-client-stderr.log</string>
+		<string>/Users/rafal/Library/Family Rules/family-rules-client-stderr.log</string>
 		<key>StandardOutPath</key>
-		<string>/var/logfamily-rules-client-stdout.log</string>
+		<string>/Users/rafal/Library/Family Rules/family-rules-client-stdout.log</string>
 		<key>KeepAlive</key>
 		<true/>
 	</dict>

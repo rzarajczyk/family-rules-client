@@ -1,13 +1,14 @@
 import os
-import sys
 from datetime import timedelta
 
-from PySide6.QtCore import Qt, QTimer
+from PySide6.QtCore import Qt, QTimer, QThread, Signal
 from PySide6.QtGui import QIcon, QAction
 from PySide6.QtWidgets import QWidget, QApplication, QSystemTrayIcon, QMenu, QVBoxLayout, QLabel, QMainWindow, \
-    QTableWidgetItem, QHeaderView
+    QTableWidgetItem, QHeaderView, QMessageBox
 
-from actions import LockSystem, BlockAccess, KillApplication
+from Installer import Installer
+from actions import LockSystem
+from gen.InitialSetup import Ui_InitialSetup
 from gen.MainWindow import Ui_MainWindow
 
 
@@ -31,6 +32,83 @@ class MainWindow(QMainWindow):
             item_duration = QTableWidgetItem(str(time))
             self.ui.table.setItem(i, 0, item_name)
             self.ui.table.setItem(i, 1, item_duration)
+
+
+class InitialSetupWorker(QThread):
+    result_ready = Signal(bool)
+
+    def __init__(self, basedir, server, username, password, instance):
+        super().__init__()
+        self.basedir = basedir
+        self.instance = instance
+        self.password = password
+        self.username = username
+        self.server = server
+
+    def run(self):
+        token = Installer.do_server_login(self.server, self.username, self.password, self.instance)
+        if token:
+            Installer.save_settings(self.server, self.username, self.instance, token)
+            Installer.install_autorun(self.basedir)
+            self.result_ready.emit(True)
+        else:
+            self.result_ready.emit(False)
+
+
+class InitialSetup(QMainWindow):
+    def __init__(self, basedir):
+        super().__init__()
+        self.basedir = basedir
+        self.ui = Ui_InitialSetup()
+        self.ui.setupUi(self)
+        self.ui.progressBar.setHidden(True)
+        self.ui.installButton.clicked.connect(self.install)
+
+    def install(self):
+        self.ui.progressBar.show()
+        self.ui.installButton.setDisabled(True)
+        self.ui.serverInput.setDisabled(True)
+        self.ui.usernameInput.setDisabled(True)
+        self.ui.passwordInput.setDisabled(True)
+        self.ui.instanceName.setDisabled(True)
+
+        server = self.ui.serverInput.text()
+        username = self.ui.usernameInput.text()
+        password = self.ui.passwordInput.text()
+        instance = self.ui.instanceName.text()
+        self.worker = InitialSetupWorker(self.basedir, server, username, password, instance)
+        self.worker.result_ready.connect(self.done)
+        self.worker.start()
+
+    def done(self, success):
+        msg_box = QMessageBox()
+        if success:
+            msg_box.setWindowTitle("Instalacja zakończona")
+            msg_box.setText(f"Instalacja zakończona. Uruchom aplikację ponownie.")
+            msg_box.setIcon(QMessageBox.Icon.Information)
+            msg_box.setStandardButtons(QMessageBox.StandardButton.Ok)
+            ok_button = msg_box.button(QMessageBox.StandardButton.Ok)
+            ok_button.clicked.connect(self.finish_close)
+        else:
+            msg_box.setWindowTitle("Niepowodzenie")
+            msg_box.setText(f"Sprawdź poprawność danych i spróbuj ponownie.")
+            msg_box.setIcon(QMessageBox.Icon.Critical)
+            msg_box.setStandardButtons(QMessageBox.StandardButton.Ok)
+            ok_button = msg_box.button(QMessageBox.StandardButton.Ok)
+            ok_button.clicked.connect(self.finish)
+        msg_box.exec()
+
+    def finish_close(self):
+        self.finish()
+        self.close()
+
+    def finish(self):
+        self.ui.progressBar.hide()
+        self.ui.installButton.setDisabled(False)
+        self.ui.serverInput.setDisabled(False)
+        self.ui.usernameInput.setDisabled(False)
+        self.ui.passwordInput.setDisabled(False)
+        self.ui.instanceName.setDisabled(False)
 
 
 class BlockAccessWindow(QWidget):
@@ -67,12 +145,17 @@ class BlockAccessWindow(QWidget):
 
 
 class Gui:
-    def __init__(self, basedir):
+    def __init__(self, basedir, argv):
         self.basedir = basedir
+        self.app = QApplication(argv)
+        self.dont_gc = []
 
-    def run(self, tick_interval_ms: int, tick_function, argv):
-        app = QApplication(argv)
-        app.setQuitOnLastWindowClosed(False)
+    def setup_initial_setup_ui(self):
+        self.installer_window = InitialSetup(self.basedir)
+        self.installer_window.show()
+
+    def setup_main_ui(self, tick_interval_ms: int, tick_function):
+        self.app.setQuitOnLastWindowClosed(False)
 
         # self.top_wight_window = TopRightWindow()
         self.block_access_window = BlockAccessWindow()
@@ -87,13 +170,14 @@ class Gui:
             action = QAction(name)
             action.triggered.connect(signal)
             tray_menu.addAction(action)
+            self.dont_gc += [action]
             return action
 
-        show_action = add_menu_item("Show", self.main_window.show)
-        lock_action = add_menu_item("Lock screen", lambda: LockSystem().execute(self))
-        # block_action = add_menu_item("Block screen", lambda: BlockAccess().execute(self))
-        # kill_action = add_menu_item("Kill Notes.ap", lambda: KillApplication("Notes.app").execute(self))
-        quit_action = add_menu_item("Quit", app.quit)
+        add_menu_item("Show", self.main_window.show)
+        add_menu_item("Lock screen", lambda: LockSystem().execute(self))
+        # add_menu_item("Block screen", lambda: BlockAccess().execute(self))
+        # add_menu_item("Kill Notes.ap", lambda: KillApplication("Notes.app").execute(self))
+        add_menu_item("Quit", self.app.quit)
 
         tray_icon.setContextMenu(tray_menu)
 
@@ -108,5 +192,9 @@ class Gui:
         timer.timeout.connect(tick)
         timer.start(tick_interval_ms)
 
-        # Start the application event loop
-        sys.exit(app.exec())
+        self.dont_gc += [
+            tray_icon, tray_menu, timer
+        ]
+
+    def run(self):
+        return self.app.exec()

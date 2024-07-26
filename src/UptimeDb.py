@@ -1,7 +1,8 @@
 import datetime
 import json
 from datetime import timedelta
-from pathlib import Path
+
+from src.osutils import app_data
 
 
 class SingleDayUptimeDb:
@@ -50,8 +51,7 @@ class UptimeDb:
         return Usage(db.get_screen_time(), db.get_apps())
 
     def get_file_for_today(self):
-        user_home = Path.home()
-        data_dir = user_home / ".family-rules"
+        data_dir = app_data() / "data"
         data_dir.mkdir(exist_ok=True)
 
         today = datetime.datetime.now().strftime("%Y-%m-%d")
@@ -66,6 +66,3 @@ class Usage:
     def __init__(self, screen_time, applications):
         self.screen_time: timedelta = screen_time
         self.applications: dict[str, timedelta] = applications
-
-    def __repr__(self):
-        return f"Usage(screen_time={self.screen_time}, applications={self.applications})"

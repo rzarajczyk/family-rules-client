@@ -91,8 +91,8 @@ class Gui:
 
         show_action = add_menu_item("Show", self.main_window.show)
         lock_action = add_menu_item("Lock screen", lambda: LockSystem().execute(self))
-        block_action = add_menu_item("Block screen", lambda: BlockAccess().execute(self))
-        kill_action = add_menu_item("Kill Notes.ap", lambda: KillApplication("Notes.app").execute(self))
+        # block_action = add_menu_item("Block screen", lambda: BlockAccess().execute(self))
+        # kill_action = add_menu_item("Kill Notes.ap", lambda: KillApplication("Notes.app").execute(self))
         quit_action = add_menu_item("Quit", app.quit)
 
         tray_icon.setContextMenu(tray_menu)

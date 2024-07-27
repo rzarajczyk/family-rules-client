@@ -10,7 +10,7 @@ from osutils import app_data
 from src.Settings import Settings
 
 TICK_INTERVAL_SECONDS = 5
-DEBUG_HTTP_REQUESTS = True
+DEBUG_HTTP_REQUESTS = False
 
 logging.basicConfig(filename=app_data().absolute().as_posix() + "/output.log",
                     level=logging.INFO,

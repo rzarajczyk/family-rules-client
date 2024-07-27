@@ -4,9 +4,9 @@ from datetime import timedelta
 from PySide6.QtCore import Qt, QTimer, QThread, Signal
 from PySide6.QtGui import QIcon, QAction
 from PySide6.QtWidgets import QWidget, QApplication, QSystemTrayIcon, QMenu, QVBoxLayout, QLabel, QMainWindow, \
-    QTableWidgetItem, QHeaderView, QMessageBox
+    QTableWidgetItem, QHeaderView, QMessageBox, QLayout
 
-from Installer import Installer
+from Installer import Installer, ServerLoginStatus
 from actions import LockSystem
 from gen.InitialSetup import Ui_InitialSetup
 from gen.MainWindow import Ui_MainWindow
@@ -35,7 +35,7 @@ class MainWindow(QMainWindow):
 
 
 class InitialSetupWorker(QThread):
-    result_ready = Signal(bool)
+    result_ready = Signal(list)
 
     def __init__(self, basedir, server, username, password, instance):
         super().__init__()
@@ -46,19 +46,20 @@ class InitialSetupWorker(QThread):
         self.server = server
 
     def run(self):
-        token = Installer.do_server_login(self.server, self.username, self.password, self.instance)
-        if token:
-            Installer.save_settings(self.server, self.username, self.instance, token)
+        response = Installer.do_server_login(self.server, self.username, self.password, self.instance)
+        if response.status == ServerLoginStatus.OK:
+            Installer.save_settings(self.server, self.username, self.instance, response.token)
             Installer.install_autorun(self.basedir)
-            self.result_ready.emit(True)
+            self.result_ready.emit([True,""])
         else:
-            self.result_ready.emit(False)
+            self.result_ready.emit([False, response.message])
 
 
 class InitialSetup(QMainWindow):
     def __init__(self, basedir):
         super().__init__()
         self.basedir = basedir
+        self.layout().setSizeConstraint(QLayout.SizeConstraint.SetFixedSize)
         self.ui = Ui_InitialSetup()
         self.ui.setupUi(self)
         self.ui.progressBar.setHidden(True)
@@ -80,8 +81,10 @@ class InitialSetup(QMainWindow):
         self.worker.result_ready.connect(self.done)
         self.worker.start()
 
-    def done(self, success):
+    def done(self, result):
         msg_box = QMessageBox()
+        success = result[0]
+        message = result[1]
         if success:
             msg_box.setWindowTitle("Instalacja zakończona")
             msg_box.setText(f"Instalacja zakończona. Uruchom aplikację ponownie.")
@@ -91,7 +94,7 @@ class InitialSetup(QMainWindow):
             ok_button.clicked.connect(self.finish_close)
         else:
             msg_box.setWindowTitle("Niepowodzenie")
-            msg_box.setText(f"Sprawdź poprawność danych i spróbuj ponownie.")
+            msg_box.setText(f"Sprawdź poprawność danych i spróbuj ponownie.\n\n" + message)
             msg_box.setIcon(QMessageBox.Icon.Critical)
             msg_box.setStandardButtons(QMessageBox.StandardButton.Ok)
             ok_button = msg_box.button(QMessageBox.StandardButton.Ok)

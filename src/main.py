@@ -10,10 +10,18 @@ from osutils import app_data
 from src.Settings import Settings
 
 TICK_INTERVAL_SECONDS = 5
+DEBUG_HTTP_REQUESTS = True
 
 logging.basicConfig(filename=app_data().absolute().as_posix() + "/output.log",
                     level=logging.INFO,
                     format='[%(asctime)s] {%(pathname)s:%(lineno)d} %(levelname)s - %(message)s')
+
+if DEBUG_HTTP_REQUESTS:
+    import http.client as http_client
+    http_client.HTTPConnection.debuglevel = 1
+    requests_log = logging.getLogger("requests.packages.urllib3")
+    requests_log.setLevel(logging.DEBUG)
+    requests_log.propagate = True
 
 BASEDIR = os.path.dirname(__file__)
 

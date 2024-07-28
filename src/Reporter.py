@@ -3,9 +3,9 @@ import logging
 import requests
 from requests.auth import HTTPBasicAuth
 
+from Settings import Settings
 from UptimeDb import Usage
 from actions import *
-from Settings import Settings
 
 
 class Reporter:
@@ -16,8 +16,9 @@ class Reporter:
             response = requests.post(
                 url=f"{server}/report",
                 json={
+                    'instanceName': settings.instance_name,
                     'screenTime': usage.screen_time.total_seconds(),
-                    'applications': {k:v.total_seconds() for k,v in usage.applications.items()}
+                    'applications': {k: v.total_seconds() for k, v in usage.applications.items()}
                 },
                 auth=HTTPBasicAuth(settings.username, settings.instance_token),
                 headers={'Content-Type': 'application/json'}

@@ -15,7 +15,9 @@ from osutils import is_mac
 class ServerLoginStatus(Enum):
     OK = auto()
     HOST_NOT_REACHABLE = auto()
-    INVALID_CREDENTIALS = auto()
+    INVALID_PASSWORD = auto()
+    INSTANCE_ALREADY_EXISTS = auto()
+    ILLEGAL_INSTANCE_NAME = auto()
     SERVER_ERROR = auto()
 
 
@@ -39,22 +41,28 @@ class Installer:
             )
             response.raise_for_status()
             response_json = response.json()
-            if response_json['status'] != 'SUCCESS':
+            status = response_json['status']
+            if status == 'SUCCESS':
+                return ServerLoginResponse(ServerLoginStatus.OK, token=response_json['token'])
+            elif status == 'INVALID_PASSWORD':
+                return ServerLoginResponse(ServerLoginStatus.INVALID_PASSWORD, message=f"Invalid username or password")
+            elif status == 'INSTANCE_ALREADY_EXISTS':
+                return ServerLoginResponse(ServerLoginStatus.INSTANCE_ALREADY_EXISTS,
+                                           message=f"Instance already exists")
+            elif status == 'ILLEGAL_INSTANCE_NAME':
+                return ServerLoginResponse(ServerLoginStatus.ILLEGAL_INSTANCE_NAME,
+                                           message=f"Incorrect instance name (probably too short)")
+            else:
                 return ServerLoginResponse(ServerLoginStatus.SERVER_ERROR,
-                                           token=f"Response status: {response_json['status']}")
-            return ServerLoginResponse(ServerLoginStatus.OK, token=response_json['token'])
+                                           token=f"Unknown server response: {response_json['status']}")
         except MissingSchema:
             return ServerLoginResponse(ServerLoginStatus.HOST_NOT_REACHABLE, message="Missing URL schema")
         except ConnectionError:
             return ServerLoginResponse(ServerLoginStatus.HOST_NOT_REACHABLE,
                                        message=f"Connection error - host {server} is unreachable")
         except HTTPError as e:
-            if e.response.status_code == 403:
-                return ServerLoginResponse(ServerLoginStatus.INVALID_CREDENTIALS,
-                                           message=f"Invalid username or password")
-            else:
-                return ServerLoginResponse(ServerLoginStatus.SERVER_ERROR,
-                                           message=f"Server returned HTTP {e.response.status_code} {e.response.text}")
+            return ServerLoginResponse(ServerLoginStatus.SERVER_ERROR,
+                                       message=f"Server returned HTTP {e.response.status_code} {e.response.text}")
         except Exception as e:
             logging.error("Could not perform request", e)
             return ServerLoginResponse(ServerLoginStatus.SERVER_ERROR, message=str(e))

@@ -52,7 +52,7 @@ class InitialSetupWorker(QThread):
             Installer.install_autorun(self.basedir)
             self.result_ready.emit([True,""])
         else:
-            self.result_ready.emit([False, response.message])
+            self.result_ready.emit([False, f"{response.status.name}\n\n{response.message}"])
 
 
 class InitialSetup(QMainWindow):

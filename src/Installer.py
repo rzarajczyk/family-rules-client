@@ -3,13 +3,14 @@ import os
 import shutil
 from enum import Enum, auto
 from pathlib import Path
+import plistlib
 
 import requests
 from requests.auth import HTTPBasicAuth
 from requests.exceptions import MissingSchema, ConnectionError, HTTPError
 
 from Settings import Settings
-from osutils import is_mac
+from osutils import is_mac, app_data, path_to_str, dist_path
 
 
 class ServerLoginStatus(Enum):
@@ -74,11 +75,17 @@ class Installer:
     @staticmethod
     def install_autorun(basedir):
         if is_mac():
-            agents = os.path.join(Path.home(), "Library", "LaunchAgents")
-            file = Path(agents, "pl.zarajczyk.family-rules-client.plist")
-            if not file.is_file():
-                plist = Path(basedir, "resources", "pl.zarajczyk.family-rules-client.plist")
-                shutil.copy(plist, file)
-                logging.info(f"plist file installed")
+            plist_content = {
+                "Label": "pl.zarajczyk.family-rules-client",
+                "ProgramArguments": [path_to_str(dist_path(basedir))],
+                "RunAtLoad": True,
+                "KeepAlive": True,
+                "StandardErrorPath": path_to_str(app_data() / "family-rules-client-stderr.log"),
+                "StandardOutPath": path_to_str(app_data() / "family-rules-client-stdout.log"),
+            }
+            launch_agent = Path.home() / "Library" / "LaunchAgents" / "pl.zarajczyk.family-rules-client.plist"
+            if not launch_agent.is_file():
+                with launch_agent.open("wb") as f:
+                    plistlib.dump(plist_content, f)
         else:
             raise Exception("Unsupported OS")

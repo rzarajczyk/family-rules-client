@@ -4,20 +4,22 @@ import sys
 
 from Reporter import Reporter
 from RunningApplications import RunningApplications
+from Settings import Settings
 from UptimeDb import UptimeDb
 from gui import Gui
-from osutils import app_data
-from src.Settings import Settings
+from osutils import app_data, path_to_str, dist_path
+from src.Installer import Installer
 
 TICK_INTERVAL_SECONDS = 5
 DEBUG_HTTP_REQUESTS = True
 
-logging.basicConfig(filename=app_data().absolute().as_posix() + "/output.log",
+logging.basicConfig(filename=path_to_str(app_data() / "output.log"),
                     level=logging.INFO,
                     format='[%(asctime)s] {%(pathname)s:%(lineno)d} %(levelname)s - %(message)s')
 
 if DEBUG_HTTP_REQUESTS:
     import http.client as http_client
+
     http_client.HTTPConnection.debuglevel = 1
     requests_log = logging.getLogger("requests.packages.urllib3")
     requests_log.setLevel(logging.DEBUG)
@@ -38,8 +40,10 @@ def tick(gui: Gui):
 
 
 if __name__ == "__main__":
+    Installer.install_autorun(BASEDIR)
+
     logging.info("App started!")
-    # check_install(BASEDIR)
+    logging.info(dist_path(BASEDIR))
     gui = Gui(BASEDIR, sys.argv)
 
     if not Settings.setup_completed():

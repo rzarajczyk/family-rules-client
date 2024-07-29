@@ -1,6 +1,7 @@
 import os
 from datetime import timedelta
 
+from PySide6 import QtWidgets, QtCore
 from PySide6.QtCore import Qt, QTimer, QThread, Signal
 from PySide6.QtGui import QIcon, QAction
 from PySide6.QtWidgets import QWidget, QApplication, QSystemTrayIcon, QMenu, QVBoxLayout, QLabel, QMainWindow, \
@@ -10,6 +11,7 @@ from Installer import Installer, ServerLoginStatus
 from actions import LockSystem
 from gen.InitialSetup import Ui_InitialSetup
 from gen.MainWindow import Ui_MainWindow
+from osutils import is_dist
 
 
 class MainWindow(QMainWindow):
@@ -166,7 +168,7 @@ class Gui:
         self.main_window = MainWindow()
 
         tray_icon = QSystemTrayIcon()
-        tray_icon.setIcon(QIcon(os.path.join(self.basedir, "resources", "foaf.png")))
+        tray_icon.setIcon(QIcon(os.path.join(self.basedir, "resources", "icon.png")))
 
         tray_menu = QMenu()
 
@@ -181,7 +183,8 @@ class Gui:
         # add_menu_item("Lock screen", lambda: LockSystem().execute(self))
         # add_menu_item("Block screen", lambda: BlockAccess().execute(self))
         # add_menu_item("Kill Notes.ap", lambda: KillApplication("Notes.app").execute(self))
-        # add_menu_item("Quit", self.app.quit)
+        if not is_dist():
+            add_menu_item("Quit", self.app.quit)
 
         tray_icon.setContextMenu(tray_menu)
 

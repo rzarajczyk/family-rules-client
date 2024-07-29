@@ -45,6 +45,11 @@ coll = COLLECT(
 app = BUNDLE(
     coll,
     name='Family Rules.app',
-    icon='src/resources/foaf.icns',
+    icon='src/resources/icon.icns',
     bundle_identifier=None,
+    info_plist={
+            'LSUIElement': True,
+            'LSBackgroundOnly': False,
+            'NSUIElement': True
+        }
 )

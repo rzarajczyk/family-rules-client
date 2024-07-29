@@ -1,9 +1,7 @@
 import logging
-import os
-import shutil
+import plistlib
 from enum import Enum, auto
 from pathlib import Path
-import plistlib
 
 import requests
 from requests.auth import HTTPBasicAuth
@@ -76,8 +74,7 @@ class Installer:
     def install_autorun(basedir):
         if is_mac():
             path = path_to_str(dist_path(basedir) / "Contents" / "MacOS" / "Family Rules")
-            logging.info(f"Installig LaunchAgent {path}")
-            plist_content = {
+            expected_plist_content = {
                 "Label": "pl.zarajczyk.family-rules-client",
                 "ProgramArguments": [path],
                 "RunAtLoad": True,
@@ -86,8 +83,15 @@ class Installer:
                 "StandardOutPath": path_to_str(app_data() / "family-rules-client-stdout.log"),
             }
             launch_agent = Path.home() / "Library" / "LaunchAgents" / "pl.zarajczyk.family-rules-client.plist"
-            if not launch_agent.is_file():
+
+            existing_plist_contents = {}
+            if launch_agent.is_file():
+                with launch_agent.open("rb") as f:
+                    existing_plist_contents = plistlib.load(f)
+
+            if existing_plist_contents != expected_plist_content:
+                logging.info(f"Installing LaunchAgent {path}")
                 with launch_agent.open("wb") as f:
-                    plistlib.dump(plist_content, f)
+                        plistlib.dump(expected_plist_content, f)
         else:
             raise Exception("Unsupported OS")

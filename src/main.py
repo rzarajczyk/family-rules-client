@@ -8,10 +8,11 @@ from Settings import Settings
 from UptimeDb import UptimeDb
 from gui import Gui
 from osutils import app_data, path_to_str, dist_path
+from src.Installer import Installer
 
 TICK_INTERVAL_SECONDS = 5
 REPORT_INTERVALS_TICK = 6
-DEBUG_HTTP_REQUESTS = True
+DEBUG_HTTP_REQUESTS = False
 
 logging.basicConfig(filename=path_to_str(app_data() / "output.log"),
                     level=logging.INFO,
@@ -42,12 +43,12 @@ def tick(gui: Gui, tick_count: int):
 
 if __name__ == "__main__":
     logging.info("App started!")
-    logging.info(dist_path(BASEDIR))
     gui = Gui(BASEDIR, sys.argv)
 
     if not Settings.setup_completed():
         gui.setup_initial_setup_ui()
     else:
+        Installer.install_autorun(BASEDIR)
         gui.setup_main_ui(
             tick_interval_ms=TICK_INTERVAL_SECONDS * 1000,
             tick_function=tick

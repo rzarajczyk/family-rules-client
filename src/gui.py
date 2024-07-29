@@ -8,10 +8,10 @@ from PySide6.QtWidgets import QWidget, QApplication, QSystemTrayIcon, QMenu, QVB
     QTableWidgetItem, QHeaderView, QMessageBox, QLayout
 
 from Installer import Installer, ServerLoginStatus
-from actions import LockSystem
 from gen.InitialSetup import Ui_InitialSetup
 from gen.MainWindow import Ui_MainWindow
 from osutils import is_dist
+from gui_settings import SettingsWindow
 
 
 class MainWindow(QMainWindow):
@@ -52,7 +52,7 @@ class InitialSetupWorker(QThread):
         if response.status == ServerLoginStatus.OK:
             Installer.save_settings(self.server, self.username, self.instance, response.token)
             Installer.install_autorun(self.basedir)
-            self.result_ready.emit([True,""])
+            self.result_ready.emit([True, ""])
         else:
             self.result_ready.emit([False, f"{response.status.name}\n\n{response.message}"])
 
@@ -166,9 +166,10 @@ class Gui:
         # self.top_wight_window = TopRightWindow()
         self.block_access_window = BlockAccessWindow()
         self.main_window = MainWindow()
+        self.settings_window = SettingsWindow()
 
         tray_icon = QSystemTrayIcon()
-        tray_icon.setIcon(QIcon(os.path.join(self.basedir, "resources", "icon.png")))
+        tray_icon.setIcon(QIcon(os.path.join(self.basedir, "resources", "icon.png" if is_dist() else "icon-dev.png")))
 
         tray_menu = QMenu()
 
@@ -179,7 +180,13 @@ class Gui:
             self.dont_gc += [action]
             return action
 
-        add_menu_item("Show", self.main_window.show)
+        def show_main_window():
+            if QtWidgets.QApplication.keyboardModifiers() == QtCore.Qt.KeyboardModifier.ShiftModifier:
+                self.settings_window.show()
+            else:
+                self.main_window.show()
+
+        add_menu_item("Show", show_main_window)
         # add_menu_item("Lock screen", lambda: LockSystem().execute(self))
         # add_menu_item("Block screen", lambda: BlockAccess().execute(self))
         # add_menu_item("Kill Notes.ap", lambda: KillApplication("Notes.app").execute(self))

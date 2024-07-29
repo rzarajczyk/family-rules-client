@@ -1,5 +1,8 @@
 import logging
+import os
 import plistlib
+import shutil
+import time
 from enum import Enum, auto
 from pathlib import Path
 
@@ -95,3 +98,13 @@ class Installer:
                         plistlib.dump(expected_plist_content, f)
         else:
             raise Exception("Unsupported OS")
+
+
+    @staticmethod
+    def uninstall(username, password) -> bool:
+        time.sleep(3)
+        shutil.rmtree(app_data())
+        if is_mac():
+            path = Path.home() / "Library" / "LaunchAgents" / "pl.zarajczyk.family-rules-client.plist"
+            os.remove(path)
+        return True

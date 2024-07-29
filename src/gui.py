@@ -152,6 +152,7 @@ class Gui:
         self.basedir = basedir
         self.app = QApplication(argv)
         self.dont_gc = []
+        self.tick_count: int = 0
 
     def setup_initial_setup_ui(self):
         self.installer_window = InitialSetup(self.basedir)
@@ -177,17 +178,18 @@ class Gui:
             return action
 
         add_menu_item("Show", self.main_window.show)
-        add_menu_item("Lock screen", lambda: LockSystem().execute(self))
+        # add_menu_item("Lock screen", lambda: LockSystem().execute(self))
         # add_menu_item("Block screen", lambda: BlockAccess().execute(self))
         # add_menu_item("Kill Notes.ap", lambda: KillApplication("Notes.app").execute(self))
-        add_menu_item("Quit", self.app.quit)
+        # add_menu_item("Quit", self.app.quit)
 
         tray_icon.setContextMenu(tray_menu)
 
         tray_icon.show()
 
         def tick():
-            tick_function(self)
+            tick_function(self, self.tick_count)
+            self.tick_count += 1
 
         tick()
         # Set up a timer to show the window every 10 seconds

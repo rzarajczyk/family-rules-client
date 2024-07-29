@@ -8,9 +8,9 @@ from Settings import Settings
 from UptimeDb import UptimeDb
 from gui import Gui
 from osutils import app_data, path_to_str, dist_path
-from src.Installer import Installer
 
 TICK_INTERVAL_SECONDS = 5
+REPORT_INTERVALS_TICK = 6
 DEBUG_HTTP_REQUESTS = True
 
 logging.basicConfig(filename=path_to_str(app_data() / "output.log"),
@@ -28,15 +28,16 @@ if DEBUG_HTTP_REQUESTS:
 BASEDIR = os.path.dirname(__file__)
 
 
-def tick(gui: Gui):
+def tick(gui: Gui, tick_count: int):
     apps = RunningApplications().get_running_apps()
     usage = UptimeDb().update(apps, TICK_INTERVAL_SECONDS)
 
     gui.main_window.update_screen_time(usage.screen_time)
     gui.main_window.update_applications_usage(usage.applications)
 
-    action = Reporter().submit_report_get_action(usage)
-    action.execute(gui)
+    if tick_count % REPORT_INTERVALS_TICK == 0:
+        action = Reporter().submit_report_get_action(usage)
+        action.execute(gui)
 
 
 if __name__ == "__main__":

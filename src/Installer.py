@@ -75,9 +75,11 @@ class Installer:
     @staticmethod
     def install_autorun(basedir):
         if is_mac():
+            path = path_to_str(dist_path(basedir) / "Contents" / "MacOS" / "Family Rules")
+            logging.info(f"Installig LaunchAgent {path}")
             plist_content = {
                 "Label": "pl.zarajczyk.family-rules-client",
-                "ProgramArguments": [path_to_str(dist_path(basedir))],
+                "ProgramArguments": [path],
                 "RunAtLoad": True,
                 "KeepAlive": True,
                 "StandardErrorPath": path_to_str(app_data() / "family-rules-client-stderr.log"),

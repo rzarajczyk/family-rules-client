@@ -40,8 +40,6 @@ def tick(gui: Gui):
 
 
 if __name__ == "__main__":
-    Installer.install_autorun(BASEDIR)
-
     logging.info("App started!")
     logging.info(dist_path(BASEDIR))
     gui = Gui(BASEDIR, sys.argv)

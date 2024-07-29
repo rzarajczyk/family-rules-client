@@ -20,9 +20,9 @@ def is_dist() -> bool:
 
 
 def dist_path(basedir) -> Path:
-    if not is_dist():
-        return None
     if is_mac():
+        if not is_dist():
+            return Path("/Users/rafal/Developer/family-rules-client/dist/Family Rules.app")
         return Path(basedir.removesuffix("/Contents/Frameworks"))
     else:
         raise Exception("Unsupported OS")

@@ -1,18 +1,32 @@
 import os
 import sys
+from enum import Enum, auto
 from pathlib import Path
 
 
-def is_mac() -> bool:
-    return os.uname().sysname == 'Darwin'
+class SupportedOs(Enum):
+    MAC_OS = auto()
+    UNSUPPORTED = auto()
 
 
-def is_linux() -> bool:
-    return os.uname().sysname == 'Linux'
+def get_os() -> SupportedOs:
+    if os.uname().sysname == 'Darwin':
+        return SupportedOs.MAC_OS
+    else:
+        return SupportedOs.UNSUPPORTED
 
 
-def is_windows() -> bool:
-    return os.uname().sysname == 'Windows'
+#
+# def is_mac() -> bool:
+#     return os.uname().sysname == 'Darwin'
+#
+#
+# def is_linux() -> bool:
+#     return os.uname().sysname == 'Linux'
+#
+#
+# def is_windows() -> bool:
+#     return os.uname().sysname == 'Windows'
 
 
 def is_dist() -> bool:
@@ -20,26 +34,26 @@ def is_dist() -> bool:
 
 
 def dist_path(basedir) -> Path:
-    if is_mac():
-        if not is_dist():
-            return Path("/Users/rafal/Developer/family-rules-client/dist/Family Rules.app")
-        return Path(basedir.removesuffix("/Contents/Frameworks"))
-    else:
-        raise Exception("Unsupported OS")
-
+    match get_os():
+        case SupportedOs.MAC_OS:
+            if not is_dist():
+                return Path("/Users/rafal/Developer/family-rules-client/dist/Family Rules.app")
+            return Path(basedir.removesuffix("/Contents/Frameworks"))
+        case SupportedOs.UNSUPPORTED:
+            raise Exception("Unsupported operating system")
 
 
 def app_data() -> Path:
-    if is_mac():
-        path = Path(Path.home(), "Library", "Family Rules")
-        path.mkdir(exist_ok=True)
-        return path
-    else:
-        raise Exception("Unsupported OS")
+    match get_os():
+        case SupportedOs.MAC_OS:
+            path = Path(Path.home(), "Library", "Family Rules")
+            path.mkdir(exist_ok=True)
+            return path
+        case SupportedOs.UNSUPPORTED:
+            raise Exception("Unsupported operating system")
 
 
 def path_to_str(path: Path) -> str:
     if path is None:
         return None
     return path.absolute().as_posix()
-

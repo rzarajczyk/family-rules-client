@@ -11,7 +11,7 @@ from requests.auth import HTTPBasicAuth
 from requests.exceptions import MissingSchema, ConnectionError, HTTPError
 
 from Settings import Settings
-from osutils import is_mac, app_data, path_to_str, dist_path
+from osutils import app_data, path_to_str, dist_path, get_os, SupportedOs
 
 
 class ServerLoginStatus(Enum):
@@ -75,36 +75,44 @@ class Installer:
 
     @staticmethod
     def install_autorun(basedir):
-        if is_mac():
-            path = path_to_str(dist_path(basedir) / "Contents" / "MacOS" / "Family Rules")
-            expected_plist_content = {
-                "Label": "pl.zarajczyk.family-rules-client",
-                "ProgramArguments": [path],
-                "RunAtLoad": True,
-                "KeepAlive": True,
-                "StandardErrorPath": path_to_str(app_data() / "family-rules-client-stderr.log"),
-                "StandardOutPath": path_to_str(app_data() / "family-rules-client-stdout.log"),
-            }
-            launch_agent = Path.home() / "Library" / "LaunchAgents" / "pl.zarajczyk.family-rules-client.plist"
+        match get_os():
+            case SupportedOs.MAC_OS:
+                Installer.__install_macos_autorun(basedir)
+            case SupportedOs.UNSUPPORTED:
+                raise Exception("Unsupported operating system")
 
-            existing_plist_contents = {}
-            if launch_agent.is_file():
-                with launch_agent.open("rb") as f:
-                    existing_plist_contents = plistlib.load(f)
+    @staticmethod
+    def __install_macos_autorun(basedir):
+        path = path_to_str(dist_path(basedir) / "Contents" / "MacOS" / "Family Rules")
+        expected_plist_content = {
+            "Label": "pl.zarajczyk.family-rules-client",
+            "ProgramArguments": [path],
+            "RunAtLoad": True,
+            "KeepAlive": True,
+            "StandardErrorPath": path_to_str(app_data() / "family-rules-client-stderr.log"),
+            "StandardOutPath": path_to_str(app_data() / "family-rules-client-stdout.log"),
+        }
+        launch_agent = Path.home() / "Library" / "LaunchAgents" / "pl.zarajczyk.family-rules-client.plist"
 
-            if existing_plist_contents != expected_plist_content:
-                logging.info(f"Installing LaunchAgent {path}")
-                with launch_agent.open("wb") as f:
-                        plistlib.dump(expected_plist_content, f)
-        else:
-            raise Exception("Unsupported OS")
+        existing_plist_contents = {}
+        if launch_agent.is_file():
+            with launch_agent.open("rb") as f:
+                existing_plist_contents = plistlib.load(f)
+
+        if existing_plist_contents != expected_plist_content:
+            logging.info(f"Installing LaunchAgent {path}")
+            with launch_agent.open("wb") as f:
+                plistlib.dump(expected_plist_content, f)
 
 
     @staticmethod
     def uninstall(username, password) -> bool:
         time.sleep(3)
         shutil.rmtree(app_data())
-        if is_mac():
-            path = Path.home() / "Library" / "LaunchAgents" / "pl.zarajczyk.family-rules-client.plist"
-            os.remove(path)
+        match get_os():
+            case SupportedOs.MAC_OS:
+                path = Path.home() / "Library" / "LaunchAgents" / "pl.zarajczyk.family-rules-client.plist"
+                os.remove(path)
+            case SupportedOs.UNSUPPORTED:
+                raise Exception("Unsupported operating system")
         return True

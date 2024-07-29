@@ -1,5 +1,5 @@
 from RunningApplications import RunningApplications
-from osutils import is_mac
+from osutils import get_os, SupportedOs
 
 
 class Action:
@@ -13,12 +13,13 @@ class NoAction(Action):
 
 class LockSystem(Action):
     def execute(self, gui: 'Gui'):
-        if is_mac():
-            from ctypes import CDLL
-            login_pf = CDLL('/System/Library/PrivateFrameworks/login.framework/Versions/Current/login')
-            login_pf.SACLockScreenImmediate()
-        else:
-            raise Exception("Unsupported operating system")
+        match get_os():
+            case SupportedOs.MAC_OS:
+                from ctypes import CDLL
+                login_pf = CDLL('/System/Library/PrivateFrameworks/login.framework/Versions/Current/login')
+                login_pf.SACLockScreenImmediate()
+            case SupportedOs.UNSUPPORTED:
+                raise Exception("Unsupported operating system")
 
 
 class BlockAccess(Action):

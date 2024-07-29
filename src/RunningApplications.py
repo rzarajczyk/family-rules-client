@@ -3,27 +3,29 @@ import signal
 import subprocess
 from collections import defaultdict
 
-from osutils import is_mac
+from osutils import get_os, SupportedOs
 
 
 class RunningApplications:
     def get_running_apps(self):
-        if is_mac():
-            return set(self.__get_running_apps_mac_os().keys())
-        else:
-            raise Exception("Unsupported operating system")
+        match get_os():
+            case SupportedOs.MAC_OS:
+                return set(self.__get_running_apps_mac_os().keys())
+            case SupportedOs.UNSUPPORTED:
+                raise Exception("Unsupported operating system")
 
     def kill_by_name(self, app):
-        if is_mac():
-            apps = self.__get_running_apps_mac_os()
-            pids = apps[app]
-            for pid in pids:
-                try:
-                    os.kill(pid, signal.SIGTERM)
-                except Exception as e:
-                    pass
-        else:
-            raise Exception("Unsupported operating system")
+        match get_os():
+            case SupportedOs.MAC_OS:
+                apps = self.__get_running_apps_mac_os()
+                pids = apps[app]
+                for pid in pids:
+                    try:
+                        os.kill(pid, signal.SIGTERM)
+                    except Exception as e:
+                        pass
+            case SupportedOs.UNSUPPORTED:
+                raise Exception("Unsupported operating system")
 
     def __get_running_apps_mac_os(self):
         user = subprocess.run("whoami", capture_output=True, text=True).stdout.strip()

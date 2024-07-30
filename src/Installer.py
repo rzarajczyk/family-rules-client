@@ -2,7 +2,6 @@ import logging
 import os
 import plistlib
 import shutil
-import time
 from enum import Enum, auto
 from pathlib import Path
 
@@ -14,7 +13,7 @@ from Settings import Settings
 from osutils import app_data, path_to_str, dist_path, get_os, SupportedOs
 
 
-class ServerLoginStatus(Enum):
+class RegisterInstanceStatus(Enum):
     OK = auto()
     HOST_NOT_REACHABLE = auto()
     INVALID_PASSWORD = auto()
@@ -23,8 +22,15 @@ class ServerLoginStatus(Enum):
     SERVER_ERROR = auto()
 
 
-class ServerLoginResponse:
-    def __init__(self, status: ServerLoginStatus, token: str = None, message: str = None):
+class UnregisterInstanceStatus(Enum):
+    OK = auto()
+    HOST_NOT_REACHABLE = auto()
+    INVALID_PASSWORD = auto()
+    SERVER_ERROR = auto()
+
+
+class RegisterInstanceResponse:
+    def __init__(self, status: RegisterInstanceStatus, token: str = None, message: str = None):
         self.status = status
         self.token = token
         self.message = message
@@ -33,10 +39,10 @@ class ServerLoginResponse:
 class Installer:
 
     @staticmethod
-    def do_server_login(server, username, password, instance_name) -> ServerLoginResponse:
+    def install(server, username, password, instance_name) -> RegisterInstanceResponse:
         try:
             response = requests.post(
-                url=f"{server}/setup",
+                url=f"{server}/register-instance",
                 json={'instanceName': instance_name},
                 auth=HTTPBasicAuth(username, password),
                 headers={'Content-Type': 'application/json'}
@@ -44,30 +50,28 @@ class Installer:
             response.raise_for_status()
             response_json = response.json()
             status = response_json['status']
-            if status == 'SUCCESS':
-                return ServerLoginResponse(ServerLoginStatus.OK, token=response_json['token'])
-            elif status == 'INVALID_PASSWORD':
-                return ServerLoginResponse(ServerLoginStatus.INVALID_PASSWORD, message=f"Invalid username or password")
-            elif status == 'INSTANCE_ALREADY_EXISTS':
-                return ServerLoginResponse(ServerLoginStatus.INSTANCE_ALREADY_EXISTS,
-                                           message=f"Instance already exists")
-            elif status == 'ILLEGAL_INSTANCE_NAME':
-                return ServerLoginResponse(ServerLoginStatus.ILLEGAL_INSTANCE_NAME,
-                                           message=f"Incorrect instance name (probably too short)")
-            else:
-                return ServerLoginResponse(ServerLoginStatus.SERVER_ERROR,
-                                           token=f"Unknown server response: {response_json['status']}")
+            match response_json['status']:
+                case 'SUCCESS':
+                    return RegisterInstanceResponse(RegisterInstanceStatus.OK, token=response_json['token'])
+                case 'INVALID_PASSWORD':
+                    return RegisterInstanceResponse(RegisterInstanceStatus.INVALID_PASSWORD)
+                case 'INSTANCE_ALREADY_EXISTS':
+                    return RegisterInstanceResponse(RegisterInstanceStatus.INSTANCE_ALREADY_EXISTS)
+                case 'ILLEGAL_INSTANCE_NAME':
+                    return RegisterInstanceResponse(RegisterInstanceStatus.ILLEGAL_INSTANCE_NAME)
+                case _:
+                    return RegisterInstanceResponse(RegisterInstanceStatus.SERVER_ERROR, message=status)
         except MissingSchema:
-            return ServerLoginResponse(ServerLoginStatus.HOST_NOT_REACHABLE, message="Missing URL schema")
+            return RegisterInstanceResponse(RegisterInstanceStatus.HOST_NOT_REACHABLE)
         except ConnectionError:
-            return ServerLoginResponse(ServerLoginStatus.HOST_NOT_REACHABLE,
-                                       message=f"Connection error - host {server} is unreachable")
+            return RegisterInstanceResponse(RegisterInstanceStatus.HOST_NOT_REACHABLE)
         except HTTPError as e:
-            return ServerLoginResponse(ServerLoginStatus.SERVER_ERROR,
-                                       message=f"Server returned HTTP {e.response.status_code} {e.response.text}")
+            logging.error(f"HTTP Response {e.response.status_code} {e.response.text}")
+            return RegisterInstanceResponse(RegisterInstanceStatus.SERVER_ERROR,
+                                            message=f"HTTP {e.response.status_code} {e.response.text}")
         except Exception as e:
             logging.error("Could not perform request", e)
-            return ServerLoginResponse(ServerLoginStatus.SERVER_ERROR, message=str(e))
+            return RegisterInstanceResponse(RegisterInstanceStatus.SERVER_ERROR, message=str(e))
 
     @staticmethod
     def save_settings(server, username, instance, token):
@@ -104,15 +108,44 @@ class Installer:
             with launch_agent.open("wb") as f:
                 plistlib.dump(expected_plist_content, f)
 
+    @staticmethod
+    def uninstall(username, password) -> UnregisterInstanceStatus:
+        unregister_status = Installer.__unregister_instance(username, password)
+        if unregister_status == UnregisterInstanceStatus.OK:
+            shutil.rmtree(app_data())
+            match get_os():
+                case SupportedOs.MAC_OS:
+                    path = Path.home() / "Library" / "LaunchAgents" / "pl.zarajczyk.family-rules-client.plist"
+                    os.remove(path)
+                case SupportedOs.UNSUPPORTED:
+                    raise Exception("Unsupported operating system")
+        return unregister_status
 
     @staticmethod
-    def uninstall(username, password) -> bool:
-        time.sleep(3)
-        shutil.rmtree(app_data())
-        match get_os():
-            case SupportedOs.MAC_OS:
-                path = Path.home() / "Library" / "LaunchAgents" / "pl.zarajczyk.family-rules-client.plist"
-                os.remove(path)
-            case SupportedOs.UNSUPPORTED:
-                raise Exception("Unsupported operating system")
-        return True
+    def __unregister_instance(username, password) -> UnregisterInstanceStatus:
+        settings = Settings.load()
+        try:
+            response = requests.post(
+                url=f"{settings.server}/unregister-instance",
+                json={'instanceName': settings.instance_name},
+                auth=HTTPBasicAuth(username, password),
+                headers={'Content-Type': 'application/json'}
+            )
+            response.raise_for_status()
+            match response.json()['status']:
+                case 'SUCCESS':
+                    return UnregisterInstanceStatus.OK
+                case 'INVALID_PASSWORD':
+                    return UnregisterInstanceStatus.INVALID_PASSWORD
+                case _:
+                    return UnregisterInstanceStatus.SERVER_ERROR
+        except MissingSchema:
+            return UnregisterInstanceStatus.HOST_NOT_REACHABLE
+        except ConnectionError:
+            return UnregisterInstanceStatus.HOST_NOT_REACHABLE
+        except HTTPError as e:
+            logging.error(f"HTTP Response {e.response.status_code} {e.response.text}")
+            return UnregisterInstanceStatus.SERVER_ERROR
+        except Exception as e:
+            logging.error("Could not perform request", e)
+            return UnregisterInstanceStatus.SERVER_ERROR

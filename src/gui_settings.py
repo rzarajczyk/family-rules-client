@@ -3,13 +3,13 @@ import sys
 from PySide6.QtCore import QThread, Signal
 from PySide6.QtWidgets import QDialog, QMainWindow, QMessageBox
 
-from Installer import Installer
+from Installer import Installer, UnregisterInstanceStatus
 from gen.ParentConfirm import Ui_ParentConfirm
 from gen.SettingsWindow import Ui_SettingsWindow
 
 
 class CheckPasswordWorker(QThread):
-    result_ready = Signal(bool)
+    result_ready = Signal(UnregisterInstanceStatus)
 
     def __init__(self, username, password):
         super().__init__()
@@ -47,20 +47,20 @@ class SettingsWindow(QMainWindow):
         self.worker.start()
 
     def uninstall_finished(self, status):
-        if status:
+        if status == UnregisterInstanceStatus.OK:
             msg_box = QMessageBox()
             msg_box.setWindowTitle("Uninstall finished")
             msg_box.setText(f"Uninstall finished.")
             msg_box.setIcon(QMessageBox.Icon.Information)
             msg_box.setStandardButtons(QMessageBox.StandardButton.Ok)
             ok_button = msg_box.button(QMessageBox.StandardButton.Ok)
-            ok_button.clicked.connect(lambda : sys.exit(0))
+            ok_button.clicked.connect(lambda: sys.exit(0))
             msg_box.exec()
         else:
             self.ui.progressBar.setHidden(True)
             msg_box = QMessageBox()
             msg_box.setWindowTitle("Uninstall failed")
-            msg_box.setText(f"Incorrect credentials.")
+            msg_box.setText(f"Uninstall failed\n\n{status}")
             msg_box.setIcon(QMessageBox.Icon.Critical)
             msg_box.setStandardButtons(QMessageBox.StandardButton.Ok)
             ok_button = msg_box.button(QMessageBox.StandardButton.Ok)

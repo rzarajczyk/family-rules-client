@@ -44,6 +44,8 @@ def dist_path(basedir) -> Path:
 
 
 def app_data() -> Path:
+    if not is_dist():
+        return Path("/Users/rafal/Developer/family-rules-client/data")
     match get_os():
         case SupportedOs.MAC_OS:
             path = Path(Path.home(), "Library", "Family Rules")

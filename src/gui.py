@@ -7,7 +7,7 @@ from PySide6.QtGui import QIcon, QAction
 from PySide6.QtWidgets import QWidget, QApplication, QSystemTrayIcon, QMenu, QVBoxLayout, QLabel, QMainWindow, \
     QTableWidgetItem, QHeaderView, QMessageBox, QLayout
 
-from Installer import Installer, ServerLoginStatus
+from Installer import Installer, RegisterInstanceStatus
 from gen.InitialSetup import Ui_InitialSetup
 from gen.MainWindow import Ui_MainWindow
 from osutils import is_dist
@@ -48,13 +48,28 @@ class InitialSetupWorker(QThread):
         self.server = server
 
     def run(self):
-        response = Installer.do_server_login(self.server, self.username, self.password, self.instance)
-        if response.status == ServerLoginStatus.OK:
+        response = Installer.install(self.server, self.username, self.password, self.instance)
+        if response.status == RegisterInstanceStatus.OK:
             Installer.save_settings(self.server, self.username, self.instance, response.token)
             Installer.install_autorun(self.basedir)
             self.result_ready.emit([True, ""])
         else:
-            self.result_ready.emit([False, f"{response.status.name}\n\n{response.message}"])
+            match response.status:
+                case RegisterInstanceStatus.ILLEGAL_INSTANCE_NAME:
+                    message = "Nieprawidłowa nazwa tego komputera"
+                case RegisterInstanceStatus.INSTANCE_ALREADY_EXISTS:
+                    message = "Komputer o takiej nazwie już został zarejestrowany"
+                case RegisterInstanceStatus.HOST_NOT_REACHABLE:
+                    message = "Brak połączenia z serwerem"
+                case RegisterInstanceStatus.INVALID_PASSWORD:
+                    message = "Nieprawidłowa nazwa użytkownika lub hasło"
+                case RegisterInstanceStatus.SERVER_ERROR:
+                    message = "Serwer zwrócił błąd"
+                case _:
+                    message = f"Wykryto nieznany błąd: {response.status}"
+            if response.message is not None:
+                message += f"\n\n{message}"
+            self.result_ready.emit([False, message])
 
 
 class InitialSetup(QMainWindow):

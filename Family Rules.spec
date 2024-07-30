@@ -5,8 +5,10 @@ a = Analysis(
     ['src/main.py'],
     pathex=['src/'],
     binaries=[],
-    datas=[('src/resources', 'resources')],
-    hiddenimports=['shiboken6'],
+    datas=[
+        ('src/resources', 'resources')
+    ],
+    hiddenimports=[],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],

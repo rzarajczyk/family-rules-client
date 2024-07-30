@@ -12,7 +12,7 @@ from src.Installer import Installer
 
 TICK_INTERVAL_SECONDS = 5
 REPORT_INTERVALS_TICK = 6
-DEBUG_HTTP_REQUESTS = False
+DEBUG_HTTP_REQUESTS = True
 
 logging.basicConfig(filename=path_to_str(app_data() / "output.log"),
                     level=logging.INFO,

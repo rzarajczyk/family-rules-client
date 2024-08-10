@@ -5,10 +5,11 @@ import sys
 from Reporter import Reporter
 from RunningApplications import RunningApplications
 from Settings import Settings
-from UptimeDb import UptimeDb
+from UptimeDb import UptimeDb, AbsoluteUsage
 from gui import Gui
-from osutils import app_data, path_to_str, dist_path
-from src.Installer import Installer
+from osutils import app_data, path_to_str
+from Installer import Installer
+from uptime import PsUptime
 
 TICK_INTERVAL_SECONDS = 5
 REPORT_INTERVALS_TICK = 6
@@ -29,16 +30,14 @@ if DEBUG_HTTP_REQUESTS:
 BASEDIR = os.path.dirname(__file__)
 
 
-def tick(gui: Gui, tick_count: int):
-    apps = RunningApplications().get_running_apps()
-    usage = UptimeDb().update(apps, TICK_INTERVAL_SECONDS)
+def uptime_tick():
+    settings = Settings.load()
+    return PsUptime(TICK_INTERVAL_SECONDS).get()
 
-    gui.main_window.update_screen_time(usage.screen_time)
-    gui.main_window.update_applications_usage(usage.applications)
 
-    if tick_count % REPORT_INTERVALS_TICK == 0:
-        action = Reporter().submit_report_get_action(usage)
-        action.execute(gui)
+def report_tick(gui: Gui, usage: AbsoluteUsage):
+    action = Reporter().submit_report_get_action(usage)
+    action.execute(gui)
 
 
 if __name__ == "__main__":
@@ -50,7 +49,9 @@ if __name__ == "__main__":
     else:
         Installer.install_autorun(BASEDIR)
         gui.setup_main_ui(
-            tick_interval_ms=TICK_INTERVAL_SECONDS * 1000,
-            tick_function=tick
+            uptime_tick_interval_ms=TICK_INTERVAL_SECONDS * 1000,
+            uptime_tick_function=uptime_tick,
+            report_tick_interval_ms=TICK_INTERVAL_SECONDS * REPORT_INTERVALS_TICK * 1000,
+            report_tick_function=report_tick
         )
     sys.exit(gui.run())

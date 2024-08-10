@@ -4,12 +4,12 @@ import requests
 from requests.auth import HTTPBasicAuth
 
 from Settings import Settings
-from UptimeDb import Usage
+from UptimeDb import AbsoluteUsage
 from actions import *
 
 
 class Reporter:
-    def submit_report_get_action(self, usage: Usage):
+    def submit_report_get_action(self, usage: AbsoluteUsage):
         settings = Settings.load()
         try:
             server = settings.server

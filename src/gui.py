@@ -12,6 +12,7 @@ from gen.InitialSetup import Ui_InitialSetup
 from gen.MainWindow import Ui_MainWindow
 from osutils import is_dist
 from gui_settings import SettingsWindow
+from UptimeDb import UptimeDb, UsageUpdate
 
 
 class MainWindow(QMainWindow):
@@ -175,7 +176,12 @@ class Gui:
         self.installer_window = InitialSetup(self.basedir)
         self.installer_window.show()
 
-    def setup_main_ui(self, tick_interval_ms: int, tick_function):
+    def setup_main_ui(self,
+                      uptime_tick_interval_ms: int,
+                      uptime_tick_function,
+                      report_tick_interval_ms: int,
+                      report_tick_function
+                      ):
         self.app.setQuitOnLastWindowClosed(False)
 
         # self.top_wight_window = TopRightWindow()
@@ -212,18 +218,29 @@ class Gui:
 
         tray_icon.show()
 
-        def tick():
-            tick_function(self, self.tick_count)
-            self.tick_count += 1
+        db = UptimeDb()
 
-        tick()
-        # Set up a timer to show the window every 10 seconds
-        timer = QTimer()
-        timer.timeout.connect(tick)
-        timer.start(tick_interval_ms)
+        def uptime_tick():
+            usage_update: UsageUpdate = uptime_tick_function()
+            absolute_usage = db.update(usage_update)
+            self.main_window.update_screen_time(absolute_usage.screen_time)
+            self.main_window.update_applications_usage(absolute_usage.applications)
+
+        def report_tick():
+            usage = db.get()
+            report_tick_function(self, usage)
+
+        uptime_tick()
+        uptime_timer = QTimer()
+        uptime_timer.timeout.connect(uptime_tick)
+        uptime_timer.start(uptime_tick_interval_ms)
+
+        report_timer = QTimer()
+        report_timer.timeout.connect(report_tick)
+        report_timer.start(report_tick_interval_ms)
 
         self.dont_gc += [
-            tray_icon, tray_menu, timer
+            tray_icon, tray_menu, uptime_timer, report_timer, db
         ]
 
     def run(self):

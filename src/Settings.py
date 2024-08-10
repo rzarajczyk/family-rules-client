@@ -1,6 +1,11 @@
 import json
+from enum import Enum, auto
 
 from osutils import app_data
+
+class UptimeMethod(Enum):
+    PS = auto()
+    APPLE_SCREEN_TIME = auto()
 
 
 class Settings:
@@ -9,6 +14,7 @@ class Settings:
         self.username = json_settings['username']
         self.instance_name = json_settings['instance_name']
         self.instance_token = json_settings['instance_token']
+        self.uptime_method = UptimeMethod.APPLE_SCREEN_TIME
 
     @staticmethod
     def setup_completed():

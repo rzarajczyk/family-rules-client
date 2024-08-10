@@ -4,12 +4,12 @@ import sys
 
 from Reporter import Reporter
 from RunningApplications import RunningApplications
-from Settings import Settings
+from Settings import Settings, UptimeMethod
 from UptimeDb import UptimeDb, AbsoluteUsage
 from gui import Gui
 from osutils import app_data, path_to_str
 from Installer import Installer
-from uptime import PsUptime
+from uptime import PsUptime, AppleScreenTimeUptime
 
 TICK_INTERVAL_SECONDS = 5
 REPORT_INTERVALS_TICK = 6
@@ -32,7 +32,13 @@ BASEDIR = os.path.dirname(__file__)
 
 def uptime_tick():
     settings = Settings.load()
-    return PsUptime(TICK_INTERVAL_SECONDS).get()
+    match settings.uptime_method:
+        case UptimeMethod.PS:
+            return PsUptime(TICK_INTERVAL_SECONDS).get()
+        case UptimeMethod.APPLE_SCREEN_TIME:
+            return AppleScreenTimeUptime().get()
+        case _:
+            raise Exception(f"Unsupported UptimeMethod: {settings.uptime_method}")
 
 
 def report_tick(gui: Gui, usage: AbsoluteUsage):

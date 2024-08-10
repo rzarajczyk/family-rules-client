@@ -43,7 +43,10 @@ class Installer:
         try:
             response = requests.post(
                 url=f"{server}/register-instance",
-                json={'instanceName': instance_name},
+                json={
+                    'instanceName': instance_name,
+                    'os': get_os().name
+                },
                 auth=HTTPBasicAuth(username, password),
                 headers={'Content-Type': 'application/json'}
             )

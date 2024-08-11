@@ -14,7 +14,7 @@ class Settings:
         self.username = json_settings['username']
         self.instance_name = json_settings['instance_name']
         self.instance_token = json_settings['instance_token']
-        self.uptime_method = UptimeMethod.PS
+        self.uptime_method = UptimeMethod[json_settings['uptime_method']]
 
     @staticmethod
     def setup_completed():
@@ -35,6 +35,7 @@ class Settings:
         json_settings['username'] = username
         json_settings['instance_name'] = instance_name
         json_settings['instance_token'] = instance_token
+        json_settings['uptime_method'] = UptimeMethod.PS.name
 
         file = app_data() / "settings.json"
         if file.exists():

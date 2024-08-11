@@ -4,7 +4,7 @@ from datetime import timedelta
 from RunningApplications import RunningApplications
 from UptimeDb import UsageUpdate
 from src.AppleScreenTime import AppleScreenTime
-from src.osutils import is_screen_locked
+from src.osutils import is_user_active
 
 
 class Uptime:
@@ -17,7 +17,7 @@ class PsUptime(Uptime):
         self.interval = interval
 
     def get(self) -> UsageUpdate:
-        if is_screen_locked():
+        if not is_user_active():
             return UsageUpdate(
                 screen_time=timedelta(seconds=0),
                 applications={},

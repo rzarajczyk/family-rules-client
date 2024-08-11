@@ -2,13 +2,12 @@ import logging
 import os
 import sys
 
+from Installer import Installer
 from Reporter import Reporter
-from RunningApplications import RunningApplications
 from Settings import Settings, UptimeMethod
-from UptimeDb import UptimeDb, AbsoluteUsage
+from UptimeDb import AbsoluteUsage
 from gui import Gui
 from osutils import app_data, path_to_str
-from Installer import Installer
 from uptime import PsUptime, AppleScreenTimeUptime
 
 TICK_INTERVAL_SECONDS = 5

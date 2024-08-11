@@ -1,4 +1,6 @@
 import os
+import plistlib
+import subprocess
 import sys
 from enum import Enum, auto
 from pathlib import Path
@@ -59,3 +61,17 @@ def path_to_str(path: Path) -> str:
     if path is None:
         return None
     return path.absolute().as_posix()
+
+
+def is_screen_locked() -> bool:
+    match get_os():
+        case SupportedOs.MAC_OS:
+            output = subprocess.run("ioreg -n Root -d1 -a", capture_output=True, shell=True, text=True).stdout.strip()
+            plist = plistlib.loads(output.encode('utf-8'))
+            ioconsoleusers = plist.get('IOConsoleUsers', [])
+            if len(ioconsoleusers) > 0:
+                ioconsoleusers = ioconsoleusers[0]
+                return 'CGSSessionScreenIsLocked' in ioconsoleusers
+            return False
+        case SupportedOs.UNSUPPORTED:
+            raise Exception("Unsupported operating system")

@@ -14,7 +14,7 @@ class Settings:
         self.username = json_settings['username']
         self.instance_name = json_settings['instance_name']
         self.instance_token = json_settings['instance_token']
-        self.uptime_method = UptimeMethod.APPLE_SCREEN_TIME
+        self.uptime_method = UptimeMethod.PS
 
     @staticmethod
     def setup_completed():

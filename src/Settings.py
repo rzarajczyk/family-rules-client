@@ -3,6 +3,7 @@ from enum import Enum, auto
 
 from osutils import app_data
 
+
 class UptimeMethod(Enum):
     PS = auto()
     APPLE_SCREEN_TIME = auto()
@@ -15,6 +16,15 @@ class Settings:
         self.instance_name = json_settings['instance_name']
         self.instance_token = json_settings['instance_token']
         self.uptime_method = UptimeMethod[json_settings['uptime_method']]
+
+    def to_json(self):
+        return {
+            'server': self.server,
+            'username': self.username,
+            'instance_name': self.instance_name,
+            'instance_token': self.instance_token,
+            'uptime_method': self.uptime_method.name
+        }
 
     @staticmethod
     def setup_completed():
@@ -29,16 +39,23 @@ class Settings:
         return Settings(json_settings)
 
     @staticmethod
-    def create(server, username, instance_name, instance_token):
-        json_settings = dict()
-        json_settings['server'] = server
-        json_settings['username'] = username
-        json_settings['instance_name'] = instance_name
-        json_settings['instance_token'] = instance_token
-        json_settings['uptime_method'] = UptimeMethod.PS.name
+    def save(settings: 'Settings'):
+        settings_json = settings.to_json()
+        Settings.__save_json(settings_json)
 
+    @staticmethod
+    def __save_json(settings_json: dict):
         file = app_data() / "settings.json"
-        if file.exists():
-            raise Exception("Settings file already exists")
         with open(file, 'w') as f:
-            json.dump(json_settings, f, indent=4)
+            json.dump(settings_json, f, indent=4)
+
+    @staticmethod
+    def create(server, username, instance_name, instance_token):
+        settings_json = {
+            'server': server,
+            'username': username,
+            'instance_name': instance_name,
+            'instance_token': instance_token,
+            'uptime_method': UptimeMethod.PS.name
+        }
+        Settings.__save_json(settings_json)

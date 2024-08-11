@@ -42,7 +42,7 @@ class Installer:
     def install(server, username, password, instance_name) -> RegisterInstanceResponse:
         try:
             response = requests.post(
-                url=f"{server}/register-instance",
+                url=f"{server}/api/register-instance",
                 json={
                     'instanceName': instance_name,
                     'os': get_os().name
@@ -116,20 +116,24 @@ class Installer:
         unregister_status = Installer.__unregister_instance(username, password)
         if unregister_status == UnregisterInstanceStatus.OK:
             shutil.rmtree(app_data())
-            match get_os():
-                case SupportedOs.MAC_OS:
-                    path = Path.home() / "Library" / "LaunchAgents" / "pl.zarajczyk.family-rules-client.plist"
-                    os.remove(path)
-                case SupportedOs.UNSUPPORTED:
-                    raise Exception("Unsupported operating system")
+            Installer.uninstall_autorun()
         return unregister_status
+
+    @staticmethod
+    def uninstall_autorun():
+        match get_os():
+            case SupportedOs.MAC_OS:
+                path = Path.home() / "Library" / "LaunchAgents" / "pl.zarajczyk.family-rules-client.plist"
+                os.remove(path)
+            case SupportedOs.UNSUPPORTED:
+                raise Exception("Unsupported operating system")
 
     @staticmethod
     def __unregister_instance(username, password) -> UnregisterInstanceStatus:
         settings = Settings.load()
         try:
             response = requests.post(
-                url=f"{settings.server}/unregister-instance",
+                url=f"{settings.server}/api/unregister-instance",
                 json={'instanceName': settings.instance_name},
                 auth=HTTPBasicAuth(username, password),
                 headers={'Content-Type': 'application/json'}

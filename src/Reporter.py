@@ -4,8 +4,8 @@ import requests
 from requests.auth import HTTPBasicAuth
 
 from Settings import Settings
-from UptimeDb import AbsoluteUsage
 from StateController import *
+from UptimeDb import AbsoluteUsage
 
 
 class Reporter:
@@ -14,7 +14,7 @@ class Reporter:
         try:
             server = settings.server
             response = requests.post(
-                url=f"{server}/report",
+                url=f"{server}/api/report",
                 json={
                     'instanceName': settings.instance_name,
                     'screenTime': usage.screen_time.total_seconds(),

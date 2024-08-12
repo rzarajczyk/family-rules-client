@@ -1,14 +1,17 @@
 from gui import Gui
+from osutils import get_os, SupportedOs
 
 
 class State:
     def __init__(self, json):
         self.locked = json['locked']
+        self.logged_out = json['logged-out']
 
     @staticmethod
     def empty():
         return State({
-            'locked': False
+            'locked': False,
+            'logged-out': False
         })
 
 
@@ -23,10 +26,24 @@ class StateController:
     def run(self, state: State):
         if state is not None:
             self.state = state
+
+        if state.logged_out:
+            self.__logout()
+            return
+
         if state.locked:
             self.gui.block_access_window.show()
         else:
             self.gui.block_access_window.hide()
+
+    def __logout(self):
+        match get_os():
+            case SupportedOs.MAC_OS:
+                from ctypes import CDLL
+                login_pf = CDLL('/System/Library/PrivateFrameworks/login.framework/Versions/Current/login')
+                login_pf.SACLockScreenImmediate()
+            case SupportedOs.UNSUPPORTED:
+                raise Exception("Unsupported operating system")
 
 # class Action:
 #     def execute(self, gui: 'Gui'):

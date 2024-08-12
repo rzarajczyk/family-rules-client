@@ -1,19 +1,19 @@
 import os
 from datetime import timedelta
-import ctypes
 
 from PySide6 import QtWidgets, QtCore
-from PySide6.QtCore import Qt, QTimer, QThread, Signal
+from PySide6.QtCore import QTimer, QThread, Signal
 from PySide6.QtGui import QIcon, QAction
-from PySide6.QtWidgets import QWidget, QApplication, QSystemTrayIcon, QMenu, QVBoxLayout, QLabel, QMainWindow, \
+from PySide6.QtWidgets import QApplication, QSystemTrayIcon, QMenu, QMainWindow, \
     QTableWidgetItem, QHeaderView, QMessageBox, QLayout
 
 from Installer import Installer, RegisterInstanceStatus
+from UptimeDb import UptimeDb, UsageUpdate
 from gen.InitialSetup import Ui_InitialSetup
 from gen.MainWindow import Ui_MainWindow
-from osutils import is_dist, get_os, SupportedOs
+from gui_block import BlockScreenWindow
 from gui_settings import SettingsWindow
-from UptimeDb import UptimeDb, UsageUpdate
+from osutils import is_dist
 
 
 class MainWindow(QMainWindow):
@@ -133,68 +133,6 @@ class InitialSetup(QMainWindow):
         self.ui.instanceName.setDisabled(False)
 
 
-class BlockAccessWindow(QWidget):
-    def __init__(self):
-        super().__init__()
-
-        screen_geometry = QApplication.primaryScreen().geometry()
-        screen_width = screen_geometry.width()
-        screen_height = screen_geometry.height()
-
-        self.setWindowTitle("Blokada ekranu!")
-        self.setFixedSize(screen_width, screen_height)
-        self.setWindowFlags(
-            Qt.Window | Qt.CustomizeWindowHint | Qt.WindowTitleHint | Qt.WindowSystemMenuHint | Qt.WindowStaysOnTopHint)
-
-        match get_os():
-            case SupportedOs.MAC_OS:
-                view_id = self.winId()
-
-                # Load the necessary macOS frameworks
-                objc = ctypes.cdll.LoadLibrary('/System/Library/Frameworks/Cocoa.framework/Cocoa')
-                objc.objc_getClass.restype = ctypes.c_void_p
-                objc.sel_registerName.restype = ctypes.c_void_p
-                objc.objc_msgSend.restype = ctypes.c_void_p
-                objc.objc_msgSend.argtypes = [ctypes.c_void_p, ctypes.c_void_p]
-
-                # Get the NSView
-                NSView = ctypes.c_void_p(view_id)
-
-                # Get the NSWindow from the NSView
-                sel_window = objc.sel_registerName(b"window")
-                NSWindow = objc.objc_msgSend(NSView, sel_window)
-
-                # Modify the CollectionBehavior of the NSWindow to make it appear on all desktops
-                sel_setCollectionBehavior = objc.sel_registerName(b"setCollectionBehavior:")
-                # Define the desired collection behavior
-                NSWindowCollectionBehaviorCanJoinAllSpaces = 1 << 0
-                objc.objc_msgSend(NSWindow, sel_setCollectionBehavior, ctypes.c_uint(NSWindowCollectionBehaviorCanJoinAllSpaces))
-
-
-            case _:
-                raise Exception("Unsupported OS")
-
-
-        # Center the content inside the window
-        layout = QVBoxLayout()
-        label = QLabel("Ekran zablokowany")
-        layout.addWidget(label)
-        layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.setLayout(layout)
-        self.move(0, 0)
-
-    def moveEvent(self, event):
-        self.move(0, 0)
-        event.ignore()
-
-    def resizeEvent(self, event):
-        screen_geometry = QApplication.primaryScreen().geometry()
-        screen_height = screen_geometry.height()
-        screen_width = screen_geometry.width()
-        self.setFixedSize(screen_width, screen_height)
-        event.ignore()
-
-
 class Gui:
     def __init__(self, basedir, argv):
         self.basedir = basedir
@@ -215,7 +153,7 @@ class Gui:
         self.app.setQuitOnLastWindowClosed(False)
 
         # self.top_wight_window = TopRightWindow()
-        self.block_access_window = BlockAccessWindow()
+        self.block_access_window = BlockScreenWindow(self.basedir)
         self.main_window = MainWindow()
         self.settings_window = SettingsWindow()
 
@@ -238,7 +176,7 @@ class Gui:
                 self.main_window.show()
 
         add_menu_item("Show", show_main_window)
-        # add_menu_item("Lock screen", lambda: LockSystem().execute(self))
+        add_menu_item("Lock screen", lambda: self.block_access_window.show())
         # add_menu_item("Block screen", lambda: BlockAccess().execute(self))
         # add_menu_item("Kill Notes.ap", lambda: KillApplication("Notes.app").execute(self))
         if not is_dist():

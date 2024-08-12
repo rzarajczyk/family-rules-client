@@ -5,11 +5,11 @@ from requests.auth import HTTPBasicAuth
 
 from Settings import Settings
 from UptimeDb import AbsoluteUsage
-from actions import *
+from StateController import *
 
 
 class Reporter:
-    def submit_report_get_action(self, usage: AbsoluteUsage):
+    def submit_report_get_state(self, usage: AbsoluteUsage) -> State:
         settings = Settings.load()
         try:
             server = settings.server
@@ -25,14 +25,7 @@ class Reporter:
             )
             response.raise_for_status()
             response_json = response.json()
-            action_type = response_json['action']['type']
-
-            if action_type == 'NO_ACTION':
-                return NoAction()
-            elif action_type == 'LOCK_SYSTEM':
-                return LockSystem()
-            else:
-                return NoAction()
+            return State(response_json)
         except Exception as e:
             logging.error("Unable to submit report", e)
-            return NoAction()
+            return None

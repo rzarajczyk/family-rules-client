@@ -1,5 +1,6 @@
 import os
 from datetime import timedelta
+import ctypes
 
 from PySide6 import QtWidgets, QtCore
 from PySide6.QtCore import Qt, QTimer, QThread, Signal
@@ -10,7 +11,7 @@ from PySide6.QtWidgets import QWidget, QApplication, QSystemTrayIcon, QMenu, QVB
 from Installer import Installer, RegisterInstanceStatus
 from gen.InitialSetup import Ui_InitialSetup
 from gen.MainWindow import Ui_MainWindow
-from osutils import is_dist
+from osutils import is_dist, get_os, SupportedOs
 from gui_settings import SettingsWindow
 from UptimeDb import UptimeDb, UsageUpdate
 
@@ -144,6 +145,35 @@ class BlockAccessWindow(QWidget):
         self.setFixedSize(screen_width, screen_height)
         self.setWindowFlags(
             Qt.Window | Qt.CustomizeWindowHint | Qt.WindowTitleHint | Qt.WindowSystemMenuHint | Qt.WindowStaysOnTopHint)
+
+        match get_os():
+            case SupportedOs.MAC_OS:
+                view_id = self.winId()
+
+                # Load the necessary macOS frameworks
+                objc = ctypes.cdll.LoadLibrary('/System/Library/Frameworks/Cocoa.framework/Cocoa')
+                objc.objc_getClass.restype = ctypes.c_void_p
+                objc.sel_registerName.restype = ctypes.c_void_p
+                objc.objc_msgSend.restype = ctypes.c_void_p
+                objc.objc_msgSend.argtypes = [ctypes.c_void_p, ctypes.c_void_p]
+
+                # Get the NSView
+                NSView = ctypes.c_void_p(view_id)
+
+                # Get the NSWindow from the NSView
+                sel_window = objc.sel_registerName(b"window")
+                NSWindow = objc.objc_msgSend(NSView, sel_window)
+
+                # Modify the CollectionBehavior of the NSWindow to make it appear on all desktops
+                sel_setCollectionBehavior = objc.sel_registerName(b"setCollectionBehavior:")
+                # Define the desired collection behavior
+                NSWindowCollectionBehaviorCanJoinAllSpaces = 1 << 0
+                objc.objc_msgSend(NSWindow, sel_setCollectionBehavior, ctypes.c_uint(NSWindowCollectionBehaviorCanJoinAllSpaces))
+
+
+            case _:
+                raise Exception("Unsupported OS")
+
 
         # Center the content inside the window
         layout = QVBoxLayout()

@@ -8,11 +8,12 @@ from Settings import Settings, UptimeMethod
 from UptimeDb import AbsoluteUsage
 from gui import Gui
 from osutils import app_data, path_to_str
+from src.StateController import StateController
 from uptime import PsUptime, AppleScreenTimeUptime
 
 TICK_INTERVAL_SECONDS = 5
-REPORT_INTERVALS_TICK = 6
-DEBUG_HTTP_REQUESTS = True
+REPORT_INTERVALS_TICK = 2
+DEBUG_HTTP_REQUESTS = False
 
 logging.basicConfig(filename=path_to_str(app_data() / "output.log"),
                     level=logging.INFO,
@@ -28,6 +29,7 @@ if DEBUG_HTTP_REQUESTS:
 
 BASEDIR = os.path.dirname(__file__)
 
+state_controller = StateController()
 
 def uptime_tick():
     settings = Settings.load()
@@ -41,13 +43,14 @@ def uptime_tick():
 
 
 def report_tick(gui: Gui, usage: AbsoluteUsage):
-    action = Reporter().submit_report_get_action(usage)
-    action.execute(gui)
+    state = Reporter().submit_report_get_state(usage)
+    state_controller.run(state)
 
 
 if __name__ == "__main__":
     logging.info("App started!")
     gui = Gui(BASEDIR, sys.argv)
+    state_controller.initialize(gui)
 
     if not Settings.setup_completed():
         gui.setup_initial_setup_ui()

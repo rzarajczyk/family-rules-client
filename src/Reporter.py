@@ -28,4 +28,4 @@ class Reporter:
             return State(response_json)
         except Exception as e:
             logging.error("Unable to submit report", e)
-            return None
+            return State.empty()

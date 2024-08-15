@@ -12,6 +12,7 @@ from UptimeDb import UptimeDb, UsageUpdate
 from gen.InitialSetup import Ui_InitialSetup
 from gen.MainWindow import Ui_MainWindow
 from gui_block import BlockScreenWindow
+from gui_countdown import CountDownWindow
 from gui_settings import SettingsWindow
 from osutils import is_dist
 
@@ -156,6 +157,7 @@ class Gui:
         self.block_access_window = BlockScreenWindow(self.basedir)
         self.main_window = MainWindow()
         self.settings_window = SettingsWindow()
+        self.count_down_window = CountDownWindow(self.basedir)
 
         tray_icon = QSystemTrayIcon()
         tray_icon.setIcon(QIcon(os.path.join(self.basedir, "resources", "icon.png" if is_dist() else "icon-dev.png")))
@@ -176,8 +178,8 @@ class Gui:
                 self.main_window.show()
 
         add_menu_item("Show", show_main_window)
-        add_menu_item("Lock screen", lambda: self.block_access_window.show())
-        # add_menu_item("Block screen", lambda: BlockAccess().execute(self))
+        # add_menu_item("Countdown", lambda: self.count_down_window.start(10, lambda: print("done")))
+        # add_menu_item("Lock screen", lambda: self.block_access_window.show())
         # add_menu_item("Kill Notes.ap", lambda: KillApplication("Notes.app").execute(self))
         if not is_dist():
             add_menu_item("Quit", self.app.quit)

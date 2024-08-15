@@ -1,17 +1,22 @@
+from datetime import datetime
+
 from gui import Gui
 from osutils import get_os, SupportedOs
 
 
 class State:
     def __init__(self, json):
-        self.locked = json['locked']
-        self.logged_out = json['logged-out']
+        self.locked_since = self.parse_date(json['lockedSince'])
+        self.logged_out_since = self.parse_date(json['loggedOutSince'])
+
+    def parse_date(self, date_string):
+        return None if date_string is None else datetime.strptime(date_string, '%Y-%m-%dT%H:%M:%S.%fZ')
 
     @staticmethod
     def empty():
         return State({
-            'locked': False,
-            'logged-out': False
+            'lockedSince': None,
+            'loggedOutSince': None
         })
 
 
@@ -27,14 +32,23 @@ class StateController:
         if state is not None:
             self.state = state
 
-        if state.logged_out:
-            self.__logout()
-            return
-
-        if state.locked:
-            self.gui.block_access_window.show()
+        now = datetime.now()
+        if state.logged_out_since is not None and now >= state.logged_out_since:
+            print("Logged out!")
+            # if not self.gui.count_down_window.isVisible():
+            #     self.gui.count_down_window.start(10)
         else:
-            self.gui.block_access_window.hide()
+            print("NOT Logged out!")
+            # self.gui.count_down_window.stop()
+            # self.__logout()
+            # return
+
+        if state.locked_since is not None and now >= state.locked_since:
+            print("Locked")
+            # self.gui.block_access_window.show()
+        else:
+            print("NOT Locked")
+            # self.gui.block_access_window.hide()
 
     def __logout(self):
         match get_os():

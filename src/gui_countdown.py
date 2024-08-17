@@ -1,8 +1,16 @@
+from enum import Enum, auto
+
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtWidgets import QWidget, QApplication
 
 from gen.CountDownWindow import Ui_CountDownWindow
 from guiutils import show_on_all_desktops
+
+
+class CountDownState(Enum):
+    NOT_STARTED = auto()
+    IN_PROGRESS = auto()
+    DONE = auto()
 
 
 class CountDownWindow(QWidget):
@@ -20,22 +28,25 @@ class CountDownWindow(QWidget):
         self.timer = QTimer()
         self.timer.timeout.connect(self.tick)
         self.timer.start(1000)
-        self.active = False
         self.amount_seconds = 0
         self.onTimeout = lambda *args: None
+        self.state = CountDownState.NOT_STARTED
+        self.name = None
 
-    def start(self, initial_amount_seconds: int, onTimeout=lambda *args: None):
+    def start(self, initial_amount_seconds: int, name=None, onTimeout=lambda *args: None):
+        self.state = CountDownState.IN_PROGRESS
+        self.name = name
         self.show()
         self.amount_seconds = initial_amount_seconds
-        self.active = True
         self.onTimeout = onTimeout
         self.tick()
 
-    def stop(self):
+    def stop_reset(self):
         self.hide()
-        self.active = False
+        self.name = None
         self.amount_seconds = 0
         self.onTimeout = lambda *args: None
+        self.state = CountDownState.NOT_STARTED
 
     # def paintEvent(self, event):
     #     # This method is used to paint the window with a transparent background
@@ -45,9 +56,10 @@ class CountDownWindow(QWidget):
     #     painter.end()
 
     def tick(self):
-        if self.active:
-            self.ui.label.setText(str(self.amount_seconds))
+        if self.state.value == CountDownState.IN_PROGRESS.value:
+            self.ui.label.setText("<div style=\"background-color: yellow; color: red;\">" + str(self.amount_seconds) + "</div>")
             self.amount_seconds -= 1
-            if self.amount_seconds == 0:
-                self.active = False
+            if self.amount_seconds <= 0:
+                self.amount_seconds = 0
+                self.state = CountDownState.DONE
                 self.onTimeout()

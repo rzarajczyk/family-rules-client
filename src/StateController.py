@@ -1,22 +1,18 @@
-from datetime import datetime
-
 from gui import Gui
+from gui_countdown import CountDownState
 from osutils import get_os, SupportedOs
 
 
 class State:
     def __init__(self, json):
-        self.locked_since = self.parse_date(json['lockedSince'])
-        self.logged_out_since = self.parse_date(json['loggedOutSince'])
-
-    def parse_date(self, date_string):
-        return None if date_string is None else datetime.strptime(date_string, '%Y-%m-%dT%H:%M:%S.%fZ')
+        self.device_state = json['deviceState']
+        self.device_state_countdown = int(json['deviceStateCountdown'])
 
     @staticmethod
     def empty():
         return State({
-            'lockedSince': None,
-            'loggedOutSince': None
+            'deviceState': 'ACTIVE',
+            'deviceStateCountdown': 0
         })
 
 
@@ -24,6 +20,7 @@ class StateController:
     def __init__(self):
         self.gui: Gui = None
         self.state: State = State.empty()
+        self.countdown_done = False
 
     def initialize(self, gui: Gui):
         self.gui = gui
@@ -32,23 +29,40 @@ class StateController:
         if state is not None:
             self.state = state
 
-        now = datetime.now()
-        if state.logged_out_since is not None and now >= state.logged_out_since:
-            print("Logged out!")
-            # if not self.gui.count_down_window.isVisible():
-            #     self.gui.count_down_window.start(10)
-        else:
-            print("NOT Logged out!")
-            # self.gui.count_down_window.stop()
-            # self.__logout()
-            # return
+        match state.device_state:
+            case "ACTIVE":
+                self.gui.count_down_window.stop_reset()
+                self.gui.block_access_window.hide()
+            case "LOCKED":
+                if self.gui.count_down_window.state.value == CountDownState.IN_PROGRESS.value and self.gui.count_down_window.name != "LOCKED":
+                    self.gui.count_down_window.stop_reset()
 
-        if state.locked_since is not None and now >= state.locked_since:
-            print("Locked")
-            # self.gui.block_access_window.show()
-        else:
-            print("NOT Locked")
-            # self.gui.block_access_window.hide()
+                def lock():
+                    self.gui.block_access_window.show()
+                    self.gui.count_down_window.hide()
+
+                if self.gui.count_down_window.state.value == CountDownState.NOT_STARTED.value:
+                    self.gui.count_down_window.start(
+                        initial_amount_seconds=self.state.device_state_countdown,
+                        name="LOCKED",
+                        onTimeout=lock)
+            case "LOGGED_OUT":
+                if self.gui.count_down_window.state.value == CountDownState.IN_PROGRESS.value and self.gui.count_down_window.name != "LOGGED_OUT":
+                    self.gui.count_down_window.stop_reset()
+
+                def lock():
+                    self.gui.count_down_window.hide()
+                    self.__logout()
+
+                if self.gui.count_down_window.state.value == CountDownState.NOT_STARTED.value:
+                    self.gui.count_down_window.start(
+                        initial_amount_seconds=self.state.device_state_countdown,
+                        name="LOGGED_OUT",
+                        onTimeout=lock)
+                elif self.gui.count_down_window.state.value == CountDownState.DONE.value:
+                    self.__logout()
+            case _:
+                raise Exception(f"unsupported state: {state.device_state}")
 
     def __logout(self):
         match get_os():

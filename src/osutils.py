@@ -1,8 +1,5 @@
 import os
-import plistlib
-import subprocess
 import sys
-import time
 from enum import Enum, auto
 from pathlib import Path
 

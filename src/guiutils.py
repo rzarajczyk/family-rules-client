@@ -1,4 +1,5 @@
 import ctypes
+import logging
 
 from osutils import get_os, SupportedOs
 
@@ -28,6 +29,8 @@ def show_on_all_desktops(window):
             NSWindowCollectionBehaviorCanJoinAllSpaces = 1 << 0
             objc.objc_msgSend(NSWindow, sel_setCollectionBehavior,
                               ctypes.c_uint(NSWindowCollectionBehaviorCanJoinAllSpaces))
-
+        case SupportedOs.WINDOWS:
+            # FIXME UNSUPPORTED_WINDOWS
+            logging.debug("Show on all desktops - not implemented for Windows")
         case _:
             raise Exception("Unsupported OS")

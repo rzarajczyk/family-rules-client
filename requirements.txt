@@ -1,3 +1,5 @@
 PySide6
 pyinstaller
 requests
+psutil
+pywin32

@@ -1,32 +1,24 @@
+import logging
 import os
 import sys
 from enum import Enum, auto
 from pathlib import Path
+import platform
 
 
 class SupportedOs(Enum):
     MAC_OS = auto()
+    WINDOWS = auto()
     UNSUPPORTED = auto()
 
 
 def get_os() -> SupportedOs:
-    if os.uname().sysname == 'Darwin':
+    if "windows" in platform.platform().lower():
+        return SupportedOs.WINDOWS
+    elif os.uname().sysname == 'Darwin': ## TODO migrate to pltform
         return SupportedOs.MAC_OS
     else:
         return SupportedOs.UNSUPPORTED
-
-
-#
-# def is_mac() -> bool:
-#     return os.uname().sysname == 'Darwin'
-#
-#
-# def is_linux() -> bool:
-#     return os.uname().sysname == 'Linux'
-#
-#
-# def is_windows() -> bool:
-#     return os.uname().sysname == 'Windows'
 
 
 def is_dist() -> bool:
@@ -39,19 +31,34 @@ def dist_path(basedir) -> Path:
             if not is_dist():
                 return Path("/Users/rafal/Developer/family-rules-client/dist/Family Rules.app")
             return Path(basedir.removesuffix("/Contents/Frameworks"))
-        case SupportedOs.UNSUPPORTED:
+        case SupportedOs.WINDOWS:
+            # FIXME UNSUPPORTED_WINDOWS
+            logging.critical("Cannot determine dist_path on Windows - not implemented yet")
+            return None
+        case _:
             raise Exception("Unsupported operating system")
 
 
 def app_data() -> Path:
     if not is_dist():
-        return Path("/Users/rafal/Developer/family-rules-client/data")
+        match get_os():
+            case SupportedOs.MAC_OS:
+                return Path("/Users/rafal/Developer/family-rules-client/data")
+            case SupportedOs.WINDOWS:
+                return Path("C:\\Users\\user\\Developer\\family-rules-client\\data")
+            case _:
+                raise Exception("Unsupported operating system")
+
     match get_os():
         case SupportedOs.MAC_OS:
             path = Path(Path.home(), "Library", "Family Rules")
             path.mkdir(exist_ok=True)
             return path
-        case SupportedOs.UNSUPPORTED:
+        case SupportedOs.WINDOWS:
+            path = Path(os.getenv('LOCALAPPDATA'), "Family Rules")
+            path.mkdir(exist_ok=True)
+            return path
+        case _:
             raise Exception("Unsupported operating system")
 
 
@@ -65,5 +72,9 @@ def is_user_active() -> bool:
     match get_os():
         case SupportedOs.MAC_OS:
             return os.stat("/dev/console").st_uid == os.getuid()
-        case SupportedOs.UNSUPPORTED:
+        case SupportedOs.WINDOWS:
+            # FIXME UNSUPPORTED_WINDOWS
+            logging.debug("Is user active - not implemented on Windows")
+            return True
+        case _:
             raise Exception("Unsupported operating system")

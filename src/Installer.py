@@ -10,7 +10,7 @@ from requests.auth import HTTPBasicAuth
 from requests.exceptions import MissingSchema, ConnectionError, HTTPError
 
 from Settings import Settings
-from osutils import app_data, path_to_str, dist_path, get_os, SupportedOs
+from osutils import app_data, path_to_str, dist_path, get_os, SupportedOs, is_dist
 
 
 class RegisterInstanceStatus(Enum):
@@ -82,11 +82,16 @@ class Installer:
 
     @staticmethod
     def install_autorun(basedir):
-        match get_os():
-            case SupportedOs.MAC_OS:
-                Installer.__install_macos_autorun(basedir)
-            case SupportedOs.UNSUPPORTED:
-                raise Exception("Unsupported operating system")
+        if is_dist():
+            match get_os():
+                case SupportedOs.MAC_OS:
+                    Installer.__install_macos_autorun(basedir)
+                case SupportedOs.WINDOWS:
+                    Installer.__install_windows_autorun(basedir)
+                case _:
+                    raise Exception("Unsupported operating system")
+        else:
+            logging.info("installing autorun skipped in non-dist version")
 
     @staticmethod
     def __install_macos_autorun(basedir):
@@ -112,6 +117,12 @@ class Installer:
                 plistlib.dump(expected_plist_content, f)
 
     @staticmethod
+    def __install_windows_autorun(basedir):
+        # FIXME UNSUPPORTED_WINDOWS
+        logging.critical("Installing autorun on Windows not implemented!")
+        pass
+
+    @staticmethod
     def uninstall(username, password) -> UnregisterInstanceStatus:
         unregister_status = Installer.__unregister_instance(username, password)
         if unregister_status == UnregisterInstanceStatus.OK:
@@ -121,12 +132,18 @@ class Installer:
 
     @staticmethod
     def uninstall_autorun():
-        match get_os():
-            case SupportedOs.MAC_OS:
-                path = Path.home() / "Library" / "LaunchAgents" / "pl.zarajczyk.family-rules-client.plist"
-                os.remove(path)
-            case SupportedOs.UNSUPPORTED:
-                raise Exception("Unsupported operating system")
+        if is_dist():
+            match get_os():
+                case SupportedOs.MAC_OS:
+                    path = Path.home() / "Library" / "LaunchAgents" / "pl.zarajczyk.family-rules-client.plist"
+                    os.remove(path)
+                case SupportedOs.WINDOWS:
+                    # FIXME UNSUPPORTED_WINDOWS
+                    logging.critical("Uninstalling autorun on Windows not implemented!")
+                case _:
+                    raise Exception("Unsupported operating system")
+        else:
+            logging.info("uninstalling autorun skipped in non-dist version")
 
     @staticmethod
     def __unregister_instance(username, password) -> UnregisterInstanceStatus:

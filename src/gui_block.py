@@ -24,7 +24,7 @@ class BlockScreenWindow(QWidget):
 
         self.setFixedSize(screen_width, screen_height)
         self.setWindowFlags(
-            Qt.Window | Qt.CustomizeWindowHint | Qt.WindowTitleHint | Qt.WindowSystemMenuHint | Qt.WindowStaysOnTopHint)
+            Qt.Tool | Qt.Window | Qt.CustomizeWindowHint | Qt.WindowTitleHint | Qt.WindowSystemMenuHint | Qt.WindowStaysOnTopHint)
         show_on_all_desktops(self)
 
     def moveEvent(self, event):

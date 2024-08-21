@@ -1,4 +1,4 @@
-name: Build Windows App
+name: Build MacOS App
 
 on:
   push:
@@ -27,7 +27,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ github.ref }}-macos
-          release_name: Release ${{ github.ref }}
+          release_name: Release ${{ github.ref }} MacOS
           draft: false
           prerelease: false
 

@@ -28,7 +28,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ github.ref }}-windows
-          release_name: Release ${{ github.ref }}
+          release_name: Release ${{ github.ref }} Windows
           draft: false
           prerelease: false
 

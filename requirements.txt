@@ -2,4 +2,4 @@ PySide6
 pyinstaller
 requests
 psutil
-pywin32
+pywin32; sys_platform == 'win32'

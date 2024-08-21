@@ -1,13 +1,9 @@
-name: Build and Publish
+name: Build Windows App
 
 on:
   push:
-    branches:
-     - master
-  workflow_dispatch:
-
-permissions:
-  contents: write
+    tags:
+      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
 
 jobs:
   build:

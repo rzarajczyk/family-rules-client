@@ -6,6 +6,7 @@ from PySide6.QtWidgets import QWidget, QApplication, QMainWindow
 
 from gen.BlockScreen import Ui_BlockScreen
 from guiutils import show_on_all_desktops
+from src.osutils import get_os, SupportedOs
 
 
 class BlockScreenWindow(QWidget):
@@ -23,8 +24,17 @@ class BlockScreenWindow(QWidget):
         screen_height = screen_geometry.height()
 
         self.setFixedSize(screen_width, screen_height)
-        self.setWindowFlags(
-            Qt.Tool | Qt.Window | Qt.CustomizeWindowHint | Qt.WindowTitleHint | Qt.WindowSystemMenuHint | Qt.WindowStaysOnTopHint)
+        match get_os():
+            case SupportedOs.MAC_OS:
+                self.setWindowFlags(
+                    Qt.Window | Qt.CustomizeWindowHint | Qt.WindowTitleHint | Qt.WindowSystemMenuHint | Qt.WindowStaysOnTopHint
+                )
+            case SupportedOs.WINDOWS:
+                self.setWindowFlags(
+                    Qt.Tool | Qt.Window | Qt.CustomizeWindowHint | Qt.WindowTitleHint | Qt.WindowSystemMenuHint | Qt.WindowStaysOnTopHint
+                )
+            case _:
+                raise Exception("Unsupported operating system")
         show_on_all_desktops(self)
 
     def moveEvent(self, event):

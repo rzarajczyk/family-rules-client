@@ -1,3 +1,4 @@
+import logging
 from enum import Enum, auto
 
 from PySide6.QtCore import Qt, QTimer
@@ -5,6 +6,7 @@ from PySide6.QtWidgets import QWidget, QApplication
 
 from gen.CountDownWindow import Ui_CountDownWindow
 from guiutils import show_on_all_desktops
+from osutils import get_os, SupportedOs
 
 
 class CountDownState(Enum):
@@ -19,8 +21,17 @@ class CountDownWindow(QWidget):
         self.ui = Ui_CountDownWindow()
         self.ui.setupUi(self)
         self.basedir = basedir
-        self.setWindowFlags(
-            Qt.Tool | Qt.Window | Qt.CustomizeWindowHint | Qt.WindowTitleHint | Qt.WindowSystemMenuHint | Qt.WindowStaysOnTopHint | Qt.FramelessWindowHint)
+        match get_os():
+            case SupportedOs.MAC_OS:
+                self.setWindowFlags(
+                    Qt.Window | Qt.CustomizeWindowHint | Qt.WindowTitleHint | Qt.WindowSystemMenuHint | Qt.WindowStaysOnTopHint | Qt.FramelessWindowHint
+                )
+            case SupportedOs.WINDOWS:
+                self.setWindowFlags(
+                    Qt.Tool | Qt.Window | Qt.CustomizeWindowHint | Qt.WindowTitleHint | Qt.WindowSystemMenuHint | Qt.WindowStaysOnTopHint | Qt.FramelessWindowHint
+                )
+            case _:
+                raise Exception("Unsupported operating system")
         self.setAttribute(Qt.WA_TranslucentBackground)
         screen_geometry = QApplication.primaryScreen().availableGeometry()
         self.move(screen_geometry.width() - self.width(), 0)

@@ -1,13 +1,9 @@
-import os
-import signal
+import getpass
+import platform
 import subprocess
 from collections import defaultdict
 from sys import platform
-
 from osutils import get_os, SupportedOs
-import psutil
-import getpass
-import platform
 
 
 class RunningApplications:
@@ -36,6 +32,8 @@ class RunningApplications:
     def __get_running_apps_windows(self):
         import win32gui
         import win32process
+        import psutil
+
         def enum_window_callback(hwnd, process_windows):
             if win32gui.IsWindowVisible(hwnd) and win32gui.GetWindowText(hwnd):
                 _, pid = win32process.GetWindowThreadProcessId(hwnd)

@@ -2,6 +2,7 @@ import logging
 import os
 import plistlib
 import shutil
+import subprocess
 from enum import Enum, auto
 from pathlib import Path
 
@@ -115,6 +116,15 @@ class Installer:
             logging.info(f"Installing LaunchAgent {path}")
             with launch_agent.open("wb") as f:
                 plistlib.dump(expected_plist_content, f)
+            process = subprocess.Popen(
+                ["launchctl", "load", launch_agent],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True
+            )
+            stdout = process.communicate()
+            if process.returncode != 0 or not stdout:
+                logging.error(f"Could not unload app - process exited with code {process.returncode}, output: {stdout}")
 
     @staticmethod
     def __install_windows_autorun(basedir):
@@ -132,18 +142,26 @@ class Installer:
 
     @staticmethod
     def uninstall_autorun():
-        if is_dist():
-            match get_os():
-                case SupportedOs.MAC_OS:
-                    path = Path.home() / "Library" / "LaunchAgents" / "pl.zarajczyk.family-rules-client.plist"
-                    os.remove(path)
-                case SupportedOs.WINDOWS:
-                    # FIXME UNSUPPORTED_WINDOWS
-                    logging.critical("Uninstalling autorun on Windows not implemented!")
-                case _:
-                    raise Exception("Unsupported operating system")
-        else:
-            logging.info("uninstalling autorun skipped in non-dist version")
+        match get_os():
+            case SupportedOs.MAC_OS:
+                path = Path.home() / "Library" / "LaunchAgents" / "pl.zarajczyk.family-rules-client.plist"
+                process = subprocess.Popen(
+                    ["launchctl", "unload", path],
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.STDOUT,
+                    text=True
+                )
+                stdout = process.communicate()
+                os.remove(path)
+                if process.returncode != 0 or not stdout:
+                    logging.error(
+                        f"Could not unload app - process exited with code {process.returncode}, output: {stdout}")
+            case SupportedOs.WINDOWS:
+                # FIXME UNSUPPORTED_WINDOWS
+                logging.critical("Uninstalling autorun on Windows not implemented!")
+                raise Exception("Unsupported operating system")
+            case _:
+                pass
 
     @staticmethod
     def __unregister_instance(username, password) -> UnregisterInstanceStatus:

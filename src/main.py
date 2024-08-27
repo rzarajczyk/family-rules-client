@@ -7,17 +7,22 @@ from Reporter import Reporter
 from Settings import Settings
 from UptimeDb import AbsoluteUsage
 from gui import Gui
+from StateController import (StateController)
 from osutils import app_data, path_to_str
-from src.StateController import StateController
 from uptime import PsUptime
 
 TICK_INTERVAL_SECONDS = 5
 REPORT_INTERVALS_TICK = 2
 DEBUG_HTTP_REQUESTS = False
 
-logging.basicConfig(filename=path_to_str(app_data() / "output.log"),
-                    level=logging.INFO,
-                    format='[%(asctime)s] {%(pathname)s:%(lineno)d} %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO,
+    format='[%(asctime)s] {%(pathname)s:%(lineno)d} %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler(path_to_str(app_data() / "output.log")),
+        logging.StreamHandler(sys.stdout)
+    ]
+)
 
 if DEBUG_HTTP_REQUESTS:
     import http.client as http_client

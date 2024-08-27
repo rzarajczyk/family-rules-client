@@ -16,14 +16,14 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QButtonGroup, QGroupBox, QLabel,
-    QMainWindow, QProgressBar, QPushButton, QRadioButton,
-    QSizePolicy, QVBoxLayout, QWidget)
+    QMainWindow, QProgressBar, QPushButton, QSizePolicy,
+    QVBoxLayout, QWidget)
 
 class Ui_SettingsWindow(object):
     def setupUi(self, SettingsWindow):
         if not SettingsWindow.objectName():
             SettingsWindow.setObjectName(u"SettingsWindow")
-        SettingsWindow.resize(519, 629)
+        SettingsWindow.resize(506, 347)
         self.centralwidget = QWidget(SettingsWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.verticalLayout = QVBoxLayout(self.centralwidget)
@@ -70,45 +70,6 @@ class Ui_SettingsWindow(object):
 
         self.verticalLayout.addWidget(self.groupBox_3)
 
-        self.groupBox_2 = QGroupBox(self.centralwidget)
-        self.groupBox_2.setObjectName(u"groupBox_2")
-        self.verticalLayout_3 = QVBoxLayout(self.groupBox_2)
-        self.verticalLayout_3.setObjectName(u"verticalLayout_3")
-        self.uptimeMethodPs = QRadioButton(self.groupBox_2)
-        self.buttonGroup = QButtonGroup(SettingsWindow)
-        self.buttonGroup.setObjectName(u"buttonGroup")
-        self.buttonGroup.addButton(self.uptimeMethodPs)
-        self.uptimeMethodPs.setObjectName(u"uptimeMethodPs")
-
-        self.verticalLayout_3.addWidget(self.uptimeMethodPs)
-
-        self.label = QLabel(self.groupBox_2)
-        self.label.setObjectName(u"label")
-        self.label.setWordWrap(True)
-
-        self.verticalLayout_3.addWidget(self.label)
-
-        self.uptimeMethodApple = QRadioButton(self.groupBox_2)
-        self.buttonGroup.addButton(self.uptimeMethodApple)
-        self.uptimeMethodApple.setObjectName(u"uptimeMethodApple")
-
-        self.verticalLayout_3.addWidget(self.uptimeMethodApple)
-
-        self.label_2 = QLabel(self.groupBox_2)
-        self.label_2.setObjectName(u"label_2")
-        self.label_2.setWordWrap(True)
-
-        self.verticalLayout_3.addWidget(self.label_2)
-
-        self.label_3 = QLabel(self.groupBox_2)
-        self.label_3.setObjectName(u"label_3")
-        self.label_3.setWordWrap(True)
-
-        self.verticalLayout_3.addWidget(self.label_3)
-
-
-        self.verticalLayout.addWidget(self.groupBox_2)
-
         self.progressBar = QProgressBar(self.centralwidget)
         self.progressBar.setObjectName(u"progressBar")
         self.progressBar.setMaximum(0)
@@ -138,12 +99,6 @@ class Ui_SettingsWindow(object):
         self.label_5.setText(QCoreApplication.translate("SettingsWindow", u"If you want to TEMPORARILY disable the app:", None))
         self.disableButton.setText(QCoreApplication.translate("SettingsWindow", u"Remove from autorun and quit (for now)", None))
         self.label_6.setText(QCoreApplication.translate("SettingsWindow", u"You will be able to re-enable the app by simply starting it (f.ex. from Launcher)", None))
-        self.groupBox_2.setTitle(QCoreApplication.translate("SettingsWindow", u"How to collect uptime statistics", None))
-        self.uptimeMethodPs.setText(QCoreApplication.translate("SettingsWindow", u"Use FamilyRules algorithm", None))
-        self.label.setText(QCoreApplication.translate("SettingsWindow", u"FamilyRules will check the running apps every couple of secondsand count the number of apperances", None))
-        self.uptimeMethodApple.setText(QCoreApplication.translate("SettingsWindow", u"Use Apple ScreenTime", None))
-        self.label_2.setText(QCoreApplication.translate("SettingsWindow", u"FamilyRules will read Apple ScreenTime database. To do so, the ScreenTime must be enabled, and the Family Rules MUST HAVE PERMISSION \"Full disk access\"", None))
-        self.label_3.setText(QCoreApplication.translate("SettingsWindow", u"<html><head/><body><hr/><p><span style=\" font-weight:700;\">WARNING</span></p><p>App names reported by ScreenTime and Family Rules algorithm may be different.</p><p><span style=\" font-weight:700;\">The statistics for the day of change will be broken! </span></p></body></html>", None))
         self.closeButton.setText(QCoreApplication.translate("SettingsWindow", u"Close", None))
     # retranslateUi
 

@@ -4,12 +4,12 @@ import sys
 
 from Installer import Installer
 from Reporter import Reporter
-from Settings import Settings, UptimeMethod
+from Settings import Settings
 from UptimeDb import AbsoluteUsage
 from gui import Gui
 from osutils import app_data, path_to_str
 from src.StateController import StateController
-from uptime import PsUptime, AppleScreenTimeUptime
+from uptime import PsUptime
 
 TICK_INTERVAL_SECONDS = 5
 REPORT_INTERVALS_TICK = 2
@@ -31,15 +31,9 @@ BASEDIR = os.path.dirname(__file__)
 
 state_controller = StateController()
 
+
 def uptime_tick():
-    settings = Settings.load()
-    match settings.uptime_method:
-        case UptimeMethod.PS:
-            return PsUptime(TICK_INTERVAL_SECONDS).get()
-        case UptimeMethod.APPLE_SCREEN_TIME:
-            return AppleScreenTimeUptime().get()
-        case _:
-            raise Exception(f"Unsupported UptimeMethod: {settings.uptime_method}")
+    return PsUptime(TICK_INTERVAL_SECONDS).get()
 
 
 def report_tick(gui: Gui, usage: AbsoluteUsage):

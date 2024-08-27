@@ -1,21 +1,18 @@
 import json
-from enum import Enum, auto
 
 from osutils import app_data
 
-
-class UptimeMethod(Enum):
-    PS = auto()
-    APPLE_SCREEN_TIME = auto()
+CURRENT = 1
 
 
 class Settings:
-    def __init__(self, json_settings):
-        self.server = json_settings['server']
-        self.username = json_settings['username']
-        self.instance_name = json_settings['instance_name']
-        self.instance_token = json_settings['instance_token']
-        self.uptime_method = UptimeMethod[json_settings['uptime_method']]
+    __instance: 'Settings' = None
+
+    def __init__(self, server, username, instance_name, instance_token):
+        self.server = server
+        self.username = username
+        self.instance_name = instance_name
+        self.instance_token = instance_token
 
     def to_json(self):
         return {
@@ -23,7 +20,7 @@ class Settings:
             'username': self.username,
             'instance_name': self.instance_name,
             'instance_token': self.instance_token,
-            'uptime_method': self.uptime_method.name
+            '_version': CURRENT
         }
 
     @staticmethod
@@ -33,29 +30,39 @@ class Settings:
 
     @staticmethod
     def load() -> 'Settings':
-        file = app_data() / "settings.json"
-        with open(file, "r") as f:
-            json_settings = json.load(f)
-        return Settings(json_settings)
+        if Settings.__instance is None:
+            file = app_data() / "settings.json"
+            with open(file, "r") as f:
+                json_settings = json.load(f)
+            json_settings, is_migrated = Settings.migrate(json_settings)
+            Settings.__instance = Settings(
+                server=json_settings['server'],
+                username=json_settings['username'],
+                instance_name=json_settings['instance_name'],
+                instance_token=json_settings['instance_token']
+            )
+            if is_migrated:
+                Settings.save(Settings.__instance)
+        return Settings.__instance
 
     @staticmethod
     def save(settings: 'Settings'):
         settings_json = settings.to_json()
-        Settings.__save_json(settings_json)
-
-    @staticmethod
-    def __save_json(settings_json: dict):
         file = app_data() / "settings.json"
         with open(file, 'w') as f:
             json.dump(settings_json, f, indent=4)
 
     @staticmethod
     def create(server, username, instance_name, instance_token):
-        settings_json = {
-            'server': server,
-            'username': username,
-            'instance_name': instance_name,
-            'instance_token': instance_token,
-            'uptime_method': UptimeMethod.PS.name
-        }
-        Settings.__save_json(settings_json)
+        settings = Settings(server, username, instance_name, instance_token)
+        Settings.save(settings)
+
+    @staticmethod
+    def migrate(json_settings: dict) -> tuple[dict, bool]:
+        v = json_settings.get('_version', 0)
+        if v == CURRENT:
+            return json_settings, False
+
+        if v == 0:
+            pass
+        return json_settings, True

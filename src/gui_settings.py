@@ -6,7 +6,6 @@ from PySide6.QtWidgets import QDialog, QMainWindow, QMessageBox
 from Installer import Installer, UnregisterInstanceStatus
 from gen.ParentConfirm import Ui_ParentConfirm
 from gen.SettingsWindow import Ui_SettingsWindow
-from Settings import Settings, UptimeMethod
 
 
 class CheckPasswordWorker(QThread):
@@ -39,21 +38,6 @@ class SettingsWindow(QMainWindow):
         self.ui.disableButton.clicked.connect(self.uninstall_autorun)
         self.parent_confirm.accepted.connect(self.check_password)
         self.ui.progressBar.setHidden(True)
-        settings = Settings.load()
-        match settings.uptime_method:
-            case UptimeMethod.PS:
-                self.ui.uptimeMethodPs.setChecked(True)
-            case UptimeMethod.APPLE_SCREEN_TIME:
-                self.ui.uptimeMethodApple.setChecked(True)
-        self.ui.buttonGroup.buttonClicked.connect(self.save_uptime_method)
-
-    def save_uptime_method(self):
-        settings = Settings.load()
-        if self.ui.uptimeMethodPs.isChecked():
-            settings.uptime_method = UptimeMethod.PS
-        if self.ui.uptimeMethodApple.isChecked():
-            settings.uptime_method = UptimeMethod.APPLE_SCREEN_TIME
-        Settings.save(settings)
 
     def uninstall_autorun(self):
         Installer.uninstall_autorun()

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>519</width>
-    <height>629</height>
+    <width>506</width>
+    <height>347</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -68,65 +68,6 @@
         <widget class="QLabel" name="label_6">
          <property name="text">
           <string>You will be able to re-enable the app by simply starting it (f.ex. from Launcher)</string>
-         </property>
-         <property name="wordWrap">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-    </item>
-    <item>
-     <widget class="QGroupBox" name="groupBox_2">
-      <property name="title">
-       <string>How to collect uptime statistics</string>
-      </property>
-      <layout class="QVBoxLayout" name="verticalLayout_3">
-       <item>
-        <widget class="QRadioButton" name="uptimeMethodPs">
-         <property name="text">
-          <string>Use FamilyRules algorithm</string>
-         </property>
-         <attribute name="buttonGroup">
-          <string notr="true">buttonGroup</string>
-         </attribute>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="label">
-         <property name="text">
-          <string>FamilyRules will check the running apps every couple of secondsand count the number of apperances</string>
-         </property>
-         <property name="wordWrap">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QRadioButton" name="uptimeMethodApple">
-         <property name="text">
-          <string>Use Apple ScreenTime</string>
-         </property>
-         <attribute name="buttonGroup">
-          <string notr="true">buttonGroup</string>
-         </attribute>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="label_2">
-         <property name="text">
-          <string>FamilyRules will read Apple ScreenTime database. To do so, the ScreenTime must be enabled, and the Family Rules MUST HAVE PERMISSION &quot;Full disk access&quot;</string>
-         </property>
-         <property name="wordWrap">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="label_3">
-         <property name="text">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;hr/&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;WARNING&lt;/span&gt;&lt;/p&gt;&lt;p&gt;App names reported by ScreenTime and Family Rules algorithm may be different.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;The statistics for the day of change will be broken! &lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="wordWrap">
           <bool>true</bool>

@@ -156,7 +156,7 @@ class Installer:
         trigger = task_def.Triggers.Create(1)  # 1 is for TASK_TRIGGER_TIME
 
         # Set the StartBoundary to the current time in ISO 8601 format
-        current_time = datetime.now().isoformat()
+        current_time = datetime(year=2024, month=1, day=1, hour=0, minute=0, second=0).isoformat()
         trigger.StartBoundary = current_time  # Set the start time to now
 
         trigger.Repetition.Interval = "PT2M"  # Repetition interval: PT2M means 2 minutes
@@ -210,9 +210,13 @@ class Installer:
                     logging.error(
                         f"Could not unload app - process exited with code {process.returncode}, output: {stdout}")
             case SupportedOs.WINDOWS:
-                # FIXME UNSUPPORTED_WINDOWS
-                logging.critical("Uninstalling autorun on Windows not implemented!")
-                raise Exception("Unsupported operating system")
+                task_name = "Family Rules Task"
+                result = subprocess.run(['schtasks', '/Delete', '/TN', task_name, '/F'],
+                                        stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+                if result.returncode == 0:
+                    logging.info(f"Task '{task_name}' deleted successfully.")
+                else:
+                    logging.error(f"Failed to delete task '{task_name}'. Error: {result.stderr}")
             case _:
                 pass
 

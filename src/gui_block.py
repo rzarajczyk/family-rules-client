@@ -6,17 +6,17 @@ from PySide6.QtWidgets import QWidget, QApplication, QMainWindow
 
 from gen.BlockScreen import Ui_BlockScreen
 from guiutils import show_on_all_desktops
-from src.osutils import get_os, SupportedOs
+from basedir import Basedir
+from osutils import get_os, SupportedOs
 
 
 class BlockScreenWindow(QWidget):
-    def __init__(self, basedir):
+    def __init__(self):
         super().__init__()
         self.ui = Ui_BlockScreen()
         self.ui.setupUi(self)
-        self.basedir = basedir
 
-        self.ui.label.setPixmap(QPixmap(os.path.join(self.basedir, "resources", "lockscreen.png")))
+        self.ui.label.setPixmap(QPixmap(os.path.join(Basedir.get_str(), "resources", "lockscreen.png")))
 
         self.move(0, 0)
         screen_geometry = QApplication.primaryScreen().geometry()

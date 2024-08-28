@@ -82,21 +82,21 @@ class Installer:
         Settings.create(server, username, instance, token)
 
     @staticmethod
-    def install_autorun(basedir):
+    def install_autorun():
         if is_dist():
             match get_os():
                 case SupportedOs.MAC_OS:
-                    Installer.__install_macos_autorun(basedir)
+                    Installer.__install_macos_autorun()
                 case SupportedOs.WINDOWS:
-                    Installer.__install_windows_autorun(basedir)
+                    Installer.__install_windows_autorun()
                 case _:
                     raise Exception("Unsupported operating system")
         else:
             logging.info("installing autorun skipped in non-dist version")
 
     @staticmethod
-    def __install_macos_autorun(basedir):
-        path = path_to_str(dist_path(basedir) / "Contents" / "MacOS" / "Family Rules")
+    def __install_macos_autorun():
+        path = path_to_str(dist_path() / "Contents" / "MacOS" / "Family Rules")
         expected_plist_content = {
             "Label": "pl.zarajczyk.family-rules-client",
             "ProgramArguments": [path],
@@ -127,7 +127,7 @@ class Installer:
                 logging.error(f"Could not unload app - process exited with code {process.returncode}, output: {stdout}")
 
     @staticmethod
-    def __install_windows_autorun(basedir):
+    def __install_windows_autorun():
         # FIXME UNSUPPORTED_WINDOWS
         logging.critical("Installing autorun on Windows not implemented!")
         pass

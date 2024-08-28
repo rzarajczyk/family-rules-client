@@ -5,6 +5,8 @@ from enum import Enum, auto
 from pathlib import Path
 import platform
 
+from basedir import Basedir
+
 
 class SupportedOs(Enum):
     MAC_OS = auto()
@@ -25,7 +27,8 @@ def is_dist() -> bool:
     return getattr(sys, 'frozen', False)
 
 
-def dist_path(basedir) -> Path:
+def dist_path() -> Path:
+    basedir = Basedir.get_str()
     match get_os():
         case SupportedOs.MAC_OS:
             if not is_dist():
@@ -41,13 +44,7 @@ def dist_path(basedir) -> Path:
 
 def app_data() -> Path:
     if not is_dist():
-        match get_os():
-            case SupportedOs.MAC_OS:
-                return Path("/Users/rafal/Developer/family-rules-client/data")
-            case SupportedOs.WINDOWS:
-                return Path("C:\\Users\\user\\Developer\\family-rules-client\\data")
-            case _:
-                raise Exception("Unsupported operating system")
+        return Basedir.get().parent / "data"
 
     match get_os():
         case SupportedOs.MAC_OS:

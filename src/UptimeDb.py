@@ -2,7 +2,7 @@ import datetime
 import json
 from datetime import timedelta
 
-from src.osutils import app_data
+from osutils import app_data
 
 
 class SingleDayUptimeDb:

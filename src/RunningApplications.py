@@ -2,7 +2,6 @@ import getpass
 import platform
 import subprocess
 from collections import defaultdict
-from sys import platform
 from osutils import get_os, SupportedOs
 
 

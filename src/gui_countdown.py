@@ -16,11 +16,10 @@ class CountDownState(Enum):
 
 
 class CountDownWindow(QWidget):
-    def __init__(self, basedir):
+    def __init__(self):
         super().__init__()
         self.ui = Ui_CountDownWindow()
         self.ui.setupUi(self)
-        self.basedir = basedir
         match get_os():
             case SupportedOs.MAC_OS:
                 self.setWindowFlags(

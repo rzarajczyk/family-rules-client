@@ -9,11 +9,14 @@ from UptimeDb import AbsoluteUsage
 from gui import Gui
 from StateController import (StateController)
 from osutils import app_data, path_to_str
+from basedir import Basedir
 from uptime import PsUptime
 
 TICK_INTERVAL_SECONDS = 5
 REPORT_INTERVALS_TICK = 2
 DEBUG_HTTP_REQUESTS = False
+
+Basedir.init(os.path.dirname(__file__))
 
 logging.basicConfig(
     level=logging.INFO,
@@ -32,8 +35,6 @@ if DEBUG_HTTP_REQUESTS:
     requests_log.setLevel(logging.DEBUG)
     requests_log.propagate = True
 
-BASEDIR = os.path.dirname(__file__)
-
 state_controller = StateController()
 
 
@@ -48,13 +49,15 @@ def report_tick(gui: Gui, usage: AbsoluteUsage):
 
 if __name__ == "__main__":
     logging.info("App started!")
-    gui = Gui(BASEDIR, sys.argv)
+    logging.info(f"Basedir: {Basedir.get_str()}")
+    logging.info(f"App data: {app_data()}")
+    gui = Gui(sys.argv)
     state_controller.initialize(gui)
 
     if not Settings.setup_completed():
         gui.setup_initial_setup_ui()
     else:
-        Installer.install_autorun(BASEDIR)
+        Installer.install_autorun()
         gui.setup_main_ui(
             uptime_tick_interval_ms=TICK_INTERVAL_SECONDS * 1000,
             uptime_tick_function=uptime_tick,

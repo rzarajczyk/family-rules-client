@@ -15,6 +15,7 @@ from gui_block import BlockScreenWindow
 from gui_countdown import CountDownWindow
 from gui_settings import SettingsWindow
 from osutils import is_dist
+from basedir import Basedir
 
 
 class MainWindow(QMainWindow):
@@ -42,9 +43,8 @@ class MainWindow(QMainWindow):
 class InitialSetupWorker(QThread):
     result_ready = Signal(list)
 
-    def __init__(self, basedir, server, username, password, instance):
+    def __init__(self, server, username, password, instance):
         super().__init__()
-        self.basedir = basedir
         self.instance = instance
         self.password = password
         self.username = username
@@ -54,7 +54,7 @@ class InitialSetupWorker(QThread):
         response = Installer.install(self.server, self.username, self.password, self.instance)
         if response.status == RegisterInstanceStatus.OK:
             Installer.save_settings(self.server, self.username, self.instance, response.token)
-            Installer.install_autorun(self.basedir)
+            Installer.install_autorun()
             self.result_ready.emit([True, ""])
         else:
             match response.status:
@@ -76,9 +76,8 @@ class InitialSetupWorker(QThread):
 
 
 class InitialSetup(QMainWindow):
-    def __init__(self, basedir):
+    def __init__(self):
         super().__init__()
-        self.basedir = basedir
         self.layout().setSizeConstraint(QLayout.SizeConstraint.SetFixedSize)
         self.ui = Ui_InitialSetup()
         self.ui.setupUi(self)
@@ -97,7 +96,7 @@ class InitialSetup(QMainWindow):
         username = self.ui.usernameInput.text()
         password = self.ui.passwordInput.text()
         instance = self.ui.instanceName.text()
-        self.worker = InitialSetupWorker(self.basedir, server, username, password, instance)
+        self.worker = InitialSetupWorker(server, username, password, instance)
         self.worker.result_ready.connect(self.done)
         self.worker.start()
 
@@ -135,14 +134,13 @@ class InitialSetup(QMainWindow):
 
 
 class Gui:
-    def __init__(self, basedir, argv):
-        self.basedir = basedir
+    def __init__(self, argv):
         self.app = QApplication(argv)
         self.dont_gc = []
         self.tick_count: int = 0
 
     def setup_initial_setup_ui(self):
-        self.installer_window = InitialSetup(self.basedir)
+        self.installer_window = InitialSetup()
         self.installer_window.show()
 
     def setup_main_ui(self,
@@ -154,13 +152,13 @@ class Gui:
         self.app.setQuitOnLastWindowClosed(False)
 
         # self.top_wight_window = TopRightWindow()
-        self.block_access_window = BlockScreenWindow(self.basedir)
+        self.block_access_window = BlockScreenWindow()
         self.main_window = MainWindow()
         self.settings_window = SettingsWindow()
-        self.count_down_window = CountDownWindow(self.basedir)
+        self.count_down_window = CountDownWindow()
 
         tray_icon = QSystemTrayIcon()
-        tray_icon.setIcon(QIcon(os.path.join(self.basedir, "resources", "icon.png" if is_dist() else "icon-dev.png")))
+        tray_icon.setIcon(QIcon(os.path.join(Basedir.get_str(), "resources", "icon.png" if is_dist() else "icon-dev.png")))
 
         tray_menu = QMenu()
 

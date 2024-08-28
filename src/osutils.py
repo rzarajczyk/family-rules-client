@@ -28,16 +28,15 @@ def is_dist() -> bool:
 
 
 def dist_path() -> Path:
-    basedir = Basedir.get_str()
     match get_os():
         case SupportedOs.MAC_OS:
             if not is_dist():
-                return Path("/Users/rafal/Developer/family-rules-client/dist/Family Rules.app")
-            return Path(basedir.removesuffix("/Contents/Frameworks"))
+                return Basedir.get().parent / "dist" / "Family Rules.app"
+            return Path(Basedir.get_str().removesuffix("/Contents/Frameworks"))
         case SupportedOs.WINDOWS:
-            # FIXME UNSUPPORTED_WINDOWS
-            logging.critical("Cannot determine dist_path on Windows - not implemented yet")
-            return None
+            if not is_dist():
+                return Basedir.get().parent / "dist" / "Family Rules.exe"
+            return Path(sys.executable)
         case _:
             raise Exception("Unsupported operating system")
 

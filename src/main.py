@@ -51,6 +51,7 @@ if __name__ == "__main__":
     logging.info("App started!")
     logging.info(f"Basedir: {Basedir.get_str()}")
     logging.info(f"App data: {app_data()}")
+    logging.info(sys.executable)
     gui = Gui(sys.argv)
     state_controller.initialize(gui)
 

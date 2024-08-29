@@ -88,11 +88,13 @@ def make_sure_only_one_instance_is_running():
                 import getpass
 
                 expected_username = platform.node() + "\\" + getpass.getuser()
+                count = 0
                 for p in psutil.process_iter(['username', 'exe']):
                     if p.info["username"] == expected_username:
                         if p.info['exe'].endswith(dist_path().name):
-                            logging.debug("Detected another instance running - quitting!")
-                            sys.exit(0)
-                pass
+                            count += 1
+                if count > 1:
+                    logging.warning("Detected another instance running - quitting!")
+                    sys.exit(0)
             case _:
                 raise Exception("Unsupported operating system")

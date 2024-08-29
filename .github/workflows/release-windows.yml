@@ -21,6 +21,11 @@ jobs:
       - shell: cmd
         run: build-windows-app.bat
 
+      - name: Create Installer
+        uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
+        with:
+          path: windows-installer.iss
+
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1

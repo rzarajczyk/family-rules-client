@@ -10,6 +10,7 @@ from gui import Gui
 from StateController import (StateController)
 from osutils import app_data, path_to_str
 from basedir import Basedir
+from osutils import make_sure_only_one_instance_is_running
 from uptime import PsUptime
 
 TICK_INTERVAL_SECONDS = 5
@@ -49,9 +50,7 @@ def report_tick(gui: Gui, usage: AbsoluteUsage):
 
 if __name__ == "__main__":
     logging.info("App started!")
-    logging.info(f"Basedir: {Basedir.get_str()}")
-    logging.info(f"App data: {app_data()}")
-    logging.info(sys.executable)
+    make_sure_only_one_instance_is_running()
     gui = Gui(sys.argv)
     state_controller.initialize(gui)
 

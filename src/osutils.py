@@ -74,3 +74,25 @@ def is_user_active() -> bool:
             return True
         case _:
             raise Exception("Unsupported operating system")
+
+
+def make_sure_only_one_instance_is_running():
+    if is_dist():
+        match get_os():
+            case SupportedOs.MAC_OS:
+                #FIXME UNSUPPORTED_MACOS
+                pass
+            case SupportedOs.WINDOWS:
+                import psutil
+                import platform
+                import getpass
+
+                expected_username = platform.node() + "\\" + getpass.getuser()
+                for p in psutil.process_iter(['username', 'exe']):
+                    if p.info["username"] == expected_username:
+                        if p.info['exe'].endswith(dist_path().name):
+                            logging.debug("Detected another instance running - quitting!")
+                            sys.exit(0)
+                pass
+            case _:
+                raise Exception("Unsupported operating system")

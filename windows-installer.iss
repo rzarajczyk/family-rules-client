@@ -32,7 +32,7 @@ DisableProgramGroupPage=yes
 ; PrivilegesRequired=lowest
 OutputBaseFilename="Family Rules"
 OutputDir=dist
-SetupIconFile=C:\Users\user\Developer\family-rules-client\src\resources\icon.ico
+SetupIconFile=src\resources\icon.ico
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
@@ -45,8 +45,8 @@ Name: "polish"; MessagesFile: "compiler:Languages\Polish.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "C:\Users\user\Developer\family-rules-client\dist\Family Rules\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\user\Developer\family-rules-client\dist\Family Rules\_internal\*"; DestDir: "{app}\_internal"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "dist\Family Rules\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
+Source: "dist\Family Rules\_internal\*"; DestDir: "{app}\_internal"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]

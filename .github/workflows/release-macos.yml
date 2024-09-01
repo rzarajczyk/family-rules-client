@@ -20,10 +20,10 @@ jobs:
 
       - run: bash build-mac-app.sh
 
-      - uses: L-Super/create-dmg-actions@v1.0.2
+      - uses: QQxiaoming/create-dmg-action@v0.0.2
         with:
-          dmg_name: 'Family Rules Setup'
-          src_dir: 'dict/Family Rules.app'
+          name: 'Family Rules Setup'
+          srcdir: 'dict/Family Rules.app'
 
       - name: Create Release
         id: create_release

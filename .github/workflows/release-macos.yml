@@ -1,4 +1,4 @@
-name: Build MacOS App
+name: Build MacOS (Intel) App
 
 on:
   push:
@@ -22,8 +22,8 @@ jobs:
 
       - uses: QQxiaoming/create-dmg-action@v0.0.2
         with:
-          name: "\"Family Rules Setup.dmg\""
-          srcdir: "\"dict/Family Rules.app\""
+          name: "'Family Rules Setup.dmg'"
+          srcdir: "'dict/Family Rules.app'"
 
       - name: Create Release
         id: create_release

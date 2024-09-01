@@ -35,14 +35,9 @@ class SettingsWindow(QMainWindow):
         self.ui.setupUi(self)
         self.parent_confirm = ParentConfirm()
         self.ui.resetButton.clicked.connect(self.parent_confirm.show)
-        self.ui.disableButton.clicked.connect(self.uninstall_autorun)
         self.parent_confirm.accepted.connect(self.check_password)
         self.ui.progressBar.setHidden(True)
-
-    def uninstall_autorun(self):
-        Installer.uninstall_autorun()
-        sys.exit(0)
-
+        
     def check_password(self):
         self.ui.progressBar.setHidden(False)
         username = self.parent_confirm.ui.username.text()

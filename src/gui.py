@@ -203,6 +203,7 @@ class Gui:
         uptime_timer.timeout.connect(uptime_tick)
         uptime_timer.start(uptime_tick_interval_ms)
 
+        report_tick()
         report_timer = QTimer()
         report_timer.timeout.connect(report_tick)
         report_timer.start(report_tick_interval_ms)

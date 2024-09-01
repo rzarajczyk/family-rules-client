@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>506</width>
-    <height>347</height>
+    <width>526</width>
+    <height>146</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -22,55 +22,9 @@
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
-        <widget class="QLabel" name="label_4">
-         <property name="text">
-          <string>If you want to completly uninstall the app:</string>
-         </property>
-         <property name="wordWrap">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
         <widget class="QPushButton" name="resetButton">
          <property name="text">
           <string>Reset application and remove from autorun</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-    </item>
-    <item>
-     <widget class="QGroupBox" name="groupBox_3">
-      <property name="title">
-       <string>Disable</string>
-      </property>
-      <layout class="QVBoxLayout" name="verticalLayout_4">
-       <item>
-        <widget class="QLabel" name="label_5">
-         <property name="text">
-          <string>If you want to TEMPORARILY disable the app:</string>
-         </property>
-         <property name="wordWrap">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="disableButton">
-         <property name="text">
-          <string>Remove from autorun and quit (for now)</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="label_6">
-         <property name="text">
-          <string>You will be able to re-enable the app by simply starting it (f.ex. from Launcher)</string>
-         </property>
-         <property name="wordWrap">
-          <bool>true</bool>
          </property>
         </widget>
        </item>
@@ -116,7 +70,4 @@
    </hints>
   </connection>
  </connections>
- <buttongroups>
-  <buttongroup name="buttonGroup"/>
- </buttongroups>
 </ui>

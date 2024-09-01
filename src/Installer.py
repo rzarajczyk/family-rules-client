@@ -126,7 +126,7 @@ class Installer:
             )
             stdout = process.communicate()
             if process.returncode != 0 or not stdout:
-                logging.error(f"Could not unload app - process exited with code {process.returncode}, output: {stdout}")
+                logging.error(f"'launchctl load' exited with code {process.returncode}, output: {stdout}")
 
     @staticmethod
     def __install_windows_autorun():
@@ -208,7 +208,7 @@ class Installer:
                 os.remove(path)
                 if process.returncode != 0 or not stdout:
                     logging.error(
-                        f"Could not unload app - process exited with code {process.returncode}, output: {stdout}")
+                        f"'launchctl unload' exited with code {process.returncode}, output: {stdout}")
             case SupportedOs.WINDOWS:
                 task_name = "FamilyRules Task"
                 result = subprocess.run(['schtasks', '/Delete', '/TN', task_name, '/F'],

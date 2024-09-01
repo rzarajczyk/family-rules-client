@@ -1,12 +1,16 @@
+import logging
+import sys
+
 from gui import Gui
 from gui_countdown import CountDownState
 from osutils import get_os, SupportedOs
+from Installer import Installer
 
 
 class State:
     def __init__(self, json):
-        self.device_state = json['deviceState']
-        self.device_state_countdown = int(json['deviceStateCountdown'])
+        self.device_state: str = json['deviceState']
+        self.device_state_countdown: int = int(json['deviceStateCountdown'])
 
     @staticmethod
     def empty():
@@ -61,6 +65,10 @@ class StateController:
                         onTimeout=lock)
                 elif self.gui.count_down_window.state.value == CountDownState.DONE.value:
                     self.__logout()
+            case "APP_DISABLED":
+                logging.warning("Received state APP_DISABLED: uninstalling autorun and closing the app!")
+                Installer.uninstall_autorun()
+                sys.exit(0)
             case _:
                 raise Exception(f"unsupported state: {state.device_state}")
 

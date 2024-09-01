@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: macos-13
+    runs-on: macos-13 # Intel-based
     steps:
       - uses: actions/checkout@v4
 
@@ -20,14 +20,19 @@ jobs:
 
       - run: bash build-mac-app.sh
 
+      - uses: L-Super/create-dmg-actions@v1.0.2
+        with:
+          dmg_name: 'Family Rules Setup'
+          src_dir: 'dict/Family Rules.app'
+
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref }}-macos
-          release_name: Release ${{ github.ref }} MacOS
+          tag_name: ${{ github.ref }}-macos-intel
+          release_name: Release ${{ github.ref }} MacOS Intel
           draft: false
           prerelease: false
 
@@ -38,6 +43,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-          asset_path: "Family Rules.zip"
-          asset_name: "Family Rules.zip"
+          asset_path: "Family Rules Setup.dmg"
+          asset_name: "Family Rules Setup.dmg"
           asset_content_type: application/zip

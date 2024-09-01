@@ -6,7 +6,7 @@ on:
       - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
 
 jobs:
-  build:
+  build-mac-intel:
     runs-on: macos-13 # Intel-based
     steps:
       - uses: actions/checkout@v4
@@ -22,8 +22,8 @@ jobs:
 
       - uses: QQxiaoming/create-dmg-action@v0.0.2
         with:
-          name: "Family Rules Setup.dmg"
-          srcdir: "dict/Family Rules.app"
+          name: "\"Family Rules Setup.dmg\""
+          srcdir: "\"dict/Family Rules.app\""
 
       - name: Create Release
         id: create_release

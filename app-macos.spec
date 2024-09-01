@@ -46,7 +46,7 @@ coll = COLLECT(
 )
 app = BUNDLE(
     coll,
-    name='Family Rules.app',
+    name='FamilyRules.app',
     icon='src/resources/icon.icns',
     bundle_identifier=None,
     info_plist={

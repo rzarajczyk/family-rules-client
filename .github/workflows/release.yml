@@ -1,4 +1,4 @@
-name: Build App
+name: Release App
 
 on:
   push:
@@ -23,7 +23,7 @@ jobs:
       - uses: QQxiaoming/create-dmg-action@v0.0.2
         with:
           name: "family-rules-setup"
-          srcdir: "dist/Family\\ Rules.app"
+          srcdir: "dist/FamilyRules.app"
 
       - name: Create Release
         id: create_release
@@ -43,8 +43,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-          asset_path: "Family Rules Setup.dmg"
-          asset_name: "Family Rules Setup.dmg"
+          asset_path: "family-rules-setup.dmg"
+          asset_name: "family-rules-setup.dmg"
           asset_content_type: application/zip
 
   build-windows:
@@ -85,6 +85,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-          asset_path: "dist\\Family Rules.exe"
-          asset_name: "Family Rules.exe"
+          asset_path: "dist\\family-rules-setup.exe"
+          asset_name: "family-rules-setup.exe"
           asset_content_type: application/vnd.microsoft.portable-executable

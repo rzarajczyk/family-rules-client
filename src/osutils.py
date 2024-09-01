@@ -31,11 +31,11 @@ def dist_path() -> Path:
     match get_os():
         case SupportedOs.MAC_OS:
             if not is_dist():
-                return Basedir.get().parent / "dist" / "Family Rules.app"
+                return Basedir.get().parent / "dist" / "FamilyRules.app"
             return Path(Basedir.get_str().removesuffix("/Contents/Frameworks"))
         case SupportedOs.WINDOWS:
             if not is_dist():
-                return Basedir.get().parent / "dist" / "Family Rules.exe"
+                return Basedir.get().parent / "dist" / "FamilyRules.exe"
             return Path(sys.executable)
         case _:
             raise Exception("Unsupported operating system")
@@ -47,11 +47,11 @@ def app_data() -> Path:
 
     match get_os():
         case SupportedOs.MAC_OS:
-            path = Path(Path.home(), "Library", "Family Rules")
+            path = Path(Path.home(), "Library", "FamilyRules")
             path.mkdir(exist_ok=True)
             return path
         case SupportedOs.WINDOWS:
-            path = Path(os.getenv('LOCALAPPDATA'), "Family Rules")
+            path = Path(os.getenv('LOCALAPPDATA'), "FamilyRules")
             path.mkdir(exist_ok=True)
             return path
         case _:

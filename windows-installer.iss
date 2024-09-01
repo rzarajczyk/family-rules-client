@@ -5,7 +5,7 @@
 #define MyAppVersion "1.0"
 #define MyAppPublisher "Rafał Zarajczyk"
 #define MyAppURL "https://zarajczyk.pl"
-#define MyAppExeName "Family Rules.exe"
+#define MyAppExeName "FamilyRules.exe"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
@@ -30,7 +30,7 @@ ArchitecturesInstallIn64BitMode=x64compatible
 DisableProgramGroupPage=yes
 ; Remove the following line to run in administrative install mode (install for all users.)
 ; PrivilegesRequired=lowest
-OutputBaseFilename="Family Rules"
+OutputBaseFilename="family-rules-setup"
 OutputDir=dist
 SetupIconFile=src\resources\icon.ico
 Compression=lzma

@@ -98,7 +98,7 @@ class Installer:
 
     @staticmethod
     def __install_macos_autorun():
-        path = path_to_str(dist_path() / "Contents" / "MacOS" / "Family Rules")
+        path = path_to_str(dist_path() / "Contents" / "MacOS" / "FamilyRules")
         expected_plist_content = {
             "Label": "pl.zarajczyk.family-rules-client",
             "ProgramArguments": [path],
@@ -131,7 +131,7 @@ class Installer:
     @staticmethod
     def __install_windows_autorun():
         import win32com.client
-        task_name = "Family Rules Task"
+        task_name = "FamilyRules Task"
         app_path = path_to_str(dist_path())
 
         # Get the current user's name
@@ -148,7 +148,7 @@ class Installer:
         task_def = scheduler.NewTask(0)
 
         # Set general information
-        task_def.RegistrationInfo.Description = "Run Family Rules every 2 minutes"
+        task_def.RegistrationInfo.Description = "Run FamilyRules every 2 minutes"
         task_def.Principal.UserId = current_user
         task_def.Principal.LogonType = 3  # TASK_LOGON_INTERACTIVE_TOKEN
 
@@ -210,7 +210,7 @@ class Installer:
                     logging.error(
                         f"Could not unload app - process exited with code {process.returncode}, output: {stdout}")
             case SupportedOs.WINDOWS:
-                task_name = "Family Rules Task"
+                task_name = "FamilyRules Task"
                 result = subprocess.run(['schtasks', '/Delete', '/TN', task_name, '/F'],
                                         stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
                 if result.returncode == 0:

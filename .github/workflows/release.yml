@@ -53,6 +53,7 @@ jobs:
           path: family-rules-setup.dmg
           compression-level: 0
           retention-days: 1
+          if-no-files-found: error
 
   build-windows:
     runs-on: windows-latest
@@ -73,6 +74,8 @@ jobs:
         uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
         with:
           path: windows-installer.iss
+
+      - run: ls -R
 
 #      - name: Create Release
 #        id: create_release
@@ -102,6 +105,7 @@ jobs:
           path: family-rules-setup.exe
           compression-level: 0
           retention-days: 1
+          if-no-files-found: error
 
   create-release:
     runs-on: ubuntu-latest

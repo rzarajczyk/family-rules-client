@@ -20,7 +20,7 @@ jobs:
 
       - run: bash build-mac-app.sh
 
-      - uses: unofficial-rev-port/create-dmg-action-fixed-icon@v0.1.0
+      - uses: QQxiaoming/create-dmg-action@v0.0.2
         with:
           name: "family-rules-setup-intel"
           srcdir: "dist/FamilyRules.app"

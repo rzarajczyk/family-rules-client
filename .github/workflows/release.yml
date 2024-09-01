@@ -108,4 +108,9 @@ jobs:
     needs: [build-mac-intel, build-windows]
     steps:
       - uses: actions/download-artifact@v4
+        with:
+          name: family-rules-setup.dmg
+      - uses: actions/download-artifact@v4
+        with:
+          name: family-rules-setup.exe
       - run: ls

@@ -23,7 +23,7 @@ jobs:
       - uses: QQxiaoming/create-dmg-action@v0.0.2
         with:
           name: "family-rules-setup"
-          srcdir: "'dict/Family Rules.app'"
+          srcdir: "dist/Family\ Rules.app"
 
       - name: Create Release
         id: create_release

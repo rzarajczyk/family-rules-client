@@ -22,35 +22,13 @@ jobs:
 
       - uses: QQxiaoming/create-dmg-action@v0.0.2
         with:
-          name: "family-rules-setup"
+          name: "family-rules-setup-intel"
           srcdir: "dist/FamilyRules.app"
-
-#      - name: Create Release
-#        id: create_release
-#        uses: actions/create-release@v1
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#        with:
-#          tag_name: ${{ github.ref }}-macos-intel
-#          release_name: Release ${{ github.ref }} MacOS Intel
-#          draft: false
-#          prerelease: false
-#
-#      - name: Upload Release Asset
-#        id: upload-release-asset
-#        uses: actions/upload-release-asset@v1
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#        with:
-#          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-#          asset_path: "family-rules-setup.dmg"
-#          asset_name: "family-rules-setup.dmg"
-#          asset_content_type: application/zip
 
       - uses: actions/upload-artifact@v4
         with:
-          name: family-rules-setup.dmg
-          path: family-rules-setup.dmg
+          name: family-rules-setup-intel.dmg
+          path: family-rules-setup-intel.dmg
           compression-level: 0
           retention-days: 1
           if-no-files-found: error
@@ -75,30 +53,6 @@ jobs:
         with:
           path: windows-installer.iss
 
-      - run: ls -R
-
-#      - name: Create Release
-#        id: create_release
-#        uses: actions/create-release@v1
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#        with:
-#          tag_name: ${{ github.ref }}-windows
-#          release_name: Release ${{ github.ref }} Windows
-#          draft: false
-#          prerelease: false
-#
-#      - name: Upload Release Asset
-#        id: upload-release-asset
-#        uses: actions/upload-release-asset@v1
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#        with:
-#          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-#          asset_path: "dist\\family-rules-setup.exe"
-#          asset_name: "family-rules-setup.exe"
-#          asset_content_type: application/vnd.microsoft.portable-executable
-
       - uses: actions/upload-artifact@v4
         with:
           name: family-rules-setup.exe
@@ -113,8 +67,40 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: family-rules-setup.dmg
+          name: family-rules-setup-intel.dmg
       - uses: actions/download-artifact@v4
         with:
           name: family-rules-setup.exe
       - run: ls
+
+      - uses: actions/create-release@v1
+        id: create_release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+          asset_path: "family-rules-setup.exe"
+          asset_name: "family-rules-setup.exe"
+          asset_content_type: application/vnd.microsoft.portable-executable
+
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+          asset_path: "family-rules-setup-intel.dmg"
+          asset_name: "family-rules-setup-intel.dmg"
+          asset_content_type: application/octet-stream

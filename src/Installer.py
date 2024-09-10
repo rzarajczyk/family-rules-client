@@ -48,7 +48,7 @@ class Installer:
                 url=f"{server}/api/register-instance",
                 json={
                     'instanceName': instance_name,
-                    'os': get_os().name
+                    'clientType': get_os().name
                 },
                 auth=HTTPBasicAuth(username, password),
                 headers={'Content-Type': 'application/json'}

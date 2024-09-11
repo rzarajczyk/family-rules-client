@@ -45,15 +45,15 @@ class InitialSetupWorker(QThread):
 
     def __init__(self, server, username, password, instance):
         super().__init__()
-        self.instance = instance
+        self.instance_name = instance
         self.password = password
         self.username = username
         self.server = server
 
     def run(self):
-        response = Installer.install(self.server, self.username, self.password, self.instance)
+        response = Installer.install(self.server, self.username, self.password, self.instance_name)
         if response.status == RegisterInstanceStatus.OK:
-            Installer.save_settings(self.server, self.username, self.instance, response.token)
+            Installer.save_settings(self.server, self.username, response.instance_id, self.instance_name, response.token)
             Installer.install_autorun()
             self.result_ready.emit([True, ""])
         else:

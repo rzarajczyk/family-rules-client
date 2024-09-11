@@ -33,9 +33,10 @@ class UnregisterInstanceStatus(Enum):
 
 
 class RegisterInstanceResponse:
-    def __init__(self, status: RegisterInstanceStatus, token: str = None, message: str = None):
+    def __init__(self, status: RegisterInstanceStatus, token: str = None, message: str = None, instance_id: str = None):
         self.status = status
         self.token = token
+        self.instance_id = instance_id
         self.message = message
 
 
@@ -58,7 +59,7 @@ class Installer:
             status = response_json['status']
             match response_json['status']:
                 case 'SUCCESS':
-                    return RegisterInstanceResponse(RegisterInstanceStatus.OK, token=response_json['token'])
+                    return RegisterInstanceResponse(RegisterInstanceStatus.OK, token=response_json['token'], instance_id=response_json['instanceId'])
                 case 'INVALID_PASSWORD':
                     return RegisterInstanceResponse(RegisterInstanceStatus.INVALID_PASSWORD)
                 case 'INSTANCE_ALREADY_EXISTS':
@@ -80,12 +81,12 @@ class Installer:
             return RegisterInstanceResponse(RegisterInstanceStatus.SERVER_ERROR, message=str(e))
 
     @staticmethod
-    def save_settings(server, username, instance, token):
-        Settings.create(server, username, instance, token)
+    def save_settings(server, username, instance_id, instance_name, token):
+        Settings.create(server, username, instance_id, instance_name, token)
 
     @staticmethod
     def install_autorun():
-        # if is_dist():
+        if is_dist():
             match get_os():
                 case SupportedOs.MAC_OS:
                     Installer.__install_macos_autorun()
@@ -93,8 +94,8 @@ class Installer:
                     Installer.__install_windows_autorun()
                 case _:
                     raise Exception("Unsupported operating system")
-        # else:
-        #     logging.info("installing autorun skipped in non-dist version")
+        else:
+            logging.info("installing autorun skipped in non-dist version")
 
     @staticmethod
     def __install_macos_autorun():
@@ -226,7 +227,7 @@ class Installer:
         try:
             response = requests.post(
                 url=f"{settings.server}/api/unregister-instance",
-                json={'instanceName': settings.instance_name},
+                json={'instanceID': settings.instance_id},
                 auth=HTTPBasicAuth(username, password),
                 headers={'Content-Type': 'application/json'}
             )

@@ -16,7 +16,7 @@ class Reporter:
             response = requests.post(
                 url=f"{server}/api/report",
                 json={
-                    'instanceName': settings.instance_name,
+                    'instanceId': settings.instance_id,
                     'screenTime': usage.screen_time.total_seconds(),
                     'applications': {k: v.total_seconds() for k, v in usage.applications.items()}
                 },

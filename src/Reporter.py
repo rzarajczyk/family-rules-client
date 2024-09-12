@@ -14,7 +14,7 @@ class Reporter:
         try:
             server = settings.server
             response = requests.post(
-                url=f"{server}/api/report",
+                url=f"{server}/api/v1/report",
                 json={
                     'instanceId': settings.instance_id,
                     'screenTime': usage.screen_time.total_seconds(),

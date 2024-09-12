@@ -16,6 +16,7 @@ from gui_countdown import CountDownWindow
 from gui_settings import SettingsWindow
 from osutils import is_dist
 from basedir import Basedir
+from Launcher import Launcher
 
 
 class MainWindow(QMainWindow):
@@ -187,6 +188,8 @@ class Gui:
         tray_icon.show()
 
         db = UptimeDb()
+
+        Launcher().run()
 
         def uptime_tick():
             usage_update: UsageUpdate = uptime_tick_function()

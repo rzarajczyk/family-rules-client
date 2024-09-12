@@ -70,7 +70,9 @@ class StateController:
                 Installer.uninstall_autorun()
                 sys.exit(0)
             case _:
-                raise Exception(f"unsupported state: {state.device_state}")
+                logging.error(f"unsupported state: {state.device_state} - the app will be ACTIVE")
+                self.gui.count_down_window.stop_reset()
+                self.gui.block_access_window.hide()
 
     def __logout(self):
         match get_os():

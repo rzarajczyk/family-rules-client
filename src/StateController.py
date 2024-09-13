@@ -10,14 +10,17 @@ from Installer import Installer
 class State:
     def __init__(self, json):
         self.device_state: str = json['deviceState']
-        self.device_state_countdown: int = int(json['deviceStateCountdown'])
+        self.device_state_countdown: int = 0
+        if self.device_state == "LOCKED_WITH_COUNTDOWN":
+            self.device_state = "LOCKED"
+            self.device_state_countdown = 60
+        if self.device_state == "LOGGED_OUT_WITH_COUNTDOWN":
+            self.device_state = "LOGGED_OUT"
+            self.device_state_countdown = 60
 
     @staticmethod
     def empty():
-        return State({
-            'deviceState': 'ACTIVE',
-            'deviceStateCountdown': 0
-        })
+        return State({'deviceState': 'ACTIVE'})
 
 
 class StateController:

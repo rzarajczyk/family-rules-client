@@ -1,9 +1,9 @@
 import logging
 import os
+import platform
 import sys
 from enum import Enum, auto
 from pathlib import Path
-import platform
 
 from basedir import Basedir
 
@@ -14,10 +14,15 @@ class SupportedOs(Enum):
     UNSUPPORTED = auto()
 
 
+def app_version():
+    with open(Basedir.get() / "resources" / "version.txt", "r") as f:
+        return f.read()
+
+
 def get_os() -> SupportedOs:
     if "windows" in platform.platform().lower():
         return SupportedOs.WINDOWS
-    elif os.uname().sysname == 'Darwin': ## TODO migrate to pltform
+    elif os.uname().sysname == 'Darwin':  ## TODO migrate to pltform
         return SupportedOs.MAC_OS
     else:
         return SupportedOs.UNSUPPORTED
@@ -80,7 +85,7 @@ def make_sure_only_one_instance_is_running():
     if is_dist():
         match get_os():
             case SupportedOs.MAC_OS:
-                #FIXME UNSUPPORTED_MACOS
+                # FIXME UNSUPPORTED_MACOS
                 pass
             case SupportedOs.WINDOWS:
                 import psutil

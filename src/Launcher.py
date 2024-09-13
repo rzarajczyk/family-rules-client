@@ -4,6 +4,7 @@ import requests
 from requests.auth import HTTPBasicAuth
 
 from Settings import Settings
+from osutils import app_version
 
 
 class Launcher:
@@ -16,7 +17,7 @@ class Launcher:
                 url=f"{server}/api/v1/launch",
                 json={
                     'instanceId': settings.instance_id,
-                    'version': "x1",
+                    'version': app_version(),
                     'availableStates': [
                         {
                             "deviceState": "ACTIVE",

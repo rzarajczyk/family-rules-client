@@ -6,6 +6,7 @@ from PySide6.QtWidgets import QDialog, QMainWindow, QMessageBox
 from Installer import Installer, UnregisterInstanceStatus
 from gen.ParentConfirm import Ui_ParentConfirm
 from gen.SettingsWindow import Ui_SettingsWindow
+from osutils import app_version
 
 
 class CheckPasswordWorker(QThread):
@@ -37,6 +38,7 @@ class SettingsWindow(QMainWindow):
         self.ui.resetButton.clicked.connect(self.parent_confirm.show)
         self.parent_confirm.accepted.connect(self.check_password)
         self.ui.progressBar.setHidden(True)
+        self.ui.versionLabel.setText(app_version())
         
     def check_password(self):
         self.ui.progressBar.setHidden(False)

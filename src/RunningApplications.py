@@ -38,7 +38,7 @@ class RunningApplications:
         hwnd = win32gui.GetForegroundWindow()
         _, pid = win32process.GetWindowThreadProcessId(hwnd)
         if pid is not None:
-            name = psutil.Process(pid).name()
+            name = psutil.Process(pid).exe()
             return {name: pid}
         else:
             return {}

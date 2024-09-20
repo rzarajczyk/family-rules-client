@@ -19,4 +19,5 @@ git commit -m "Version bump: $NEXT_VERSION"
 git tag "$NEXT_VERSION"
 
 echo "Pushing changes..."
+git push origin
 git push origin --tags

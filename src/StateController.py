@@ -32,8 +32,10 @@ class StateController:
     def initialize(self, gui: Gui):
         self.gui = gui
 
-    def run(self, state: State):
+    def run(self, state: State, first_run: bool):
         if state is not None:
+            if first_run:
+                state.device_state_countdown = 0
             self.state = state
 
         match state.device_state:

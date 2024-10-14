@@ -43,9 +43,9 @@ def uptime_tick():
     return PsUptime(TICK_INTERVAL_SECONDS).get()
 
 
-def report_tick(gui: Gui, usage: AbsoluteUsage):
+def report_tick(gui: Gui, usage: AbsoluteUsage, first_run: bool):
     state = Reporter().submit_report_get_state(usage)
-    state_controller.run(state)
+    state_controller.run(state, first_run)
 
 
 if __name__ == "__main__":

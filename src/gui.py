@@ -8,15 +8,15 @@ from PySide6.QtWidgets import QApplication, QSystemTrayIcon, QMenu, QMainWindow,
     QTableWidgetItem, QHeaderView, QMessageBox, QLayout
 
 from Installer import Installer, RegisterInstanceStatus
+from Launcher import Launcher
 from UptimeDb import UptimeDb, UsageUpdate
+from basedir import Basedir
 from gen.InitialSetup import Ui_InitialSetup
 from gen.MainWindow import Ui_MainWindow
 from gui_block import BlockScreenWindow
 from gui_countdown import CountDownWindow
 from gui_settings import SettingsWindow
 from osutils import is_dist
-from basedir import Basedir
-from Launcher import Launcher
 
 
 class MainWindow(QMainWindow):
@@ -54,7 +54,8 @@ class InitialSetupWorker(QThread):
     def run(self):
         response = Installer.install(self.server, self.username, self.password, self.instance_name)
         if response.status == RegisterInstanceStatus.OK:
-            Installer.save_settings(self.server, self.username, response.instance_id, self.instance_name, response.token)
+            Installer.save_settings(self.server, self.username, response.instance_id, self.instance_name,
+                                    response.token)
             Installer.install_autorun()
             self.result_ready.emit([True, ""])
         else:
@@ -159,7 +160,8 @@ class Gui:
         self.count_down_window = CountDownWindow()
 
         tray_icon = QSystemTrayIcon()
-        tray_icon.setIcon(QIcon(os.path.join(Basedir.get_str(), "resources", "icon.png" if is_dist() else "icon-dev.png")))
+        tray_icon.setIcon(
+            QIcon(os.path.join(Basedir.get_str(), "resources", "icon.png" if is_dist() else "icon-dev.png")))
 
         tray_menu = QMenu()
 
@@ -197,16 +199,16 @@ class Gui:
             self.main_window.update_screen_time(absolute_usage.screen_time)
             self.main_window.update_applications_usage(absolute_usage.applications)
 
-        def report_tick():
+        def report_tick(first_run=False):
             usage = db.get()
-            report_tick_function(self, usage)
+            report_tick_function(self, usage, first_run)
 
         uptime_tick()
         uptime_timer = QTimer()
         uptime_timer.timeout.connect(uptime_tick)
         uptime_timer.start(uptime_tick_interval_ms)
 
-        report_tick()
+        report_tick(first_run=True)
         report_timer = QTimer()
         report_timer.timeout.connect(report_tick)
         report_timer.start(report_tick_interval_ms)

@@ -1,7 +1,8 @@
 import os
+import sys
 from datetime import timedelta
 
-from PySide6 import QtWidgets, QtCore
+from PySide6 import QtWidgets, QtCore, QtGui
 from PySide6.QtCore import QTimer, QThread, Signal
 from PySide6.QtGui import QIcon, QAction
 from PySide6.QtWidgets import QApplication, QSystemTrayIcon, QMenu, QMainWindow, \
@@ -179,14 +180,18 @@ class Gui:
                 self.main_window.show()
 
         add_menu_item("Show", show_main_window)
-        # add_menu_item("Countdown", lambda: self.count_down_window.start(10, lambda: print("done")))
-        # add_menu_item("Lock screen", lambda: self.block_access_window.show())
-        # add_menu_item("Kill Notes.ap", lambda: KillApplication("Notes.app").execute(self))
         if not is_dist():
-            add_menu_item("Quit", self.app.quit)
+            add_menu_item("Quit", lambda: sys.exit(0))
 
-        tray_icon.setContextMenu(tray_menu)
+        def menu_triggered(reason):
+            match reason:
+                case QSystemTrayIcon.ActivationReason.Trigger:
+                    show_main_window()
+                case QSystemTrayIcon.ActivationReason.Context:
+                    tray_menu.exec(QtGui.QCursor.pos())
 
+        # tray_icon.setContextMenu(tray_menu)
+        tray_icon.activated.connect(menu_triggered)
         tray_icon.show()
 
         db = UptimeDb()

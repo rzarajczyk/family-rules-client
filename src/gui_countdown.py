@@ -7,6 +7,7 @@ from PySide6.QtWidgets import QWidget, QApplication
 from gen.CountDownWindow import Ui_CountDownWindow
 from guiutils import show_on_all_desktops
 from osutils import get_os, SupportedOs
+from src.guiutils import set_grayscale
 
 
 class CountDownState(Enum):
@@ -57,6 +58,15 @@ class CountDownWindow(QWidget):
         self.amount_seconds = 0
         self.onTimeout = lambda *args: None
         self.state = CountDownState.NOT_STARTED
+
+    def hide(self):
+        super().hide()
+        set_grayscale(False)
+
+    def show(self):
+        super().show()
+        set_grayscale(True)
+
 
     # def paintEvent(self, event):
     #     # This method is used to paint the window with a transparent background

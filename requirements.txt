@@ -1,6 +1,9 @@
 PySide6
 pyinstaller
 requests
+websockets
+pyautogui
+winreg; sys_platform == 'win32'
 pyobjc; sys_platform == 'darwin'
 psutil; sys_platform == 'win32'
 pywin32; sys_platform == 'win32'

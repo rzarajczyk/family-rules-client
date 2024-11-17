@@ -1,5 +1,8 @@
 import ctypes
 import logging
+from ctypes import cdll
+
+import pyautogui
 
 from osutils import get_os, SupportedOs
 
@@ -34,3 +37,38 @@ def show_on_all_desktops(window):
             logging.debug("Show on all desktops - not implemented for Windows")
         case _:
             raise Exception("Unsupported OS")
+
+
+def set_grayscale(on: bool):
+    match get_os():
+        case SupportedOs.MAC_OS:
+            lib = cdll.LoadLibrary("/System/Library/PrivateFrameworks/UniversalAccess.framework/UniversalAccess")
+            lib.UAGrayscaleSetEnabled(on)
+        case SupportedOs.WINDOWS:
+            if is_windows_grayscale_enabled() != on:
+                pyautogui.hotkey('win', 'ctrl', 'c')
+        case _:
+            raise Exception("Unsupported OS")
+
+
+def is_windows_grayscale_enabled():
+    import winreg
+    try:
+        # Open the registry key for color filtering settings
+        key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, r"Software\Microsoft\ColorFiltering")
+
+        # Read the 'Active' and 'FilterType' values
+        active = winreg.QueryValueEx(key, "Active")[0]
+        filter_type = winreg.QueryValueEx(key, "FilterType")[0]
+
+        # Close the registry key
+        winreg.CloseKey(key)
+
+        # Check if grayscale is enabled
+        if active == 1 and filter_type == 0:
+            return True  # Grayscale is enabled
+        else:
+            return False  # Grayscale is not enabled
+
+    except FileNotFoundError:
+        return False

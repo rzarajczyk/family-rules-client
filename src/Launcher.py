@@ -1,4 +1,5 @@
 import logging
+import time
 
 import requests
 from requests.auth import HTTPBasicAuth
@@ -60,7 +61,8 @@ class Launcher:
                                 Remember to manually turn the app on after de-selecting this state.
                             """.strip()
                         }
-                    ]
+                    ],
+                    'timezoneOffsetSeconds': time.timezone
                 },
                 auth=HTTPBasicAuth(settings.username, settings.instance_token),
                 headers={'Content-Type': 'application/json'}

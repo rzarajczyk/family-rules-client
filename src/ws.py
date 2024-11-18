@@ -5,7 +5,7 @@ import json
 async def send_report_request():
     uri = "ws://localhost:8080/api/v1/streaming-report"
     headers = {
-        "Authorization": "Basic YWRtaW46NmVjYzJkYzYtOTJkMS00MzU1LTk3NDktOWI2MTgyMGFkMzlh"
+        "Authorization": "Basic ..."
     }
     async with websockets.connect(uri, extra_headers=headers) as websocket:
         for _ in range(5):

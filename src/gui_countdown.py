@@ -1,4 +1,3 @@
-import logging
 from enum import Enum, auto
 
 from PySide6.QtCore import Qt, QTimer
@@ -7,7 +6,7 @@ from PySide6.QtWidgets import QWidget, QApplication
 from gen.CountDownWindow import Ui_CountDownWindow
 from guiutils import show_on_all_desktops
 from osutils import get_os, SupportedOs
-from src.guiutils import set_grayscale
+from guiutils import set_grayscale
 
 
 class CountDownState(Enum):
@@ -67,7 +66,6 @@ class CountDownWindow(QWidget):
         super().show()
         set_grayscale(True)
 
-
     # def paintEvent(self, event):
     #     # This method is used to paint the window with a transparent background
     #     painter = QPainter(self)
@@ -77,7 +75,8 @@ class CountDownWindow(QWidget):
 
     def tick(self):
         if self.state.value == CountDownState.IN_PROGRESS.value:
-            self.ui.label.setText("<div style=\"background-color: yellow; color: red;\">" + str(self.amount_seconds) + "</div>")
+            self.ui.label.setText(
+                "<div style=\"background-color: yellow; color: red;\">" + str(self.amount_seconds) + "</div>")
             self.amount_seconds -= 1
             if self.amount_seconds <= 0:
                 self.amount_seconds = 0

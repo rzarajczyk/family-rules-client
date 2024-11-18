@@ -11,6 +11,7 @@ from StateController import (StateController)
 from osutils import app_data, path_to_str
 from basedir import Basedir
 from osutils import make_sure_only_one_instance_is_running
+from guiutils import set_grayscale
 from uptime import PsUptime
 
 TICK_INTERVAL_SECONDS = 5
@@ -51,6 +52,7 @@ def report_tick(gui: Gui, usage: AbsoluteUsage, first_run: bool):
 if __name__ == "__main__":
     logging.info("App started!")
     make_sure_only_one_instance_is_running()
+    set_grayscale(False)
     gui = Gui(sys.argv)
     state_controller.initialize(gui)
 

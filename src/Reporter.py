@@ -75,7 +75,7 @@ class ReporterWs:
         try:
             return self._send_and_receive_single_attempt(usage)
         except ConnectionClosed as e:
-            logging.error(f"WebSocket connection closed: {e}; Reconnecting..")
+            logging.error(f"WebSocket connection closed: {e}; Reconnecting...")
             self._connect()
             return self._send_and_receive_single_attempt(usage)
 

@@ -1,10 +1,9 @@
-import datetime
 from datetime import timedelta
 
 from RunningApplications import RunningApplications
 from UptimeDb import UsageUpdate
-from AppleScreenTime import AppleScreenTime
 from osutils import is_user_active
+
 
 class Uptime:
     def get(self) -> UsageUpdate:
@@ -29,10 +28,3 @@ class PsUptime(Uptime):
                 applications={k: timedelta(seconds=self.interval) for k in apps},
                 absolute=False
             )
-
-
-class AppleScreenTimeUptime(Uptime):
-    # https://felixkohlhas.com/projects/screentime/
-    def get(self) -> UsageUpdate:
-        today = datetime.date.today()
-        return AppleScreenTime().get(today)

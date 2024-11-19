@@ -38,6 +38,7 @@ if DEBUG_HTTP_REQUESTS:
     requests_log.propagate = True
 
 state_controller = StateController()
+reporter = Reporter()
 
 
 def uptime_tick():
@@ -45,7 +46,7 @@ def uptime_tick():
 
 
 def report_tick(gui: Gui, usage: AbsoluteUsage, first_run: bool):
-    state = Reporter().submit_report_get_state(usage)
+    state = reporter.submit_report_get_state(usage)
     state_controller.run(state, first_run)
 
 

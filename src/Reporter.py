@@ -15,8 +15,8 @@ from UptimeDb import AbsoluteUsage
 
 class Reporter:
     def __init__(self):
-        # self.internal = ReporterRest()
-        self.internal = ReporterWs()
+        self.internal = ReporterRest()
+        # self.internal = ReporterWs()
 
     def submit_report_get_state(self, usage: AbsoluteUsage) -> State:
         return self.internal.submit_report_get_state(usage)

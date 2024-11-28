@@ -46,7 +46,7 @@ class Installer:
     def install(server, username, password, instance_name) -> RegisterInstanceResponse:
         try:
             response = requests.post(
-                url=f"{server}/api/register-instance",
+                url=f"{server}/api/v2/register-instance",
                 json={
                     'instanceName': instance_name,
                     'clientType': get_os().name
@@ -226,9 +226,8 @@ class Installer:
         settings = Settings.load()
         try:
             response = requests.post(
-                url=f"{settings.server}/api/unregister-instance",
-                json={'instanceID': settings.instance_id},
-                auth=HTTPBasicAuth(username, password),
+                url=f"{settings.server}/api/v2/unregister-instance",
+                auth=HTTPBasicAuth(settings.instance_id, settings.instance_token),
                 headers={'Content-Type': 'application/json'}
             )
             response.raise_for_status()

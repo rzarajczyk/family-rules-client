@@ -15,9 +15,8 @@ class Launcher:
         try:
             server = settings.server
             response = requests.post(
-                url=f"{server}/api/v1/launch",
+                url=f"{server}/api/v2/launch",
                 json={
-                    'instanceId': settings.instance_id,
                     'version': app_version(),
                     'availableStates': [
                         {
@@ -64,7 +63,7 @@ class Launcher:
                     ],
                     'timezoneOffsetSeconds': time.timezone
                 },
-                auth=HTTPBasicAuth(settings.username, settings.instance_token),
+                auth=HTTPBasicAuth(settings.instance_id, settings.instance_token),
                 headers={'Content-Type': 'application/json'}
             )
             response.raise_for_status()

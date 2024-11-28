@@ -28,13 +28,12 @@ class ReporterRest:
         try:
             server = settings.server
             response = requests.post(
-                url=f"{server}/api/v1/report",
+                url=f"{server}/api/v2/report",
                 json={
-                    'instanceId': settings.instance_id,
                     'screenTime': usage.screen_time.total_seconds(),
                     'applications': {k: v.total_seconds() for k, v in usage.applications.items()}
                 },
-                auth=HTTPBasicAuth(settings.username, settings.instance_token),
+                auth=HTTPBasicAuth(settings.instance_id, settings.instance_token),
                 headers={'Content-Type': 'application/json'}
             )
             response.raise_for_status()

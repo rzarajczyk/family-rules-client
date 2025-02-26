@@ -131,60 +131,9 @@ class Installer:
 
     @staticmethod
     def __install_windows_autorun():
-        import win32com.client
-        task_name = "FamilyRules Task"
         app_path = path_to_str(dist_path())
-
-        # Get the current user's name
-        current_user = os.getlogin()
-
-        # Create Task Scheduler COM object
-        scheduler = win32com.client.Dispatch('Schedule.Service')
-        scheduler.Connect()
-
-        # Get the root task folder
-        rootFolder = scheduler.GetFolder("\\")
-
-        # Create a new task definition
-        task_def = scheduler.NewTask(0)
-
-        # Set general information
-        task_def.RegistrationInfo.Description = "Run FamilyRules every 2 minutes"
-        task_def.Principal.UserId = current_user
-        task_def.Principal.LogonType = 3  # TASK_LOGON_INTERACTIVE_TOKEN
-
-        # Set the trigger (e.g., every 2 minutes)
-        trigger = task_def.Triggers.Create(1)  # 1 is for TASK_TRIGGER_TIME
-
-        # Set the StartBoundary to the current time in ISO 8601 format
-        current_time = datetime(year=2024, month=1, day=1, hour=0, minute=0, second=0).isoformat()
-        trigger.StartBoundary = current_time  # Set the start time to now
-
-        trigger.Repetition.Interval = "PT2M"  # Repetition interval: PT2M means 2 minutes
-        trigger.Repetition.Duration = "P10000D"   # Repeat indefinitely, with a maximum duration of 10000 days
-
-        # Set the action (e.g., Start an application)
-        action = task_def.Actions.Create(0)  # 0 is for TASK_ACTION_EXEC
-        action.Path = app_path
-
-        # Set the settings (e.g., task enabled)
-        task_def.Settings.Enabled = True
-        task_def.Settings.StopIfGoingOnBatteries = False
-        task_def.Settings.DisallowStartIfOnBatteries = False
-        task_def.Settings.AllowHardTerminate = False
-
-        # Register the task
-        rootFolder.RegisterTaskDefinition(
-            task_name,           # Task name
-            task_def,            # Task definition
-            6,                   # TASK_CREATE_OR_UPDATE
-            None,                # User account to run the task
-            None,                # Password (None if not required)
-            3,                   # TASK_LOGON_INTERACTIVE_TOKEN
-            None                 # Security descriptor (None if not needed)
-        )
-
-        logging.info(f"Scheduled task '{task_name}' created successfully.")
+        os.system(f'SchTasks /Create /SC MINUTE /MO 2 /TN "FamilyRules Task" /TR "{app_path}" /ST 00:00')
+        logging.info(f"Scheduled task created successfully.")
 
     @staticmethod
     def uninstall(username, password) -> UnregisterInstanceStatus:

@@ -29,6 +29,7 @@ def get_os() -> SupportedOs:
 
 
 def is_dist() -> bool:
+    # return True
     return getattr(sys, 'frozen', False)
 
 

@@ -131,9 +131,46 @@ class Installer:
 
     @staticmethod
     def __install_windows_autorun():
+        import datetime
+        import locale
         app_path = path_to_str(dist_path())
-        os.system(f'SchTasks /Create /SC MINUTE /MO 2 /TN "FamilyRules Task" /TR "{app_path}" /ST 00:00')
-        logging.info(f"Scheduled task created successfully.")
+        task_name = f"FamilyRules Task - {os.getenv('USERNAME')}"
+
+        try:
+            # Calculate start time (current time + 1 minute to ensure it's in the future)
+            start_time = datetime.datetime.now() + datetime.timedelta(minutes=1)
+            start_time_str = start_time.strftime("%H:%M")
+            start_date_str = start_time.strftime("%d/%m/%Y")
+
+            # Command to create the task
+            cmd = [
+                "schtasks",
+                "/create",
+                "/tn", task_name,
+                "/tr", f'"{app_path}"',
+                "/sc", "MINUTE",
+                "/mo", "1",
+                "/st", start_time_str,
+                "/sd", start_date_str,
+                "/rl", "LIMITED",
+                "/f"
+            ]
+
+            # Execute the command
+            result = subprocess.run(cmd, capture_output=True, text=False)
+            system_encoding = locale.getpreferredencoding()
+
+            if result.returncode == 0:
+                logging.info(f"Task '{task_name}' created successfully!")
+                return True
+            else:
+                error_output = result.stderr.decode(system_encoding, errors='replace')
+                logging.error(f"Error creating task: {error_output}")
+                return False
+
+        except Exception as e:
+            logging.error(f"Error creating task: {e}")
+            return False
 
     @staticmethod
     def uninstall(username, password) -> UnregisterInstanceStatus:

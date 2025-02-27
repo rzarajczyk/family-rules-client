@@ -59,7 +59,8 @@ class Installer:
             status = response_json['status']
             match response_json['status']:
                 case 'SUCCESS':
-                    return RegisterInstanceResponse(RegisterInstanceStatus.OK, token=response_json['token'], instance_id=response_json['instanceId'])
+                    return RegisterInstanceResponse(RegisterInstanceStatus.OK, token=response_json['token'],
+                                                    instance_id=response_json['instanceId'])
                 case 'INVALID_PASSWORD':
                     return RegisterInstanceResponse(RegisterInstanceStatus.INVALID_PASSWORD)
                 case 'INSTANCE_ALREADY_EXISTS':
@@ -132,36 +133,47 @@ class Installer:
     @staticmethod
     def __install_windows_autorun():
         import datetime
-        import locale
         app_path = path_to_str(dist_path())
-        task_name = f"FamilyRules Task - {os.getenv('USERNAME')}"
 
+        near_future = datetime.datetime.now() + datetime.timedelta(minutes=2)
+        near_future_time_str = near_future.strftime("%H:%M")
+        near_future_date_str = near_future.strftime("%d/%m/%Y")
+
+        # Command to create the task
+        Installer.__create_windows_task([
+            "schtasks",
+            "/create",
+            "/tn", f"FamilyRules Task - {os.getenv('USERNAME')}",
+            "/tr", f'"{app_path}"',
+            "/sc", "MINUTE",
+            "/mo", "1",
+            "/st", near_future_time_str,
+            "/sd", near_future_date_str,
+            "/rl", "LIMITED",
+            "/f"
+        ])
+
+        Installer.__create_windows_task([
+            "schtasks",
+            "/create",
+            "/tn", "FamilyRules Logon Task",
+            "/tr", f'"{app_path}"',
+            "/sc", "ONLOGON",
+            "/rl", "LIMITED",
+            "/f"
+        ])
+
+    @staticmethod
+    def __create_windows_task(cmd):
         try:
-            # Calculate start time (current time + 1 minute to ensure it's in the future)
-            start_time = datetime.datetime.now() + datetime.timedelta(minutes=1)
-            start_time_str = start_time.strftime("%H:%M")
-            start_date_str = start_time.strftime("%d/%m/%Y")
-
-            # Command to create the task
-            cmd = [
-                "schtasks",
-                "/create",
-                "/tn", task_name,
-                "/tr", f'"{app_path}"',
-                "/sc", "MINUTE",
-                "/mo", "1",
-                "/st", start_time_str,
-                "/sd", start_date_str,
-                "/rl", "LIMITED",
-                "/f"
-            ]
+            import locale
 
             # Execute the command
             result = subprocess.run(cmd, capture_output=True, text=False)
             system_encoding = locale.getpreferredencoding()
 
             if result.returncode == 0:
-                logging.info(f"Task '{task_name}' created successfully!")
+                logging.info(f"Task created successfully!")
                 return True
             else:
                 error_output = result.stderr.decode(system_encoding, errors='replace')

@@ -133,17 +133,26 @@ class Installer:
     @staticmethod
     def __install_windows_autorun():
         import datetime
-        app_path = path_to_str(dist_path())
+        app_path = str(dist_path().absolute())
+
+        import winreg as reg
+        key_path = r"SOFTWARE\Microsoft\Windows\CurrentVersion\Run"
+
+        try:
+            key = reg.OpenKey(reg.HKEY_CURRENT_USER, key_path, 0, reg.KEY_SET_VALUE)
+            reg.SetValueEx(key, "FamilyRules", 0, reg.REG_SZ, f"\"{app_path}\"")
+            reg.CloseKey(key)
+        except WindowsError as e:
+            logging.error(f"Error executing schtasks: {e}")
 
         near_future = datetime.datetime.now() + datetime.timedelta(minutes=2)
         near_future_time_str = near_future.strftime("%H:%M")
         near_future_date_str = near_future.strftime("%d/%m/%Y")
 
-        # Command to create the task
-        Installer.__create_windows_task([
+        Installer.__windows_schtasks([
             "schtasks",
             "/create",
-            "/tn", f"FamilyRules Task - {os.getenv('USERNAME')}",
+            "/tn", f"FamilyRules_{os.getenv('USERNAME')}",
             "/tr", f'"{app_path}"',
             "/sc", "MINUTE",
             "/mo", "1",
@@ -153,35 +162,26 @@ class Installer:
             "/f"
         ])
 
-        Installer.__create_windows_task([
-            "schtasks",
-            "/create",
-            "/tn", "FamilyRules Logon Task",
-            "/tr", f'"{app_path}"',
-            "/sc", "ONLOGON",
-            "/rl", "LIMITED",
-            "/f"
-        ])
-
     @staticmethod
-    def __create_windows_task(cmd):
+    def __windows_schtasks(cmd):
         try:
             import locale
+            logging.info("Running schtasks... " + " ".join(cmd))
 
             # Execute the command
             result = subprocess.run(cmd, capture_output=True, text=False)
             system_encoding = locale.getpreferredencoding()
 
             if result.returncode == 0:
-                logging.info(f"Task created successfully!")
+                logging.info(f"Executed schtasks successfully!")
                 return True
             else:
                 error_output = result.stderr.decode(system_encoding, errors='replace')
-                logging.error(f"Error creating task: {error_output}")
+                logging.error(f"Error executing schtasks: {error_output}")
                 return False
 
         except Exception as e:
-            logging.error(f"Error creating task: {e}")
+            logging.error(f"Error executing schtasks: {e}")
             return False
 
     @staticmethod
@@ -209,13 +209,25 @@ class Installer:
                     logging.error(
                         f"'launchctl unload' exited with code {process.returncode}, output: {stdout}")
             case SupportedOs.WINDOWS:
-                task_name = "FamilyRules Task"
+                task_name = f"FamilyRules_{os.getenv('USERNAME')}"
                 result = subprocess.run(['schtasks', '/Delete', '/TN', task_name, '/F'],
                                         stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
                 if result.returncode == 0:
                     logging.info(f"Task '{task_name}' deleted successfully.")
                 else:
                     logging.error(f"Failed to delete task '{task_name}'. Error: {result.stderr}")
+
+                key_path = r"SOFTWARE\Microsoft\Windows\CurrentVersion\Run"
+
+                import winreg as reg
+
+                try:
+                    key = reg.OpenKey(reg.HKEY_CURRENT_USER, key_path, 0, reg.KEY_SET_VALUE)
+                    reg.DeleteValue(key, "FamilyRules")
+                    reg.CloseKey(key)
+                    return True
+                except WindowsError:
+                    return False
             case _:
                 pass
 

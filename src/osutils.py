@@ -29,8 +29,8 @@ def get_os() -> SupportedOs:
 
 
 def is_dist() -> bool:
-    # return True
-    return getattr(sys, 'frozen', False)
+    return True
+    # return getattr(sys, 'frozen', False)
 
 
 def dist_path() -> Path:
@@ -40,9 +40,10 @@ def dist_path() -> Path:
                 return Basedir.get().parent / "dist" / "FamilyRules.app"
             return Path(Basedir.get_str().removesuffix("/Contents/Frameworks"))
         case SupportedOs.WINDOWS:
-            if not is_dist():
-                return Basedir.get().parent / "dist" / "FamilyRules.exe"
-            return Path(sys.executable)
+            return Path("C:\\Program Files\\Family Rules\\FamilyRules.exe")
+            # if not is_dist():
+            #     return Basedir.get().parent / "dist" / "FamilyRules.exe"
+            # return Path(sys.executable)
         case _:
             raise Exception("Unsupported operating system")
 

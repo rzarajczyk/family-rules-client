@@ -40,15 +40,16 @@ def show_on_all_desktops(window):
 
 
 def set_grayscale(on: bool):
-    match get_os():
-        case SupportedOs.MAC_OS:
-            lib = cdll.LoadLibrary("/System/Library/PrivateFrameworks/UniversalAccess.framework/UniversalAccess")
-            lib.UAGrayscaleSetEnabled(on)
-        case SupportedOs.WINDOWS:
-            if is_windows_grayscale_enabled() != on:
-                pyautogui.hotkey('win', 'ctrl', 'c')
-        case _:
-            raise Exception("Unsupported OS")
+    pass
+    # match get_os():
+    #     case SupportedOs.MAC_OS:
+    #         lib = cdll.LoadLibrary("/System/Library/PrivateFrameworks/UniversalAccess.framework/UniversalAccess")
+    #         lib.UAGrayscaleSetEnabled(on)
+    #     case SupportedOs.WINDOWS:
+    #         if is_windows_grayscale_enabled() != on:
+    #             pyautogui.hotkey('win', 'ctrl', 'c')
+    #     case _:
+    #         raise Exception("Unsupported OS")
 
 
 def is_windows_grayscale_enabled():

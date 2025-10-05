@@ -17,7 +17,8 @@ from gen.MainWindow import Ui_MainWindow
 from gui_block import BlockScreenWindow
 from gui_countdown import CountDownWindow
 from gui_settings import SettingsWindow
-from osutils import is_dist
+from osutils import is_dist, get_os
+from src.osutils import SupportedOs
 
 
 class MainWindow(QMainWindow):
@@ -55,8 +56,7 @@ class InitialSetupWorker(QThread):
     def run(self):
         response = Installer.install(self.server, self.username, self.password, self.instance_name)
         if response.status == RegisterInstanceStatus.OK:
-            Installer.save_settings(self.server, self.username, response.instance_id, self.instance_name,
-                                    response.token)
+            Installer.save_settings(self.server, self.username, response.instance_id, self.instance_name, response.token)
             Installer.install_autorun()
             self.result_ready.emit([True, ""])
         else:
@@ -81,14 +81,15 @@ class InitialSetupWorker(QThread):
 class InitialSetup(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.layout().setSizeConstraint(QLayout.SizeConstraint.SetFixedSize)
         self.ui = Ui_InitialSetup()
         self.ui.setupUi(self)
+        # Ensure the window maintains its fixed 800px width
+        self.setFixedSize(800, 322)
         self.ui.progressBar.setHidden(True)
         self.ui.installButton.clicked.connect(self.install)
 
     def install(self):
-        self.ui.progressBar.show()
+        self.ui.progressBar.setHidden(False)
         self.ui.installButton.setDisabled(True)
         self.ui.serverInput.setDisabled(True)
         self.ui.usernameInput.setDisabled(True)
@@ -109,7 +110,15 @@ class InitialSetup(QMainWindow):
         message = result[1]
         if success:
             msg_box.setWindowTitle("Instalacja zakończona")
-            msg_box.setText(f"Instalacja zakończona. Uruchom aplikację ponownie.")
+            text = "Instalacja zakończona. "
+            match get_os():
+                case SupportedOs.MAC_OS:
+                    text += " Aplikcja zostanie automatycznie uruchomiona ponownie."
+                case SupportedOs.WINDOWS:
+                    text += " Uruchom aplikację ponownie."
+                case _:
+                    raise Exception("Unsupported operating system")
+            msg_box.setText(text)
             msg_box.setIcon(QMessageBox.Icon.Information)
             msg_box.setStandardButtons(QMessageBox.StandardButton.Ok)
             ok_button = msg_box.button(QMessageBox.StandardButton.Ok)

@@ -20,11 +20,13 @@ def app_version():
 
 
 def get_os() -> SupportedOs:
-    if "windows" in platform.platform().lower():
+    current_platform = platform.platform().lower()
+    if "windows" in current_platform:
         return SupportedOs.WINDOWS
-    elif os.uname().sysname == 'Darwin':  ## TODO migrate to pltform
+    elif "macos" in current_platform:
         return SupportedOs.MAC_OS
     else:
+        logging.error(f"Unsupported platform: {current_platform}")
         return SupportedOs.UNSUPPORTED
 
 

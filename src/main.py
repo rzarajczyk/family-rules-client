@@ -15,7 +15,7 @@ from guiutils import set_grayscale
 from uptime import PsUptime
 
 TICK_INTERVAL_SECONDS = 5
-REPORT_INTERVALS_TICK = 2
+REPORT_INTERVALS_TICK = 4
 DEBUG_HTTP_REQUESTS = False
 
 Basedir.init(os.path.dirname(__file__))

@@ -23,8 +23,8 @@ class Ui_InitialSetup(object):
     def setupUi(self, InitialSetup):
         if not InitialSetup.objectName():
             InitialSetup.setObjectName(u"InitialSetup")
-        InitialSetup.resize(425, 330)
-        sizePolicy = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
+        InitialSetup.resize(800, 322)
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(InitialSetup.sizePolicy().hasHeightForWidth())
@@ -35,11 +35,19 @@ class Ui_InitialSetup(object):
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.label = QLabel(self.centralwidget)
         self.label.setObjectName(u"label")
+        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
+        sizePolicy1.setHorizontalStretch(0)
+        sizePolicy1.setVerticalStretch(0)
+        sizePolicy1.setHeightForWidth(self.label.sizePolicy().hasHeightForWidth())
+        self.label.setSizePolicy(sizePolicy1)
+        self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.verticalLayout.addWidget(self.label)
 
         self.groupBox = QGroupBox(self.centralwidget)
         self.groupBox.setObjectName(u"groupBox")
+        sizePolicy1.setHeightForWidth(self.groupBox.sizePolicy().hasHeightForWidth())
+        self.groupBox.setSizePolicy(sizePolicy1)
         self.gridLayout = QGridLayout(self.groupBox)
         self.gridLayout.setObjectName(u"gridLayout")
         self.label_2 = QLabel(self.groupBox)
@@ -78,6 +86,8 @@ class Ui_InitialSetup(object):
 
         self.groupBox_2 = QGroupBox(self.centralwidget)
         self.groupBox_2.setObjectName(u"groupBox_2")
+        sizePolicy1.setHeightForWidth(self.groupBox_2.sizePolicy().hasHeightForWidth())
+        self.groupBox_2.setSizePolicy(sizePolicy1)
         self.gridLayout_2 = QGridLayout(self.groupBox_2)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
         self.instanceName = QLineEdit(self.groupBox_2)
@@ -115,13 +125,14 @@ class Ui_InitialSetup(object):
 
     def retranslateUi(self, InitialSetup):
         InitialSetup.setWindowTitle(QCoreApplication.translate("InitialSetup", u"Family Rules", None))
-        self.label.setText(QCoreApplication.translate("InitialSetup", u"Instalacja Family Rules", None))
+        self.label.setText(QCoreApplication.translate("InitialSetup", u"Instalacja FamilyRules", None))
         self.groupBox.setTitle(QCoreApplication.translate("InitialSetup", u"Dane serwera", None))
-        self.label_2.setText(QCoreApplication.translate("InitialSetup", u"Adres URL Servera:", None))
+        self.label_2.setText(QCoreApplication.translate("InitialSetup", u"Adres URL Serwera:", None))
+        self.serverInput.setText(QCoreApplication.translate("InitialSetup", u"https://familyrules.org", None))
         self.label_3.setText(QCoreApplication.translate("InitialSetup", u"Nazwa u\u017cytownika:", None))
         self.label_4.setText(QCoreApplication.translate("InitialSetup", u"Has\u0142o:", None))
         self.groupBox_2.setTitle(QCoreApplication.translate("InitialSetup", u"Dane tego komputera", None))
-        self.label_7.setText(QCoreApplication.translate("InitialSetup", u"Nazwa tego koputera:", None))
+        self.label_7.setText(QCoreApplication.translate("InitialSetup", u"Nazwij ten komputer:", None))
         self.installButton.setText(QCoreApplication.translate("InitialSetup", u"Instaluj!", None))
     # retranslateUi
 

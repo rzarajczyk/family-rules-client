@@ -58,6 +58,13 @@ class Ui_MainWindow(object):
 
         self.gridLayout.addItem(self.horizontalSpacer, 2, 1, 1, 1)
 
+        self.label_2 = QLabel(self.centralwidget)
+        self.label_2.setObjectName(u"label_2")
+        self.label_2.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.label_2.setTextFormat(Qt.TextFormat.MarkdownText)
+
+        self.gridLayout.addWidget(self.label_2, 2, 0, 1, 1)
+
 
         self.verticalLayout.addLayout(self.gridLayout)
 
@@ -74,5 +81,6 @@ class Ui_MainWindow(object):
         self.screen_time_label.setText(QCoreApplication.translate("MainWindow", u"0", None))
         self.label.setText(QCoreApplication.translate("MainWindow", u"Czas przed ekranem", None))
         self.ok_button.setText(QCoreApplication.translate("MainWindow", u"OK", None))
+        self.label_2.setText(QCoreApplication.translate("MainWindow", u"[FamilyRules](https://familyrules.org)", None))
     # retranslateUi
 

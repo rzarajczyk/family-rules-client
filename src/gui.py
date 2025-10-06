@@ -1,5 +1,6 @@
 import os
 import sys
+import webbrowser
 from datetime import timedelta
 
 from PySide6 import QtWidgets, QtCore, QtGui
@@ -26,6 +27,13 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        
+        # Connect the FamilyRules label click to open browser
+        self.ui.label_2.linkActivated.connect(self.open_family_rules_website)
+
+    def open_family_rules_website(self, link):
+        """Open the FamilyRules website in the default browser"""
+        webbrowser.open(link)
 
     def update_screen_time(self, time: timedelta):
         self.ui.screen_time_label.setText(str(time))

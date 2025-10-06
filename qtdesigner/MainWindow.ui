@@ -63,6 +63,19 @@
         </property>
        </spacer>
       </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_2">
+        <property name="cursor">
+         <cursorShape>PointingHandCursor</cursorShape>
+        </property>
+        <property name="text">
+         <string>[FamilyRules](https://familyrules.org)</string>
+        </property>
+        <property name="textFormat">
+         <enum>Qt::TextFormat::MarkdownText</enum>
+        </property>
+       </widget>
+      </item>
      </layout>
     </item>
    </layout>

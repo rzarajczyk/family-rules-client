@@ -185,8 +185,12 @@ class Gui:
         def show_main_window():
             if QtWidgets.QApplication.keyboardModifiers() == QtCore.Qt.KeyboardModifier.ShiftModifier:
                 self.settings_window.show()
+                self.settings_window.raise_()
+                self.settings_window.activateWindow()
             else:
                 self.main_window.show()
+                self.main_window.raise_()
+                self.main_window.activateWindow()
 
         add_menu_item("Show", show_main_window)
         if not is_dist():

@@ -37,7 +37,7 @@ class Ui_BlockScreen(object):
     # setupUi
 
     def retranslateUi(self, BlockScreen):
-        BlockScreen.setWindowTitle(QCoreApplication.translate("BlockScreen", u"Ekran zablokowany", None))
+        BlockScreen.setWindowTitle(QCoreApplication.translate("BlockScreen", u"Screen blocked", None))
         self.label.setText(QCoreApplication.translate("BlockScreen", u"<b>test</b>", None))
     # retranslateUi
 

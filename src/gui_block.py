@@ -17,6 +17,9 @@ class BlockScreenWindow(QWidget):
         self.ui.setupUi(self)
 
         self.ui.label.setPixmap(QPixmap(os.path.join(Basedir.get_str(), "resources", "lockscreen.png")))
+        
+        # Retranslate UI after setup
+        self.ui.retranslateUi(self)
 
         self.move(0, 0)
         screen_geometry = QApplication.primaryScreen().geometry()

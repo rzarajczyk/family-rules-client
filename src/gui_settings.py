@@ -7,6 +7,7 @@ from Installer import Installer, UnregisterInstanceStatus
 from gen.ParentConfirm import Ui_ParentConfirm
 from gen.SettingsWindow import Ui_SettingsWindow
 from osutils import app_version
+from translations import tr
 
 
 class CheckPasswordWorker(QThread):
@@ -27,6 +28,9 @@ class ParentConfirm(QDialog):
         super().__init__()
         self.ui = Ui_ParentConfirm()
         self.ui.setupUi(self)
+        
+        # Retranslate UI after setup
+        self.ui.retranslateUi(self)
 
 
 class SettingsWindow(QMainWindow):
@@ -40,6 +44,9 @@ class SettingsWindow(QMainWindow):
         self.ui.progressBar.setHidden(True)
         self.ui.versionLabel.setText(app_version())
         
+        # Retranslate UI after setup
+        self.ui.retranslateUi(self)
+        
     def check_password(self):
         self.ui.progressBar.setHidden(False)
         username = self.parent_confirm.ui.username.text()
@@ -51,8 +58,8 @@ class SettingsWindow(QMainWindow):
     def uninstall_finished(self, status):
         if status == UnregisterInstanceStatus.OK:
             msg_box = QMessageBox()
-            msg_box.setWindowTitle("Uninstall finished")
-            msg_box.setText(f"Uninstall finished.")
+            msg_box.setWindowTitle(tr("Uninstall finished"))
+            msg_box.setText(tr("Uninstall finished."))
             msg_box.setIcon(QMessageBox.Icon.Information)
             msg_box.setStandardButtons(QMessageBox.StandardButton.Ok)
             ok_button = msg_box.button(QMessageBox.StandardButton.Ok)
@@ -61,8 +68,8 @@ class SettingsWindow(QMainWindow):
         else:
             self.ui.progressBar.setHidden(True)
             msg_box = QMessageBox()
-            msg_box.setWindowTitle("Uninstall failed")
-            msg_box.setText(f"Uninstall failed\n\n{status}")
+            msg_box.setWindowTitle(tr("Uninstall failed"))
+            msg_box.setText(f"{tr('Uninstall failed')}\n\n{status}")
             msg_box.setIcon(QMessageBox.Icon.Critical)
             msg_box.setStandardButtons(QMessageBox.StandardButton.Ok)
             ok_button = msg_box.button(QMessageBox.StandardButton.Ok)

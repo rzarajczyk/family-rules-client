@@ -77,9 +77,9 @@ class Ui_MainWindow(object):
     # setupUi
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"Czas przed ekranem", None))
+        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"Screen Time", None))
         self.screen_time_label.setText(QCoreApplication.translate("MainWindow", u"0", None))
-        self.label.setText(QCoreApplication.translate("MainWindow", u"Czas przed ekranem", None))
+        self.label.setText(QCoreApplication.translate("MainWindow", u"Screen Time", None))
         self.ok_button.setText(QCoreApplication.translate("MainWindow", u"OK", None))
         self.label_2.setText(QCoreApplication.translate("MainWindow", u"[FamilyRules](https://familyrules.org)", None))
     # retranslateUi

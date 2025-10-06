@@ -18,8 +18,8 @@ from gen.MainWindow import Ui_MainWindow
 from gui_block import BlockScreenWindow
 from gui_countdown import CountDownWindow
 from gui_settings import SettingsWindow
-from osutils import is_dist, get_os
-from src.osutils import SupportedOs
+from osutils import is_dist, get_os, SupportedOs
+from translations import tr
 
 
 class MainWindow(QMainWindow):
@@ -30,6 +30,9 @@ class MainWindow(QMainWindow):
         
         # Connect the FamilyRules label click to open browser
         self.ui.label_2.linkActivated.connect(self.open_family_rules_website)
+        
+        # Retranslate UI after setup
+        self.ui.retranslateUi(self)
 
     def open_family_rules_website(self, link):
         """Open the FamilyRules website in the default browser"""
@@ -39,7 +42,7 @@ class MainWindow(QMainWindow):
         self.ui.screen_time_label.setText(str(time))
 
     def update_applications_usage(self, apps: dict[str, timedelta]):
-        self.ui.table.setHorizontalHeaderLabels(["Aplikacja", "Czas działania"])
+        self.ui.table.setHorizontalHeaderLabels([tr("Application"), tr("Runtime")])
         self.ui.table.setRowCount(len(apps))
         self.ui.table.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeMode.Stretch)
         self.ui.table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.ResizeToContents)
@@ -70,17 +73,17 @@ class InitialSetupWorker(QThread):
         else:
             match response.status:
                 case RegisterInstanceStatus.ILLEGAL_INSTANCE_NAME:
-                    message = "Nieprawidłowa nazwa tego komputera"
+                    message = tr("Invalid computer name")
                 case RegisterInstanceStatus.INSTANCE_ALREADY_EXISTS:
-                    message = "Komputer o takiej nazwie już został zarejestrowany"
+                    message = tr("Computer with this name has already been registered")
                 case RegisterInstanceStatus.HOST_NOT_REACHABLE:
-                    message = "Brak połączenia z serwerem"
+                    message = tr("No connection to server")
                 case RegisterInstanceStatus.INVALID_PASSWORD:
-                    message = "Nieprawidłowa nazwa użytkownika lub hasło"
+                    message = tr("Invalid username or password")
                 case RegisterInstanceStatus.SERVER_ERROR:
-                    message = "Serwer zwrócił błąd"
+                    message = tr("Server returned an error")
                 case _:
-                    message = f"Wykryto nieznany błąd: {response.status}"
+                    message = f"{tr('Unknown error detected:')} {response.status}"
             if response.message is not None:
                 message += f"\n\n{message}"
             self.result_ready.emit([False, message])
@@ -95,6 +98,9 @@ class InitialSetup(QMainWindow):
         self.setFixedSize(800, 322)
         self.ui.progressBar.setHidden(True)
         self.ui.installButton.clicked.connect(self.install)
+        
+        # Retranslate UI after setup
+        self.ui.retranslateUi(self)
 
     def install(self):
         self.ui.progressBar.setHidden(False)
@@ -117,13 +123,13 @@ class InitialSetup(QMainWindow):
         success = result[0]
         message = result[1]
         if success:
-            msg_box.setWindowTitle("Instalacja zakończona")
-            text = "Instalacja zakończona. "
+            msg_box.setWindowTitle(tr("Installation completed"))
+            text = tr("Installation completed. ")
             match get_os():
                 case SupportedOs.MAC_OS:
-                    text += " Aplikcja zostanie automatycznie uruchomiona ponownie."
+                    text += tr("Installation completed. The application will be automatically restarted.")
                 case SupportedOs.WINDOWS:
-                    text += " Uruchom aplikację ponownie."
+                    text += tr("Installation completed. Restart the application.")
                 case _:
                     raise Exception("Unsupported operating system")
             msg_box.setText(text)
@@ -132,8 +138,8 @@ class InitialSetup(QMainWindow):
             ok_button = msg_box.button(QMessageBox.StandardButton.Ok)
             ok_button.clicked.connect(self.finish_close)
         else:
-            msg_box.setWindowTitle("Niepowodzenie")
-            msg_box.setText(f"Sprawdź poprawność danych i spróbuj ponownie.\n\n" + message)
+            msg_box.setWindowTitle(tr("Failure"))
+            msg_box.setText(f"{tr('Check the data correctness and try again.')}\n\n" + message)
             msg_box.setIcon(QMessageBox.Icon.Critical)
             msg_box.setStandardButtons(QMessageBox.StandardButton.Ok)
             ok_button = msg_box.button(QMessageBox.StandardButton.Ok)
@@ -155,7 +161,9 @@ class InitialSetup(QMainWindow):
 
 class Gui:
     def __init__(self, argv):
-        self.app = QApplication(argv)
+        self.app = QApplication.instance()
+        if self.app is None:
+            self.app = QApplication(argv)
         self.dont_gc = []
         self.tick_count: int = 0
 
@@ -200,9 +208,9 @@ class Gui:
                 self.main_window.raise_()
                 self.main_window.activateWindow()
 
-        add_menu_item("Show", show_main_window)
+        add_menu_item(tr("Show"), show_main_window)
         if not is_dist():
-            add_menu_item("Quit", lambda: sys.exit(0))
+            add_menu_item(tr("Quit"), lambda: sys.exit(0))
 
         def menu_triggered(reason):
             match reason:

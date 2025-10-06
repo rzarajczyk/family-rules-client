@@ -17,7 +17,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>Family Rules</string>
+   <string>Family Rules Installation</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -30,7 +30,7 @@
        </sizepolicy>
       </property>
       <property name="text">
-       <string>Instalacja FamilyRules</string>
+       <string>Family Rules Installation</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignmentFlag::AlignCenter</set>
@@ -46,13 +46,13 @@
        </sizepolicy>
       </property>
       <property name="title">
-       <string>Dane serwera</string>
+       <string>Server Data</string>
       </property>
       <layout class="QGridLayout" name="gridLayout">
        <item row="0" column="0">
         <widget class="QLabel" name="label_2">
          <property name="text">
-          <string>Adres URL Serwera:</string>
+          <string>Server URL:</string>
          </property>
         </widget>
        </item>
@@ -66,7 +66,7 @@
        <item row="1" column="0">
         <widget class="QLabel" name="label_3">
          <property name="text">
-          <string>Nazwa użytownika:</string>
+          <string>Username:</string>
          </property>
         </widget>
        </item>
@@ -76,7 +76,7 @@
        <item row="2" column="0">
         <widget class="QLabel" name="label_4">
          <property name="text">
-          <string>Hasło:</string>
+          <string>Password:</string>
          </property>
         </widget>
        </item>
@@ -99,7 +99,7 @@
        </sizepolicy>
       </property>
       <property name="title">
-       <string>Dane tego komputera</string>
+       <string>This Computer Data</string>
       </property>
       <layout class="QGridLayout" name="gridLayout_2">
        <item row="0" column="1">
@@ -108,7 +108,7 @@
        <item row="0" column="0">
         <widget class="QLabel" name="label_7">
          <property name="text">
-          <string>Nazwij ten komputer:</string>
+          <string>Name this computer:</string>
          </property>
         </widget>
        </item>
@@ -131,7 +131,7 @@
     <item>
      <widget class="QPushButton" name="installButton">
       <property name="text">
-       <string>Instaluj!</string>
+       <string>Install!</string>
       </property>
      </widget>
     </item>

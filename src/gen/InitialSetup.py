@@ -124,15 +124,15 @@ class Ui_InitialSetup(object):
     # setupUi
 
     def retranslateUi(self, InitialSetup):
-        InitialSetup.setWindowTitle(QCoreApplication.translate("InitialSetup", u"Family Rules", None))
-        self.label.setText(QCoreApplication.translate("InitialSetup", u"Instalacja FamilyRules", None))
-        self.groupBox.setTitle(QCoreApplication.translate("InitialSetup", u"Dane serwera", None))
-        self.label_2.setText(QCoreApplication.translate("InitialSetup", u"Adres URL Serwera:", None))
+        InitialSetup.setWindowTitle(QCoreApplication.translate("InitialSetup", u"Family Rules Installation", None))
+        self.label.setText(QCoreApplication.translate("InitialSetup", u"Family Rules Installation", None))
+        self.groupBox.setTitle(QCoreApplication.translate("InitialSetup", u"Server Data", None))
+        self.label_2.setText(QCoreApplication.translate("InitialSetup", u"Server URL:", None))
         self.serverInput.setText(QCoreApplication.translate("InitialSetup", u"https://familyrules.org", None))
-        self.label_3.setText(QCoreApplication.translate("InitialSetup", u"Nazwa u\u017cytownika:", None))
-        self.label_4.setText(QCoreApplication.translate("InitialSetup", u"Has\u0142o:", None))
-        self.groupBox_2.setTitle(QCoreApplication.translate("InitialSetup", u"Dane tego komputera", None))
-        self.label_7.setText(QCoreApplication.translate("InitialSetup", u"Nazwij ten komputer:", None))
-        self.installButton.setText(QCoreApplication.translate("InitialSetup", u"Instaluj!", None))
+        self.label_3.setText(QCoreApplication.translate("InitialSetup", u"Username:", None))
+        self.label_4.setText(QCoreApplication.translate("InitialSetup", u"Password:", None))
+        self.groupBox_2.setTitle(QCoreApplication.translate("InitialSetup", u"This Computer Data", None))
+        self.label_7.setText(QCoreApplication.translate("InitialSetup", u"Name this computer:", None))
+        self.installButton.setText(QCoreApplication.translate("InitialSetup", u"Install!", None))
     # retranslateUi
 

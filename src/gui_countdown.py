@@ -20,6 +20,10 @@ class CountDownWindow(QWidget):
         super().__init__()
         self.ui = Ui_CountDownWindow()
         self.ui.setupUi(self)
+        
+        # Retranslate UI after setup
+        self.ui.retranslateUi(self)
+        
         match get_os():
             case SupportedOs.MAC_OS:
                 self.setWindowFlags(

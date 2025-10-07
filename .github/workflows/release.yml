@@ -86,7 +86,7 @@ jobs:
           dir "dist\Family Rules"
 
       - name: Create Installer
-        uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
+        uses: Minionguyjpro/Inno-Setup-Action@v1.2.7
         with:
           path: windows-installer.iss
           options: /O+

@@ -7,7 +7,7 @@ a = Analysis(
     binaries=[],
     datas=[
         ('src/resources', 'resources'),
-        ('translations', 'translations')
+        ('src/gen/translation_files', 'translation_files')
     ],
     hiddenimports=[],
     hookspath=[],

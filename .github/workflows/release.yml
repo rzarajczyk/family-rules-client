@@ -9,9 +9,9 @@ jobs:
   build-mac-intel:
     runs-on: macos-13 # Intel-based
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
           cache: 'pip'
@@ -36,9 +36,9 @@ jobs:
   build-mac-m1:
     runs-on: macos-14 # Apple Silicon (M1/M2/M3)
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
           cache: 'pip'
@@ -63,9 +63,9 @@ jobs:
   build-windows:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
           cache: 'pip'
@@ -78,6 +78,8 @@ jobs:
       - name: List build output
         shell: cmd
         run: |
+          echo "Contents of this folder:"
+          dir
           echo "Contents of dist folder:"
           dir dist
           echo "Contents of dist\Family Rules folder:"
@@ -101,13 +103,13 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build-mac-intel, build-mac-m1, build-windows]
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: family-rules-setup-intel.dmg
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: family-rules-setup-m1.dmg
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: family-rules-setup.exe
       - run: ls

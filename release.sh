@@ -1,4 +1,8 @@
 #!/bin/bash
+
+# Configure git to remember credentials for 1 hour (3600 seconds)
+git config --global credential.helper 'cache --timeout=3600'
+
 UNCOMMITED_FILES=$(git status --porcelain=v1 2>/dev/null | wc -l)
 if [[ "$UNCOMMITED_FILES" -gt 0 ]]; then
   echo "Uncommited files detected. Please commit first!"

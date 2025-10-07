@@ -3,6 +3,10 @@
 # Configure git to remember credentials for 1 hour (3600 seconds)
 git config --global credential.helper 'cache --timeout=3600'
 
+# Start SSH agent and add SSH key to remember passphrase
+eval "$(ssh-agent -s)"
+ssh-add --apple-use-keychain ~/.ssh/id_rsa 2>/dev/null || ssh-add ~/.ssh/id_rsa 2>/dev/null
+
 UNCOMMITED_FILES=$(git status --porcelain=v1 2>/dev/null | wc -l)
 if [[ "$UNCOMMITED_FILES" -gt 0 ]]; then
   echo "Uncommited files detected. Please commit first!"

@@ -20,6 +20,24 @@ jobs:
 
       - run: bash build-mac-app.sh
 
+      - name: Import Apple Code Signing Certificate
+        uses: apple-actions/import-codesign-certs@v5
+        with:
+          p12-file-base64: ${{ secrets.MACOS_CERTIFICATE_P12_BASE64 }}
+          p12-password: ${{ secrets.MACOS_CERTIFICATE_P12_PASSWORD }}
+          # Recommended: create a separate password for the new keychain
+          keychain-password: 'buildkeychainpassword'
+
+      - name: Code Sign Application
+        run: |
+          IDENTITY="Developer ID Application: Rafał Zarajczyk"
+          codesign --force --deep --options runtime --sign "${IDENTITY}" dist/FamilyRules.app
+
+      - name: Clean up temporary keychain
+        if: ${{ always() }}
+        run: |
+          security delete-keychain $RUNNER_TEMP/app-signing.keychain-db
+
       - uses: L-Super/create-dmg-actions@v1.0.3
         with:
           dmg_name: "family-rules-setup"

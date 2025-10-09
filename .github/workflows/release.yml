@@ -28,6 +28,18 @@ jobs:
           # Recommended: create a separate password for the new keychain
           keychain-password: 'buildkeychainpassword'
 
+      - name: Trust Certificate
+        run: |
+          # Trust the certificate by adding it to the keychain and setting trust settings
+          security set-key-partition-list -S apple-tool:,apple: -s -k 'buildkeychainpassword' $RUNNER_TEMP/app-signing.keychain-db
+          security set-keychain-settings -t 7200 -l $RUNNER_TEMP/app-signing.keychain-db
+          
+          # Find and trust the certificate
+          CERT_ID=$(security find-identity -v -p codesigning | grep "FamilyRules" | head -1 | awk '{print $2}')
+          if [ -n "$CERT_ID" ]; then
+            security add-trusted-cert -d -r trustRoot -k $RUNNER_TEMP/app-signing.keychain-db <<< "$(security find-certificate -c "FamilyRules" -p)"
+          fi
+
       - name: Code Sign Application
         run: |
           IDENTITY="FamilyRules"

@@ -30,7 +30,9 @@ jobs:
 
       - name: Code Sign Application
         run: |
-          IDENTITY="Developer ID Application: Rafał Zarajczyk"
+          IDENTITY="FamilyRules"
+          security find-identity -v -p codesigning
+          security find-identity -p codesigning
           codesign --force --deep --options runtime --sign "${IDENTITY}" dist/FamilyRules.app
 
       - name: Clean up temporary keychain

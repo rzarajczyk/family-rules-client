@@ -20,49 +20,59 @@ jobs:
 
       - run: bash build-mac-app.sh
 
-      - name: Code Signing
-        run: |
-          # Create a temporary keychain
-          KEYCHAIN_PATH="$RUNNER_TEMP/app-signing.keychain-db"
-          KEYCHAIN_PASSWORD="buildkeychainpassword"
-          
-          # Create the keychain
-          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
-          security default-keychain -s "$KEYCHAIN_PATH"
-          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
-          
-          # Set keychain settings to allow access
-          security set-keychain-settings -t 7200 -l "$KEYCHAIN_PATH"
-          security set-key-partition-list -S apple-tool:,apple: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
-          
-          # Import the certificate
-          echo "${{ secrets.MACOS_CERTIFICATE_P12_BASE64 }}" | base64 --decode > certificate.p12
-          security import certificate.p12 -k "$KEYCHAIN_PATH" -P "${{ secrets.MACOS_CERTIFICATE_P12_PASSWORD }}" -T /usr/bin/codesign
-          
-          # Trust the certificate
-          CERT_ID=$(security find-identity -v -p codesigning | grep "FamilyRules" | head -1 | awk '{print $2}')
-          if [ -n "$CERT_ID" ]; then
-            security add-trusted-cert -d -r trustRoot -k "$KEYCHAIN_PATH" <<< "$(security find-certificate -c "FamilyRules" -p)"
-          fi
-          
-          # Clean up the temporary certificate file
-          rm -f certificate.p12
-          
-          # List available identities for debugging
-          echo "Available code signing identities:"
-          security find-identity -v -p codesigning
-
-          IDENTITY="FamilyRules"
-          security find-identity -v -p codesigning
-          security find-identity -p codesigning
-          codesign --force --deep --options runtime --sign "${IDENTITY}" dist/FamilyRules.app
-
-          security delete-keychain $RUNNER_TEMP/app-signing.keychain-db
+#      - name: Code Signing
+#        run: |
+#          # Create a temporary keychain
+#          KEYCHAIN_PATH="$RUNNER_TEMP/app-signing.keychain-db"
+#          KEYCHAIN_PASSWORD="buildkeychainpassword"
+#
+#          # Create the keychain
+#          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+#          security default-keychain -s "$KEYCHAIN_PATH"
+#          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+#
+#          # Set keychain settings to allow access
+#          security set-keychain-settings -t 7200 -l "$KEYCHAIN_PATH"
+#          security set-key-partition-list -S apple-tool:,apple: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+#
+#          # Import the certificate
+#          echo "${{ secrets.MACOS_CERTIFICATE_P12_BASE64 }}" | base64 --decode > certificate.p12
+#          security import certificate.p12 -k "$KEYCHAIN_PATH" -P "${{ secrets.MACOS_CERTIFICATE_P12_PASSWORD }}" -T /usr/bin/codesign
+#
+#          # Trust the certificate
+#          CERT_ID=$(security find-identity -v -p codesigning | grep "FamilyRules" | head -1 | awk '{print $2}')
+#          if [ -n "$CERT_ID" ]; then
+#            security add-trusted-cert -d -r trustRoot -k "$KEYCHAIN_PATH" <<< "$(security find-certificate -c "FamilyRules" -p)"
+#          fi
+#
+#          # Clean up the temporary certificate file
+#          rm -f certificate.p12
+#
+#          # List available identities for debugging
+#          echo "Available code signing identities:"
+#          security find-identity -v -p codesigning
+#
+#          IDENTITY="FamilyRules"
+#          security find-identity -v -p codesigning
+#          security find-identity -p codesigning
+#          codesign --force --deep --options runtime --sign "${IDENTITY}" dist/FamilyRules.app
+#
+#          security delete-keychain $RUNNER_TEMP/app-signing.keychain-db
 
       - uses: L-Super/create-dmg-actions@v1.0.3
         with:
           dmg_name: "family-rules-setup"
           src_dir: "dist/FamilyRules.app"
+
+      - run: echo "${{ secrets.MACOS_CERTIFICATE_P12_BASE64 }}" | base64 --decode > certificate.p12
+
+      - uses: indygreg/apple-code-sign-action@v1
+        with:
+          input_path: "dist/FamilyRules.app"
+          p12_file: certificate.p12
+          p12_password: ${{ secrets.MACOS_CERTIFICATE_P12_PASSWORD }}
+
+      - run: rm -f certificate.p12
 
       - uses: actions/upload-artifact@v4
         with:

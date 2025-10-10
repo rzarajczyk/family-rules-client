@@ -25,17 +25,6 @@ jobs:
           dmg_name: "family-rules-setup"
           src_dir: "dist/FamilyRules.app"
 
-#       It doesn't work as expected
-#      - run: echo "${{ secrets.MACOS_CERTIFICATE_P12_BASE64 }}" | base64 --decode > certificate.p12
-#
-#      - uses: indygreg/apple-code-sign-action@v1
-#        with:
-#          input_path: "dist/FamilyRules.app"
-#          p12_file: certificate.p12
-#          p12_password: ${{ secrets.MACOS_CERTIFICATE_P12_PASSWORD }}
-#
-#      - run: rm -f certificate.p12
-
       - uses: actions/upload-artifact@v4
         with:
           name: family-rules-setup.dmg

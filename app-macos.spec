@@ -33,7 +33,7 @@ exe = EXE(
     disable_windowed_traceback=False,
     argv_emulation=False,
     target_arch='universal2',
-    codesign_identity='-',
+    codesign_identity=None,
     entitlements_file=None,
 )
 coll = COLLECT(
@@ -49,7 +49,7 @@ app = BUNDLE(
     coll,
     name='FamilyRules.app',
     icon='src/resources/icon.icns',
-    bundle_identifier='com.familyrules.client',
+    bundle_identifier=None,
     info_plist={
             'LSUIElement': True,
             'LSBackgroundOnly': False,

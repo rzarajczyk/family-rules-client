@@ -10,7 +10,6 @@ from UptimeDb import AbsoluteUsage
 from basedir import Basedir
 from global_exception_handler import global_exception_handler
 from gui import Gui
-from guiutils import set_grayscale
 from osutils import app_data, path_to_str
 from osutils import make_sure_only_one_instance_is_running
 from translations import initialize_translations
@@ -57,7 +56,6 @@ if __name__ == "__main__":
 
     logging.info("App started!")
     make_sure_only_one_instance_is_running()
-    set_grayscale(False)
 
     # Create QApplication first
     from PySide6.QtWidgets import QApplication

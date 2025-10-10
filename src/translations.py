@@ -103,7 +103,7 @@ def tr(text, context="MainWindow"):
         result = QCoreApplication.translate(context, text)
     else:
         result = QCoreApplication.translate("", text)
-    logging.info(f"Translated ≪{text}≫ as ≪{result}≫ in context {Context}")
+    logging.debug(f"Translated ≪{text}≫ as ≪{result}≫ in context {Context}")
     return result
 
 

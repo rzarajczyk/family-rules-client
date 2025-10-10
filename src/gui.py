@@ -19,6 +19,16 @@ from gui_block import BlockScreenWindow
 from gui_countdown import CountDownWindow
 from gui_settings import SettingsWindow
 from osutils import is_dist, get_os, SupportedOs
+from permissions import (
+    check_all_permissions, 
+    get_required_permissions, 
+    get_permission_name, 
+    get_permission_description,
+    get_permission_instructions,
+    open_permission_settings,
+    PermissionStatus,
+    PermissionType
+)
 from translations import tr
 
 
@@ -28,10 +38,11 @@ class MainWindow(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         
-        # Connect the FamilyRules label click to open browser
         self.ui.label_2.linkActivated.connect(self.open_family_rules_website)
+        self.ui.grantPermissionButton.clicked.connect(self.grant_permission)
         
-        # Retranslate UI after setup
+        self.check_permissions()
+        
         self.ui.retranslateUi(self)
 
     def open_family_rules_website(self, link):
@@ -52,6 +63,95 @@ class MainWindow(QMainWindow):
             item_duration = QTableWidgetItem(str(time))
             self.ui.table.setItem(i, 0, item_name)
             self.ui.table.setItem(i, 1, item_duration)
+
+    def check_permissions(self):
+        """Check permissions and show/hide the warning widget."""
+        permissions = check_all_permissions()
+        required_permissions = get_required_permissions()
+        
+        if not required_permissions:
+            # No permissions required for this system
+            self.ui.permissionWarningWidget.setVisible(False)
+            return
+        
+        # Check if all permissions are granted
+        all_granted = all(status == PermissionStatus.GRANTED for status in permissions.values())
+        
+        if all_granted:
+            # All permissions granted, hide warning
+            self.ui.permissionWarningLabel.setVisible(False)
+            self.ui.grantPermissionButton.setVisible(False)
+        else:
+            # Missing permissions, show warning
+            self.ui.permissionWarningLabel.setVisible(True)
+            self.ui.grantPermissionButton.setVisible(True)
+            # Update the warning text to be more specific
+            missing_permissions = []
+            for perm_type, status in permissions.items():
+                if status != PermissionStatus.GRANTED:
+                    missing_permissions.append(get_permission_name(perm_type))
+            
+            if missing_permissions:
+                warning_text = tr("Accessibility permission not granted")
+                self.ui.permissionWarningLabel.setText(warning_text)
+
+    def grant_permission(self):
+        """Attempt to grant the required permission."""
+        required_permissions = get_required_permissions()
+        permissions = check_all_permissions()
+        
+        # Find the first permission that's not granted
+        for perm_type in required_permissions:
+            if permissions.get(perm_type) != PermissionStatus.GRANTED:
+                self._handle_permission_grant(perm_type)
+                break
+
+    def _handle_permission_grant(self, permission_type: PermissionType):
+        """Handle granting a specific permission type."""
+        permission_name = get_permission_name(permission_type)
+        permission_description = get_permission_description(permission_type)
+        instructions = get_permission_instructions(permission_type)
+        
+        # Try to open system settings first
+        if open_permission_settings(permission_type):
+            msg_box = QMessageBox()
+            msg_box.setWindowTitle(tr("Permission Settings"))
+            msg_box.setText(tr("Opening system settings for {permission_name}...").format(permission_name=permission_name))
+            msg_box.setInformativeText(tr("Please grant the permission in the system settings that just opened, then click OK to restart the application."))
+            msg_box.setIcon(QMessageBox.Icon.Information)
+            msg_box.setStandardButtons(QMessageBox.StandardButton.Ok)
+            ok_button = msg_box.button(QMessageBox.StandardButton.Ok)
+            ok_button.setText(tr("OK - Restart app now"))
+            ok_button.clicked.connect(self.restart_application)
+            msg_box.exec()
+        else:
+            # Show manual instructions
+            msg_box = QMessageBox()
+            msg_box.setWindowTitle(tr("Grant {permission_name}").format(permission_name=permission_name))
+            msg_box.setText(tr("To grant {permission_name}:").format(permission_name=permission_name))
+            msg_box.setInformativeText(instructions)
+            msg_box.setDetailedText(permission_description)
+            msg_box.setIcon(QMessageBox.Icon.Information)
+            msg_box.setStandardButtons(QMessageBox.StandardButton.Ok)
+            msg_box.exec()
+
+    def restart_application(self):
+        """Restart the application."""
+        import subprocess
+        import sys
+        import os
+        
+        # Get the current script path
+        script_path = os.path.abspath(sys.argv[0])
+        
+        # Close the current application
+        QApplication.quit()
+        
+        # Start a new instance of the application
+        subprocess.Popen([sys.executable, script_path] + sys.argv[1:])
+        
+        # Exit the current process
+        sys.exit(0)
 
 
 class InitialSetupWorker(QThread):

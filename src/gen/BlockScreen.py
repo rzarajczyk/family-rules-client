@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'BlockScreen.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.7.2
+## Created by: Qt User Interface Compiler version 6.8.3
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -23,10 +23,15 @@ class Ui_BlockScreen(object):
         if not BlockScreen.objectName():
             BlockScreen.setObjectName(u"BlockScreen")
         BlockScreen.resize(701, 710)
+        BlockScreen.setAutoFillBackground(True)
+        BlockScreen.setStyleSheet(u"background-color: black;")
         self.gridLayout = QGridLayout(BlockScreen)
         self.gridLayout.setObjectName(u"gridLayout")
         self.label = QLabel(BlockScreen)
         self.label.setObjectName(u"label")
+        self.label.setContextMenuPolicy(Qt.NoContextMenu)
+        self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.label.setStyleSheet(u"color: white; font-size: 48px; font-weight: bold;")
 
         self.gridLayout.addWidget(self.label, 0, 0, 1, 1, Qt.AlignmentFlag.AlignHCenter|Qt.AlignmentFlag.AlignVCenter)
 
@@ -38,6 +43,6 @@ class Ui_BlockScreen(object):
 
     def retranslateUi(self, BlockScreen):
         BlockScreen.setWindowTitle(QCoreApplication.translate("BlockScreen", u"Screen blocked", None))
-        self.label.setText(QCoreApplication.translate("BlockScreen", u"<b>test</b>", None))
+        self.label.setText(QCoreApplication.translate("BlockScreen", u"<b>Screen blocked</b>", None))
     # retranslateUi
 

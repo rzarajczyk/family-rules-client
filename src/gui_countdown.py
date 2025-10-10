@@ -1,12 +1,13 @@
 from enum import Enum, auto
+from playsound import playsound
 
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtWidgets import QWidget, QApplication
 
 from gen.CountDownWindow import Ui_CountDownWindow
-from guiutils import show_on_all_desktops
+from guiutils import show_on_all_desktops, set_window_above_fullscreen
 from osutils import get_os, SupportedOs
-from guiutils import set_grayscale
+from basedir import Basedir
 
 
 class CountDownState(Enum):
@@ -39,6 +40,7 @@ class CountDownWindow(QWidget):
         screen_geometry = QApplication.primaryScreen().availableGeometry()
         self.move(screen_geometry.width() - self.width(), 0)
         show_on_all_desktops(self)
+        set_window_above_fullscreen(self)
         self.timer = QTimer()
         self.timer.timeout.connect(self.tick)
         self.timer.start(1000)
@@ -46,6 +48,9 @@ class CountDownWindow(QWidget):
         self.onTimeout = lambda *args: None
         self.state = CountDownState.NOT_STARTED
         self.name = None
+        
+        # Initialize tick sound - use system beep for better compatibility
+        self.tick_sound_enabled = True
 
     def start(self, initial_amount_seconds: int, name=None, onTimeout=lambda *args: None):
         self.state = CountDownState.IN_PROGRESS
@@ -64,11 +69,16 @@ class CountDownWindow(QWidget):
 
     def hide(self):
         super().hide()
-        set_grayscale(False)
 
     def show(self):
         super().show()
-        set_grayscale(True)
+    
+    def _play_tick_sound(self):
+        playsound(Basedir.get() / 'resources' / 'tick.wav', block=False)
+    
+    def set_tick_sound_enabled(self, enabled: bool):
+        """Enable or disable the tick sound during countdown"""
+        self.tick_sound_enabled = enabled
 
     # def paintEvent(self, event):
     #     # This method is used to paint the window with a transparent background
@@ -79,6 +89,9 @@ class CountDownWindow(QWidget):
 
     def tick(self):
         if self.state.value == CountDownState.IN_PROGRESS.value:
+            # Play tick sound
+            self._play_tick_sound()
+            
             self.ui.label.setText(
                 "<div style=\"background-color: yellow; color: red;\">" + str(self.amount_seconds) + "</div>")
             self.amount_seconds -= 1

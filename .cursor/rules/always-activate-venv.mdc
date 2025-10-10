@@ -1,0 +1,4 @@
+---
+alwaysApply: true
+---
+ - always activate venv before running commands

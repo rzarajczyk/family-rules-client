@@ -44,6 +44,7 @@ class SettingsWindow(QMainWindow):
         self.ui.progressBar.setHidden(True)
         self.ui.versionLabel.setText(app_version())
         
+        
         # Retranslate UI after setup
         self.ui.retranslateUi(self)
         
@@ -75,3 +76,4 @@ class SettingsWindow(QMainWindow):
             ok_button = msg_box.button(QMessageBox.StandardButton.Ok)
             ok_button.clicked.connect(msg_box.close)
             msg_box.exec()
+    

@@ -20,6 +20,14 @@
         <translation>OK</translation>
     </message>
     <message>
+        <source>Accessibility permission not granted</source>
+        <translation>Brak uprawnień dostępności</translation>
+    </message>
+    <message>
+        <source>Grant Permission</source>
+        <translation>Przyznaj uprawnienia</translation>
+    </message>
+    <message>
         <source>Family Rules Installation</source>
         <translation>Instalacja FamilyRules</translation>
     </message>
@@ -240,6 +248,59 @@
     <message>
         <source>Close</source>
         <translation>Zamknij</translation>
+    </message>
+    <message>
+        <source>Permissions</source>
+        <translation>Uprawnienia</translation>
+    </message>
+    <message>
+        <source>Checking permissions...</source>
+        <translation>Sprawdzanie uprawnień...</translation>
+    </message>
+    <message>
+        <source>Grant Permission</source>
+        <translation>Przyznaj uprawnienie</translation>
+    </message>
+    <message>
+        <source>Refresh</source>
+        <translation>Odśwież</translation>
+    </message>
+    <message>
+        <source>No special permissions required for this system.</source>
+        <translation>Ten system nie wymaga specjalnych uprawnień.</translation>
+    </message>
+    <message>
+        <source>All required permissions are granted.</source>
+        <translation>Wszystkie wymagane uprawnienia zostały przyznane.</translation>
+    </message>
+    <message>
+        <source>Missing permissions: </source>
+        <translation>Brakujące uprawnienia: </translation>
+    </message>
+    <message>
+        <source>Permission Settings</source>
+        <translation>Ustawienia uprawnień</translation>
+    </message>
+    <message>
+        <source>Opening system settings for {permission_name}...</source>
+        <translation>Otwieranie ustawień systemowych dla {permission_name}...</translation>
+    </message>
+    <message>
+        <source>Please grant the permission in the system settings that just opened, then click OK to restart the application.</source>
+        <translation>Proszę przyznać uprawnienie w ustawieniach systemowych, które właśnie się otworzyły, a następnie kliknij OK, aby ponownie uruchomić aplikację.</translation>
+    </message>
+    </message>
+    <message>
+        <source>OK - Restart app now</source>
+        <translation>Uruchom ponownie teraz</translation>
+    </message>
+    <message>
+        <source>Grant {permission_name}</source>
+        <translation>Przyznaj {permission_name}</translation>
+    </message>
+    <message>
+        <source>To grant {permission_name}:</source>
+        <translation>Aby przyznać {permission_name}:</translation>
     </message>
 </context>
 <context>

@@ -20,6 +20,14 @@
         <translation>OK</translation>
     </message>
     <message>
+        <source>Accessibility permission not granted</source>
+        <translation>Accessibility permission not granted</translation>
+    </message>
+    <message>
+        <source>Grant Permission</source>
+        <translation>Grant Permission</translation>
+    </message>
+    <message>
         <source>Family Rules Installation</source>
         <translation>Family Rules Installation</translation>
     </message>
@@ -240,6 +248,58 @@
     <message>
         <source>Close</source>
         <translation>Close</translation>
+    </message>
+    <message>
+        <source>Permissions</source>
+        <translation>Permissions</translation>
+    </message>
+    <message>
+        <source>Checking permissions...</source>
+        <translation>Checking permissions...</translation>
+    </message>
+    <message>
+        <source>Grant Permission</source>
+        <translation>Grant Permission</translation>
+    </message>
+    <message>
+        <source>Refresh</source>
+        <translation>Refresh</translation>
+    </message>
+    <message>
+        <source>No special permissions required for this system.</source>
+        <translation>No special permissions required for this system.</translation>
+    </message>
+    <message>
+        <source>All required permissions are granted.</source>
+        <translation>All required permissions are granted.</translation>
+    </message>
+    <message>
+        <source>Missing permissions: </source>
+        <translation>Missing permissions: </translation>
+    </message>
+    <message>
+        <source>Permission Settings</source>
+        <translation>Permission Settings</translation>
+    </message>
+    <message>
+        <source>Opening system settings for {permission_name}...</source>
+        <translation>Opening system settings for {permission_name}...</translation>
+    </message>
+    <message>
+        <source>Please grant the permission in the system settings that just opened, then click OK to restart the application.</source>
+        <translation>Please grant the permission in the system settings that just opened, then click OK to restart the application.</translation>
+    </message>
+    <message>
+        <source>OK - Restart app now</source>
+        <translation>Restart app now.</translation>
+    </message>
+    <message>
+        <source>Grant {permission_name}</source>
+        <translation>Grant {permission_name}</translation>
+    </message>
+    <message>
+        <source>To grant {permission_name}:</source>
+        <translation>To grant {permission_name}:</translation>
     </message>
 </context>
 <context>

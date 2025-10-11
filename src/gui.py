@@ -81,10 +81,16 @@ class MainWindow(QMainWindow):
             # All permissions granted, hide warning
             self.ui.permissionWarningLabel.setVisible(False)
             self.ui.grantPermissionButton.setVisible(False)
+            # Set layout height to 0 to remove blank space
+            self.ui.permissionWarningLayout.setContentsMargins(0, 0, 0, 0)
+            self.ui.permissionWarningLayout.setSpacing(0)
         else:
             # Missing permissions, show warning
             self.ui.permissionWarningLabel.setVisible(True)
             self.ui.grantPermissionButton.setVisible(True)
+            # Restore normal margins and spacing
+            self.ui.permissionWarningLayout.setContentsMargins(12, 8, 12, 8)
+            self.ui.permissionWarningLayout.setSpacing(0)
             # Update the warning text to be more specific
             missing_permissions = []
             for perm_type, status in permissions.items():

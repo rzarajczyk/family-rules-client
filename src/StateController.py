@@ -3,7 +3,7 @@ import sys
 
 from gui import Gui
 from CountDownWindow import CountDownState
-from osutils import get_os, SupportedOs
+from osutils import get_os, OperatingSystem
 from Installer import Installer
 
 
@@ -81,11 +81,11 @@ class StateController:
 
     def __logout(self):
         match get_os():
-            case SupportedOs.MAC_OS:
+            case OperatingSystem.MAC_OS:
                 from ctypes import CDLL
                 login_pf = CDLL('/System/Library/PrivateFrameworks/login.framework/Versions/Current/login')
                 login_pf.SACLockScreenImmediate()
-            case SupportedOs.WINDOWS:
+            case OperatingSystem.WINDOWS:
                 import ctypes
                 ctypes.windll.user32.LockWorkStation()
             case _:

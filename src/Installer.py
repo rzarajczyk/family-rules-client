@@ -3,7 +3,6 @@ import os
 import plistlib
 import shutil
 import subprocess
-from datetime import datetime
 
 from enum import Enum, auto
 from pathlib import Path
@@ -13,8 +12,8 @@ from requests.auth import HTTPBasicAuth
 from requests.exceptions import MissingSchema, ConnectionError, HTTPError
 
 from Settings import Settings
-from osutils import app_data, dist_path, get_os, SupportedOs, is_dist
-from utils.pathutils import path_to_str
+from osutils import app_data, dist_path, get_os, OperatingSystem, is_dist
+from pathutils import path_to_str
 
 
 class RegisterInstanceStatus(Enum):
@@ -90,9 +89,9 @@ class Installer:
     def install_autorun():
         if is_dist():
             match get_os():
-                case SupportedOs.MAC_OS:
+                case OperatingSystem.MAC_OS:
                     Installer.__install_macos_autorun()
-                case SupportedOs.WINDOWS:
+                case OperatingSystem.WINDOWS:
                     Installer.__install_windows_autorun()
                 case _:
                     raise Exception("Unsupported operating system")
@@ -196,7 +195,7 @@ class Installer:
     @staticmethod
     def uninstall_autorun():
         match get_os():
-            case SupportedOs.MAC_OS:
+            case OperatingSystem.MAC_OS:
                 path = Path.home() / "Library" / "LaunchAgents" / "pl.zarajczyk.family-rules-client.plist"
                 process = subprocess.Popen(
                     ["launchctl", "unload", path],
@@ -209,7 +208,7 @@ class Installer:
                 if process.returncode != 0 or not stdout:
                     logging.error(
                         f"'launchctl unload' exited with code {process.returncode}, output: {stdout}")
-            case SupportedOs.WINDOWS:
+            case OperatingSystem.WINDOWS:
                 task_name = f"FamilyRules_{os.getenv('USERNAME')}"
                 result = subprocess.run(['schtasks', '/Delete', '/TN', task_name, '/F'],
                                         stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)

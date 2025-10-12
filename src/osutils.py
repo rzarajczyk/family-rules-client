@@ -5,13 +5,13 @@ import sys
 from enum import Enum, auto
 from pathlib import Path
 
-from src.utils.basedir import Basedir
+from Basedir import Basedir
 
 
-class SupportedOs(Enum):
+class OperatingSystem(Enum):
     MAC_OS = auto()
     WINDOWS = auto()
-    UNSUPPORTED = auto()
+    OTHER = auto()
 
 
 def app_version():
@@ -19,15 +19,15 @@ def app_version():
         return f.read()
 
 
-def get_os() -> SupportedOs:
+def get_os() -> OperatingSystem:
     current_platform = platform.platform().lower()
     if "windows" in current_platform:
-        return SupportedOs.WINDOWS
+        return OperatingSystem.WINDOWS
     elif "macos" in current_platform:
-        return SupportedOs.MAC_OS
+        return OperatingSystem.MAC_OS
     else:
         logging.error(f"Unsupported platform: {current_platform}")
-        return SupportedOs.UNSUPPORTED
+        return OperatingSystem.OTHER
 
 
 def is_dist() -> bool:
@@ -37,11 +37,11 @@ def is_dist() -> bool:
 
 def dist_path() -> Path:
     match get_os():
-        case SupportedOs.MAC_OS:
+        case OperatingSystem.MAC_OS:
             if not is_dist():
                 return Basedir.get().parent / "dist" / "FamilyRules.app"
             return Path(Basedir.get_str().removesuffix("/Contents/Frameworks"))
-        case SupportedOs.WINDOWS:
+        case OperatingSystem.WINDOWS:
             # return Path("C:\\Program Files\\Family Rules\\FamilyRules.exe")
             if not is_dist():
                 return Basedir.get().parent / "dist" / "FamilyRules.exe"
@@ -55,11 +55,11 @@ def app_data() -> Path:
         return Basedir.get().parent / "data"
 
     match get_os():
-        case SupportedOs.MAC_OS:
+        case OperatingSystem.MAC_OS:
             path = Path(Path.home(), "Library", "FamilyRules")
             path.mkdir(exist_ok=True)
             return path
-        case SupportedOs.WINDOWS:
+        case OperatingSystem.WINDOWS:
             path = Path(os.getenv('LOCALAPPDATA'), "FamilyRules")
             path.mkdir(exist_ok=True)
             return path
@@ -70,9 +70,9 @@ def app_data() -> Path:
 def is_user_active() -> bool:
     """ user might be logged in, but inactive - when the "switch user" function was used """
     match get_os():
-        case SupportedOs.MAC_OS:
+        case OperatingSystem.MAC_OS:
             return os.stat("/dev/console").st_uid == os.getuid()
-        case SupportedOs.WINDOWS:
+        case OperatingSystem.WINDOWS:
             # FIXME UNSUPPORTED_WINDOWS
             logging.debug("Is user active - not implemented on Windows")
             return True
@@ -83,10 +83,10 @@ def is_user_active() -> bool:
 def make_sure_only_one_instance_is_running():
     if is_dist():
         match get_os():
-            case SupportedOs.MAC_OS:
+            case OperatingSystem.MAC_OS:
                 # FIXME UNSUPPORTED_MACOS
                 pass
-            case SupportedOs.WINDOWS:
+            case OperatingSystem.WINDOWS:
                 import psutil
                 import platform
                 import getpass

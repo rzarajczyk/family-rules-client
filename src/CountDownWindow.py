@@ -6,9 +6,9 @@ from PySide6.QtCore import Qt, QTimer
 from PySide6.QtWidgets import QWidget, QApplication
 
 from gen.CountDownWindow import Ui_CountDownWindow
-from guiutils import show_on_all_desktops, set_window_above_fullscreen
-from osutils import get_os, SupportedOs
-from src.utils.basedir import Basedir
+from GuiHelper import GuiHelper
+from osutils import get_os, OperatingSystem
+from Basedir import Basedir
 
 
 class CountDownState(Enum):
@@ -22,16 +22,17 @@ class CountDownWindow(QWidget):
         super().__init__()
         self.ui = Ui_CountDownWindow()
         self.ui.setupUi(self)
+        self.guihelper = GuiHelper.instance()
         
         # Retranslate UI after setup
         self.ui.retranslateUi(self)
         
         match get_os():
-            case SupportedOs.MAC_OS:
+            case OperatingSystem.MAC_OS:
                 self.setWindowFlags(
                     Qt.Window | Qt.CustomizeWindowHint | Qt.WindowTitleHint | Qt.WindowSystemMenuHint | Qt.WindowStaysOnTopHint | Qt.FramelessWindowHint
                 )
-            case SupportedOs.WINDOWS:
+            case OperatingSystem.WINDOWS:
                 self.setWindowFlags(
                     Qt.Tool | Qt.Window | Qt.CustomizeWindowHint | Qt.WindowTitleHint | Qt.WindowSystemMenuHint | Qt.WindowStaysOnTopHint | Qt.FramelessWindowHint
                 )
@@ -40,8 +41,8 @@ class CountDownWindow(QWidget):
         self.setAttribute(Qt.WA_TranslucentBackground)
         screen_geometry = QApplication.primaryScreen().availableGeometry()
         self.move(screen_geometry.width() - self.width(), 0)
-        show_on_all_desktops(self)
-        set_window_above_fullscreen(self)
+        self.guihelper.show_on_all_desktops(self)
+        self.guihelper.set_window_above_fullscreen(self)
         self.timer = QTimer()
         self.timer.timeout.connect(self.tick)
         self.timer.start(1000)
@@ -77,9 +78,9 @@ class CountDownWindow(QWidget):
     def _play_tick_sound(self):
         try:
             match get_os():
-                case SupportedOs.MAC_OS:
+                case OperatingSystem.MAC_OS:
                     Popen(["osascript", "-e", "beep"], stdout=DEVNULL, stderr=DEVNULL)
-                case SupportedOs.WINDOWS:
+                case OperatingSystem.WINDOWS:
                     logging.warning("Playing sound not implemented on Windows")
                 case _:
                     raise Exception("Unsupported operating system")

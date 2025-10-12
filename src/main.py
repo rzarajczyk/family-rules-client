@@ -7,11 +7,11 @@ from Reporter import Reporter
 from Settings import Settings
 from StateController import (StateController)
 from UptimeDb import AbsoluteUsage
-from src.utils.basedir import Basedir
+from Basedir import Basedir
 from global_exception_handler import global_exception_handler
 from gui import Gui
 from osutils import app_data
-from utils.pathutils import path_to_str
+from pathutils import path_to_str
 from osutils import make_sure_only_one_instance_is_running
 from translations import initialize_translations
 from UptimeChecker import UptimeChecker

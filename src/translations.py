@@ -10,7 +10,7 @@ import logging
 from PySide6.QtCore import QTranslator, QCoreApplication
 from click import Context
 
-from src.utils.basedir import Basedir
+from Basedir import Basedir
 
 
 class TranslationManager:

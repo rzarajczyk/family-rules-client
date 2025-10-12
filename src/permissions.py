@@ -7,9 +7,9 @@ from enum import Enum, auto
 from typing import Tuple
 
 try:
-    from .osutils import get_os, SupportedOs
+    from .osutils import get_os, OperatingSystem
 except ImportError:
-    from osutils import get_os, SupportedOs
+    from osutils import get_os, OperatingSystem
 
 
 class PermissionType(Enum):
@@ -28,7 +28,7 @@ def check_accessibility_permission() -> PermissionStatus:
     Check if the application has accessibility permission on macOS.
     Returns PermissionStatus.GRANTED if permission is granted, NOT_GRANTED otherwise.
     """
-    if get_os() != SupportedOs.MAC_OS:
+    if get_os() != OperatingSystem.MAC_OS:
         return PermissionStatus.UNKNOWN
     
     try:
@@ -51,7 +51,7 @@ def check_administrator_privileges() -> PermissionStatus:
     Check if the application is running with administrator privileges on Windows.
     Returns PermissionStatus.GRANTED if running as admin, NOT_GRANTED otherwise.
     """
-    if get_os() != SupportedOs.WINDOWS:
+    if get_os() != OperatingSystem.WINDOWS:
         return PermissionStatus.UNKNOWN
     
     try:
@@ -65,9 +65,9 @@ def check_administrator_privileges() -> PermissionStatus:
 def get_required_permissions() -> list[PermissionType]:
     """ Get the list of permissions required for the current operating system. """
     match get_os():
-        case SupportedOs.MAC_OS:
+        case OperatingSystem.MAC_OS:
             return [PermissionType.MACOS_ACCESSIBILITY]
-        case SupportedOs.WINDOWS:
+        case OperatingSystem.WINDOWS:
             return [PermissionType.WINDOWS_ADMINISTRATOR]
         case _:
             return []
@@ -118,7 +118,7 @@ def open_permission_settings(permission_type: PermissionType) -> bool:
     try:
         match permission_type:
             case PermissionType.MACOS_ACCESSIBILITY:
-                if get_os() == SupportedOs.MAC_OS:
+                if get_os() == OperatingSystem.MAC_OS:
                     # Open System Preferences to Accessibility settings
                     subprocess.run([
                         "open", 
@@ -127,7 +127,7 @@ def open_permission_settings(permission_type: PermissionType) -> bool:
                     return True
                     
             case PermissionType.WINDOWS_ADMINISTRATOR:
-                if get_os() == SupportedOs.WINDOWS:
+                if get_os() == OperatingSystem.WINDOWS:
                     # For Windows, we can't directly grant admin privileges through settings
                     # The user needs to restart the application as administrator
                     return False

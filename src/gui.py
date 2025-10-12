@@ -12,13 +12,13 @@ from PySide6.QtWidgets import QApplication, QSystemTrayIcon, QMenu, QMainWindow,
 from Installer import Installer, RegisterInstanceStatus
 from Launcher import Launcher
 from UptimeDb import UptimeDb, UsageUpdate
-from src.utils.basedir import Basedir
+from Basedir import Basedir
 from gen.InitialSetup import Ui_InitialSetup
 from gen.MainWindow import Ui_MainWindow
 from BlockScreenWindow import BlockScreenWindow
 from CountDownWindow import CountDownWindow
 from SettingsWindow import SettingsWindow
-from osutils import is_dist, get_os, SupportedOs, app_version
+from osutils import is_dist, get_os, OperatingSystem, app_version
 from permissions import (
     check_all_permissions, 
     get_required_permissions, 
@@ -275,9 +275,9 @@ class InitialSetup(QMainWindow):
             msg_box.setWindowTitle(tr("Installation completed"))
             text = tr("Installation completed. ")
             match get_os():
-                case SupportedOs.MAC_OS:
+                case OperatingSystem.MAC_OS:
                     text += tr("Installation completed. The application will be automatically restarted.")
-                case SupportedOs.WINDOWS:
+                case OperatingSystem.WINDOWS:
                     text += tr("Installation completed. Restart the application.")
                 case _:
                     raise Exception("Unsupported operating system")

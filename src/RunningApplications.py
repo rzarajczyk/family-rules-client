@@ -1,13 +1,13 @@
-from osutils import get_os, SupportedOs
+from osutils import get_os, OperatingSystem
 
 
 class RunningApplications:
     @staticmethod
     def get_running_apps():
         match get_os():
-            case SupportedOs.MAC_OS:
+            case OperatingSystem.MAC_OS:
                 return set(RunningApplications.__get_running_apps_mac_os().keys())
-            case SupportedOs.WINDOWS:
+            case OperatingSystem.WINDOWS:
                 return set(RunningApplications.__get_running_apps_windows().keys())
             case _:
                 raise Exception("Unsupported operating system")

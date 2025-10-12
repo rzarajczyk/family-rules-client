@@ -1,7 +1,7 @@
 from pathlib import Path
 
-
 __BASEDIR__: Path = None
+
 
 class Basedir:
     @staticmethod

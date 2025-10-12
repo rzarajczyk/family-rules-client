@@ -77,12 +77,6 @@ end tell
 
 ## Testing
 
-### Test Script
-Use the provided `test_fullscreen_blocking.py` script to test the functionality:
-
-```bash
-python test_fullscreen_blocking.py
-```
 
 ### Test Procedure
 1. Start a fullscreen application (YouTube, game, etc.)

@@ -1,5 +1,5 @@
 import logging
-import subprocess
+from subprocess import Popen, DEVNULL
 from enum import Enum, auto
 
 from PySide6.QtCore import Qt, QTimer
@@ -76,15 +76,16 @@ class CountDownWindow(QWidget):
     
     def _play_tick_sound(self):
         try:
-            if get_os() == SupportedOs.MAC_OS:
-                # Use native afplay on macOS to avoid microphone permission issues
-                subprocess.Popen(["afplay", self.tick_sound_path], 
-                               stdout=subprocess.DEVNULL, 
-                               stderr=subprocess.DEVNULL)
-            else:
+            match get_os():
+                case SupportedOs.MAC_OS:
+                    Popen(["afplay", self.tick_sound_path], stdout=DEVNULL, stderr=DEVNULL)
+                case SupportedOs.WINDOWS:
+                    logging.warning("Playing sound not implemented on Windows")
+                case _:
+                    raise Exception("Unsupported operating system")
                 # Use playsound on other platforms
-                from playsound import playsound
-                playsound(self.tick_sound_path, block=False)
+                # from playsound import playsound
+                # playsound(self.tick_sound_path, block=False)
         except Exception as e:
             logging.warning("Unable to play a sound: %s", e)
 

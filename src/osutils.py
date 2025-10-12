@@ -5,7 +5,7 @@ import sys
 from enum import Enum, auto
 from pathlib import Path
 
-from basedir import Basedir
+from src.utils.basedir import Basedir
 
 
 class SupportedOs(Enum):
@@ -67,13 +67,8 @@ def app_data() -> Path:
             raise Exception("Unsupported operating system")
 
 
-def path_to_str(path: Path) -> str:
-    if path is None:
-        return None
-    return path.absolute().as_posix()
-
-
 def is_user_active() -> bool:
+    """ user might be logged in, but inactive - when the "switch user" function was used """
     match get_os():
         case SupportedOs.MAC_OS:
             return os.stat("/dev/console").st_uid == os.getuid()

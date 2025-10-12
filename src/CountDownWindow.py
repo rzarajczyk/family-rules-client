@@ -8,7 +8,7 @@ from PySide6.QtWidgets import QWidget, QApplication
 from gen.CountDownWindow import Ui_CountDownWindow
 from guiutils import show_on_all_desktops, set_window_above_fullscreen
 from osutils import get_os, SupportedOs
-from basedir import Basedir
+from src.utils.basedir import Basedir
 
 
 class CountDownState(Enum):

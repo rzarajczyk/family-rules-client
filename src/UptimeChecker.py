@@ -5,16 +5,9 @@ from UptimeDb import UsageUpdate
 from osutils import is_user_active
 
 
-class Uptime:
-    def get(self) -> UsageUpdate:
-        pass
-
-
-class PsUptime(Uptime):
-    def __init__(self, interval: int):
-        self.interval = interval
-
-    def get(self) -> UsageUpdate:
+class UptimeChecker:
+    @staticmethod
+    def check_uptime(interval: int) -> UsageUpdate:
         if not is_user_active():
             return UsageUpdate(
                 screen_time=timedelta(seconds=0),
@@ -22,9 +15,9 @@ class PsUptime(Uptime):
                 absolute=False
             )
         else:
-            apps = RunningApplications().get_running_apps()
+            apps = RunningApplications.get_running_apps()
             return UsageUpdate(
-                screen_time=timedelta(seconds=self.interval),
-                applications={k: timedelta(seconds=self.interval) for k in apps},
+                screen_time=timedelta(seconds=interval),
+                applications={k: timedelta(seconds=interval) for k in apps},
                 absolute=False
             )

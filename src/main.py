@@ -7,13 +7,14 @@ from Reporter import Reporter
 from Settings import Settings
 from StateController import (StateController)
 from UptimeDb import AbsoluteUsage
-from basedir import Basedir
+from src.utils.basedir import Basedir
 from global_exception_handler import global_exception_handler
 from gui import Gui
-from osutils import app_data, path_to_str
+from osutils import app_data
+from utils.pathutils import path_to_str
 from osutils import make_sure_only_one_instance_is_running
 from translations import initialize_translations
-from uptime import PsUptime
+from UptimeChecker import UptimeChecker
 
 TICK_INTERVAL_SECONDS = 5
 REPORT_INTERVALS_TICK = 4
@@ -43,7 +44,7 @@ reporter = Reporter()
 
 
 def uptime_tick():
-    return PsUptime(TICK_INTERVAL_SECONDS).get()
+    return UptimeChecker.check_uptime(TICK_INTERVAL_SECONDS)
 
 
 def report_tick(gui: Gui, usage: AbsoluteUsage, first_run: bool):
@@ -54,15 +55,13 @@ def report_tick(gui: Gui, usage: AbsoluteUsage, first_run: bool):
 if __name__ == "__main__":
     sys.excepthook = global_exception_handler
 
-    logging.info("App started!")
+    logging.info("App starting!")
     make_sure_only_one_instance_is_running()
 
-    # Create QApplication first
     from PySide6.QtWidgets import QApplication
 
     app = QApplication(sys.argv)
 
-    # Initialize translations after QApplication is created
     initialize_translations()
 
     gui = Gui(sys.argv)

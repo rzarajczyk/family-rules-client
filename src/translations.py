@@ -6,12 +6,11 @@ Handles language detection and translation loading
 
 import locale
 import logging
-import os
 
 from PySide6.QtCore import QTranslator, QCoreApplication
 from click import Context
 
-from basedir import Basedir
+from src.utils.basedir import Basedir
 
 
 class TranslationManager:

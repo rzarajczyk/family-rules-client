@@ -1,15 +1,11 @@
-import os
 import logging
 
 from PySide6.QtCore import Qt, QTimer
-from PySide6.QtGui import QPixmap
-from PySide6.QtWidgets import QWidget, QApplication, QMainWindow
+from PySide6.QtWidgets import QWidget, QApplication
 
 from gen.BlockScreen import Ui_BlockScreen
 from guiutils import show_on_all_desktops, block_system_input
-from basedir import Basedir
 from osutils import get_os, SupportedOs
-from translations import tr
 
 from guiutils import set_window_above_fullscreen
 

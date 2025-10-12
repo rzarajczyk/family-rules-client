@@ -2,7 +2,7 @@ import logging
 import sys
 
 from gui import Gui
-from gui_countdown import CountDownState
+from CountDownWindow import CountDownState
 from osutils import get_os, SupportedOs
 from Installer import Installer
 

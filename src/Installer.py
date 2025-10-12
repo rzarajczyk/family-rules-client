@@ -13,7 +13,8 @@ from requests.auth import HTTPBasicAuth
 from requests.exceptions import MissingSchema, ConnectionError, HTTPError
 
 from Settings import Settings
-from osutils import app_data, path_to_str, dist_path, get_os, SupportedOs, is_dist
+from osutils import app_data, dist_path, get_os, SupportedOs, is_dist
+from utils.pathutils import path_to_str
 
 
 class RegisterInstanceStatus(Enum):

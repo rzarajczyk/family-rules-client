@@ -9,7 +9,8 @@ from osutils import app_version
 
 
 class Launcher:
-    def run(self):
+    @staticmethod
+    def run():
         logging.info("Sending launch request")
         settings = Settings.load()
         try:

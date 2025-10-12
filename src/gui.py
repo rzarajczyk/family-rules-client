@@ -7,17 +7,17 @@ from PySide6 import QtWidgets, QtCore, QtGui
 from PySide6.QtCore import QTimer, QThread, Signal
 from PySide6.QtGui import QIcon, QAction
 from PySide6.QtWidgets import QApplication, QSystemTrayIcon, QMenu, QMainWindow, \
-    QTableWidgetItem, QHeaderView, QMessageBox, QLayout
+    QTableWidgetItem, QHeaderView, QMessageBox
 
 from Installer import Installer, RegisterInstanceStatus
 from Launcher import Launcher
 from UptimeDb import UptimeDb, UsageUpdate
-from basedir import Basedir
+from src.utils.basedir import Basedir
 from gen.InitialSetup import Ui_InitialSetup
 from gen.MainWindow import Ui_MainWindow
-from gui_block import BlockScreenWindow
-from gui_countdown import CountDownWindow
-from gui_settings import SettingsWindow
+from BlockScreenWindow import BlockScreenWindow
+from CountDownWindow import CountDownWindow
+from SettingsWindow import SettingsWindow
 from osutils import is_dist, get_os, SupportedOs, app_version
 from permissions import (
     check_all_permissions, 
@@ -375,7 +375,7 @@ class Gui:
 
         db = UptimeDb()
 
-        Launcher().run()
+        Launcher.run()
 
         def uptime_tick():
             usage_update: UsageUpdate = uptime_tick_function()

@@ -1,6 +1,7 @@
 import logging
+import subprocess
 from enum import Enum, auto
-import pygame
+from playsound import playsound
 
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtWidgets import QWidget, QApplication
@@ -50,9 +51,8 @@ class CountDownWindow(QWidget):
         self.state = CountDownState.NOT_STARTED
         self.name = None
 
-        # Initialize pygame mixer for audio playback
-        pygame.mixer.init()
-        self.tick_sound = pygame.mixer.Sound(str(Basedir.get() / 'resources' / 'tick.wav'))
+        # Initialize audio playback
+        self.tick_sound_path = str(Basedir.get() / 'resources' / 'tick.wav')
 
     def start(self, initial_amount_seconds: int, name=None, onTimeout=lambda *args: None):
         self.state = CountDownState.IN_PROGRESS
@@ -77,7 +77,14 @@ class CountDownWindow(QWidget):
     
     def _play_tick_sound(self):
         try:
-            self.tick_sound.play()
+            if get_os() == SupportedOs.MAC_OS:
+                # Use native afplay on macOS to avoid microphone permission issues
+                subprocess.Popen(["afplay", self.tick_sound_path], 
+                               stdout=subprocess.DEVNULL, 
+                               stderr=subprocess.DEVNULL)
+            else:
+                # Use playsound on other platforms
+                playsound(self.tick_sound_path, block=False)
         except Exception as e:
             logging.warning("Unable to play a sound: %s", e)
 

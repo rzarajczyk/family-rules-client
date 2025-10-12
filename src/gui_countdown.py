@@ -1,5 +1,6 @@
+import logging
 from enum import Enum, auto
-from playsound import playsound
+import pygame
 
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtWidgets import QWidget, QApplication
@@ -48,9 +49,10 @@ class CountDownWindow(QWidget):
         self.onTimeout = lambda *args: None
         self.state = CountDownState.NOT_STARTED
         self.name = None
-        
-        # Initialize tick sound - use system beep for better compatibility
-        self.tick_sound_enabled = True
+
+        # Initialize pygame mixer for audio playback
+        pygame.mixer.init()
+        self.tick_sound = pygame.mixer.Sound(str(Basedir.get() / 'resources' / 'tick.wav'))
 
     def start(self, initial_amount_seconds: int, name=None, onTimeout=lambda *args: None):
         self.state = CountDownState.IN_PROGRESS
@@ -74,11 +76,10 @@ class CountDownWindow(QWidget):
         super().show()
     
     def _play_tick_sound(self):
-        playsound(str(Basedir.get() / 'resources' / 'tick.wav'), block=False)
-    
-    def set_tick_sound_enabled(self, enabled: bool):
-        """Enable or disable the tick sound during countdown"""
-        self.tick_sound_enabled = enabled
+        try:
+            self.tick_sound.play()
+        except Exception as e:
+            logging.warning("Unable to play a sound: %s", e)
 
     # def paintEvent(self, event):
     #     # This method is used to paint the window with a transparent background

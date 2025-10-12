@@ -186,9 +186,6 @@ class BlockScreenWindow(QWidget):
             return False
     
     def _force_switch_to_first_desktop(self):
-        """Force switch to the first desktop using Ctrl+Arrow Left"""
-        logging.info("🔄 Forcing switch to first desktop...")
-        
         try:
             import subprocess
             
@@ -206,9 +203,7 @@ class BlockScreenWindow(QWidget):
             result = subprocess.run(['osascript', '-e', applescript], 
                                   capture_output=True, text=True, timeout=3)
             
-            if result.returncode == 0:
-                logging.info("✅ Desktop switching commands sent successfully")
-            else:
+            if result.returncode != 0:
                 if result.stderr:
                     logging.warning(f"⚠️  Desktop switching failed: {result.stderr}")
                 else:

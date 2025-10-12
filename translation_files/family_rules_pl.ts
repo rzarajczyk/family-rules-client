@@ -219,12 +219,12 @@
         <translation>Instaluj!</translation>
     </message>
     <message>
-        <source>Language</source>
-        <translation>Język</translation>
+        <source>Installation Settings</source>
+        <translation>Ustawienia instalacji</translation>
     </message>
     <message>
-        <source>Select language:</source>
-        <translation>Wybierz język:</translation>
+        <source>Language:</source>
+        <translation>Język:</translation>
     </message>
     <message>
         <source>English</source>
@@ -233,6 +233,10 @@
     <message>
         <source>Polski</source>
         <translation>Polski</translation>
+    </message>
+    <message>
+        <source>Computer Name:</source>
+        <translation>Nazwa komputera:</translation>
     </message>
 </context>
 <context>

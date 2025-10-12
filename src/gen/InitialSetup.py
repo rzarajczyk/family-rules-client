@@ -23,7 +23,7 @@ class Ui_InitialSetup(object):
     def setupUi(self, InitialSetup):
         if not InitialSetup.objectName():
             InitialSetup.setObjectName(u"InitialSetup")
-        InitialSetup.resize(800, 322)
+        InitialSetup.resize(798, 274)
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -33,96 +33,85 @@ class Ui_InitialSetup(object):
         self.centralwidget.setObjectName(u"centralwidget")
         self.verticalLayout = QVBoxLayout(self.centralwidget)
         self.verticalLayout.setObjectName(u"verticalLayout")
-        self.label = QLabel(self.centralwidget)
-        self.label.setObjectName(u"label")
+        self.mainGroupBox = QGroupBox(self.centralwidget)
+        self.mainGroupBox.setObjectName(u"mainGroupBox")
         sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
         sizePolicy1.setHorizontalStretch(0)
         sizePolicy1.setVerticalStretch(0)
-        sizePolicy1.setHeightForWidth(self.label.sizePolicy().hasHeightForWidth())
-        self.label.setSizePolicy(sizePolicy1)
-        self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-        self.verticalLayout.addWidget(self.label)
-
-        self.languageGroupBox = QGroupBox(self.centralwidget)
-        self.languageGroupBox.setObjectName(u"languageGroupBox")
-        sizePolicy1.setHeightForWidth(self.languageGroupBox.sizePolicy().hasHeightForWidth())
-        self.languageGroupBox.setSizePolicy(sizePolicy1)
-        self.languageGridLayout = QGridLayout(self.languageGroupBox)
-        self.languageGridLayout.setObjectName(u"languageGridLayout")
-        self.languageLabel = QLabel(self.languageGroupBox)
+        sizePolicy1.setHeightForWidth(self.mainGroupBox.sizePolicy().hasHeightForWidth())
+        self.mainGroupBox.setSizePolicy(sizePolicy1)
+        self.mainGridLayout = QGridLayout(self.mainGroupBox)
+        self.mainGridLayout.setObjectName(u"mainGridLayout")
+        self.languageLabel = QLabel(self.mainGroupBox)
         self.languageLabel.setObjectName(u"languageLabel")
+        self.languageLabel.setMinimumSize(QSize(120, 0))
+        self.languageLabel.setMaximumSize(QSize(120, 16777215))
 
-        self.languageGridLayout.addWidget(self.languageLabel, 0, 0, 1, 1)
+        self.mainGridLayout.addWidget(self.languageLabel, 0, 0, 1, 1)
 
-        self.languageComboBox = QComboBox(self.languageGroupBox)
+        self.languageComboBox = QComboBox(self.mainGroupBox)
         self.languageComboBox.addItem("")
         self.languageComboBox.addItem("")
         self.languageComboBox.setObjectName(u"languageComboBox")
+        self.languageComboBox.setMinimumSize(QSize(0, 0))
 
-        self.languageGridLayout.addWidget(self.languageComboBox, 0, 1, 1, 1)
+        self.mainGridLayout.addWidget(self.languageComboBox, 0, 1, 1, 1)
 
-
-        self.verticalLayout.addWidget(self.languageGroupBox)
-
-        self.groupBox = QGroupBox(self.centralwidget)
-        self.groupBox.setObjectName(u"groupBox")
-        sizePolicy1.setHeightForWidth(self.groupBox.sizePolicy().hasHeightForWidth())
-        self.groupBox.setSizePolicy(sizePolicy1)
-        self.gridLayout = QGridLayout(self.groupBox)
-        self.gridLayout.setObjectName(u"gridLayout")
-        self.label_2 = QLabel(self.groupBox)
+        self.label_2 = QLabel(self.mainGroupBox)
         self.label_2.setObjectName(u"label_2")
+        self.label_2.setMinimumSize(QSize(120, 0))
+        self.label_2.setMaximumSize(QSize(120, 16777215))
 
-        self.gridLayout.addWidget(self.label_2, 0, 0, 1, 1)
+        self.mainGridLayout.addWidget(self.label_2, 1, 0, 1, 1)
 
-        self.serverInput = QLineEdit(self.groupBox)
+        self.serverInput = QLineEdit(self.mainGroupBox)
         self.serverInput.setObjectName(u"serverInput")
+        self.serverInput.setMinimumSize(QSize(0, 0))
 
-        self.gridLayout.addWidget(self.serverInput, 0, 1, 1, 1)
+        self.mainGridLayout.addWidget(self.serverInput, 1, 1, 1, 1)
 
-        self.label_3 = QLabel(self.groupBox)
+        self.label_3 = QLabel(self.mainGroupBox)
         self.label_3.setObjectName(u"label_3")
+        self.label_3.setMinimumSize(QSize(120, 0))
+        self.label_3.setMaximumSize(QSize(120, 16777215))
 
-        self.gridLayout.addWidget(self.label_3, 1, 0, 1, 1)
+        self.mainGridLayout.addWidget(self.label_3, 2, 0, 1, 1)
 
-        self.usernameInput = QLineEdit(self.groupBox)
+        self.usernameInput = QLineEdit(self.mainGroupBox)
         self.usernameInput.setObjectName(u"usernameInput")
+        self.usernameInput.setMinimumSize(QSize(0, 0))
 
-        self.gridLayout.addWidget(self.usernameInput, 1, 1, 1, 1)
+        self.mainGridLayout.addWidget(self.usernameInput, 2, 1, 1, 1)
 
-        self.label_4 = QLabel(self.groupBox)
+        self.label_4 = QLabel(self.mainGroupBox)
         self.label_4.setObjectName(u"label_4")
+        self.label_4.setMinimumSize(QSize(120, 0))
+        self.label_4.setMaximumSize(QSize(120, 16777215))
 
-        self.gridLayout.addWidget(self.label_4, 2, 0, 1, 1)
+        self.mainGridLayout.addWidget(self.label_4, 3, 0, 1, 1)
 
-        self.passwordInput = QLineEdit(self.groupBox)
+        self.passwordInput = QLineEdit(self.mainGroupBox)
         self.passwordInput.setObjectName(u"passwordInput")
+        self.passwordInput.setMinimumSize(QSize(0, 0))
         self.passwordInput.setEchoMode(QLineEdit.EchoMode.Password)
 
-        self.gridLayout.addWidget(self.passwordInput, 2, 1, 1, 1)
+        self.mainGridLayout.addWidget(self.passwordInput, 3, 1, 1, 1)
 
-
-        self.verticalLayout.addWidget(self.groupBox)
-
-        self.groupBox_2 = QGroupBox(self.centralwidget)
-        self.groupBox_2.setObjectName(u"groupBox_2")
-        sizePolicy1.setHeightForWidth(self.groupBox_2.sizePolicy().hasHeightForWidth())
-        self.groupBox_2.setSizePolicy(sizePolicy1)
-        self.gridLayout_2 = QGridLayout(self.groupBox_2)
-        self.gridLayout_2.setObjectName(u"gridLayout_2")
-        self.instanceName = QLineEdit(self.groupBox_2)
-        self.instanceName.setObjectName(u"instanceName")
-
-        self.gridLayout_2.addWidget(self.instanceName, 0, 1, 1, 1)
-
-        self.label_7 = QLabel(self.groupBox_2)
+        self.label_7 = QLabel(self.mainGroupBox)
         self.label_7.setObjectName(u"label_7")
+        self.label_7.setMinimumSize(QSize(120, 0))
+        self.label_7.setMaximumSize(QSize(120, 16777215))
 
-        self.gridLayout_2.addWidget(self.label_7, 0, 0, 1, 1)
+        self.mainGridLayout.addWidget(self.label_7, 4, 0, 1, 1)
+
+        self.instanceName = QLineEdit(self.mainGroupBox)
+        self.instanceName.setObjectName(u"instanceName")
+        self.instanceName.setMinimumSize(QSize(0, 0))
+
+        self.mainGridLayout.addWidget(self.instanceName, 4, 1, 1, 1)
 
 
-        self.verticalLayout.addWidget(self.groupBox_2)
+        self.verticalLayout.addWidget(self.mainGroupBox)
 
         self.progressBar = QProgressBar(self.centralwidget)
         self.progressBar.setObjectName(u"progressBar")
@@ -146,19 +135,16 @@ class Ui_InitialSetup(object):
 
     def retranslateUi(self, InitialSetup):
         InitialSetup.setWindowTitle(QCoreApplication.translate("InitialSetup", u"Family Rules Installation", None))
-        self.label.setText(QCoreApplication.translate("InitialSetup", u"Family Rules Installation", None))
-        self.languageGroupBox.setTitle(QCoreApplication.translate("InitialSetup", u"Language", None))
-        self.languageLabel.setText(QCoreApplication.translate("InitialSetup", u"Select language:", None))
+        self.mainGroupBox.setTitle(QCoreApplication.translate("InitialSetup", u"Installation Settings", None))
+        self.languageLabel.setText(QCoreApplication.translate("InitialSetup", u"Language:", None))
         self.languageComboBox.setItemText(0, QCoreApplication.translate("InitialSetup", u"English", None))
         self.languageComboBox.setItemText(1, QCoreApplication.translate("InitialSetup", u"Polski", None))
 
-        self.groupBox.setTitle(QCoreApplication.translate("InitialSetup", u"Server Data", None))
         self.label_2.setText(QCoreApplication.translate("InitialSetup", u"Server URL:", None))
         self.serverInput.setText(QCoreApplication.translate("InitialSetup", u"https://familyrules.org", None))
         self.label_3.setText(QCoreApplication.translate("InitialSetup", u"Username:", None))
         self.label_4.setText(QCoreApplication.translate("InitialSetup", u"Password:", None))
-        self.groupBox_2.setTitle(QCoreApplication.translate("InitialSetup", u"This Computer Data", None))
-        self.label_7.setText(QCoreApplication.translate("InitialSetup", u"Name this computer:", None))
+        self.label_7.setText(QCoreApplication.translate("InitialSetup", u"Computer Name:", None))
         self.installButton.setText(QCoreApplication.translate("InitialSetup", u"Install!", None))
     # retranslateUi
 

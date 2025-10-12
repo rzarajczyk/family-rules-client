@@ -211,7 +211,7 @@ class InitialSetup(QMainWindow):
         self.ui = Ui_InitialSetup()
         self.ui.setupUi(self)
         # Ensure the window maintains its fixed 800px width
-        self.setFixedSize(800, 380)  # Increased height to accommodate language selection
+        self.setFixedSize(800, 350)  # Compact height with unified layout
         self.ui.progressBar.setHidden(True)
         self.ui.installButton.clicked.connect(self.install)
         

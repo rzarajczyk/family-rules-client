@@ -123,7 +123,7 @@ def set_window_above_fullscreen(window):
                 collection_behavior = c_uint((1 << 0) | (1 << 8))  # CanJoinAllSpaces | FullScreenAuxiliary
                 objc.objc_msgSend(NSWindow, sel_setCollectionBehavior, collection_behavior)
                 
-                logging.info("macOS window level set above fullscreen applications")
+                logging.debug("macOS window level set above fullscreen applications")
                 
             except Exception as e:
                 logging.error(f"Failed to set macOS window level above fullscreen: {e}")

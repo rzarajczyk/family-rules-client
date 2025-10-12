@@ -121,27 +121,26 @@ class BlockScreenWindow(QWidget):
             sel_setLevel = objc.sel_registerName(b"setLevel:")
             
             # Try multiple window levels for maximum compatibility with fullscreen apps
-            logging.info("🎚️  Setting window level for fullscreen blocking...")
             try:
                 # Method 1: Try CGShieldingWindowLevel (designed for parental controls)
                 shielding_level = core_graphics.CGShieldingWindowLevel()
                 # Use shielding level + 2 to be well above system shield windows
                 window_level = c_int(shielding_level + 2)
                 objc.objc_msgSend(NSWindow, sel_setLevel, window_level)
-                logging.info(f"✅ Window level set to CGShieldingWindowLevel + 2: {shielding_level + 2} (highest priority)")
+                logging.debug(f"Window level set to CGShieldingWindowLevel + 2: {shielding_level + 2} (highest priority)")
             except Exception as e:
                 logging.warning(f"⚠️  CGShieldingWindowLevel failed: {e}")
                 try:
                     # Method 2: Try CGMaximumWindowLevel (highest possible)
                     max_level = core_graphics.CGMaximumWindowLevel()
                     objc.objc_msgSend(NSWindow, sel_setLevel, c_int(max_level))
-                    logging.info(f"✅ Window level set to CGMaximumWindowLevel: {max_level} (fallback)")
+                    logging.debug(f"Window level set to CGMaximumWindowLevel: {max_level} (fallback)")
                 except Exception as e2:
                     logging.warning(f"⚠️  CGMaximumWindowLevel failed: {e2}")
                     # Method 3: Fallback to screen saver level (also very high)
                     kCGScreenSaverWindowLevel = 1000
                     objc.objc_msgSend(NSWindow, sel_setLevel, c_int(kCGScreenSaverWindowLevel))
-                    logging.info(f"✅ Window level set to kCGScreenSaverWindowLevel: 1000 (final fallback)")
+                    logging.debug(f"Window level set to kCGScreenSaverWindowLevel: 1000 (final fallback)")
             
             # Disable window resizing and moving
             sel_setStyleMask = objc.sel_registerName(b"setStyleMask:")

@@ -60,14 +60,14 @@ class TranslationManager:
         self.translator = QTranslator()
 
         # Path to translation files
-        translations_dir = os.path.join(Basedir.get_str(), "gen", "translation_files")
+        translations_dir = Basedir.get() / "gen" / "translation_files"
 
         # Load translation file
         translation_file = f"family_rules_{language_code}.qm"
-        translation_path = os.path.join(translations_dir, translation_file)
+        translation_path = translations_dir / translation_file
 
-        if os.path.exists(translation_path):
-            if self.translator.load(translation_path):
+        if translation_path.exists():
+            if self.translator.load(str(translation_path)):
                 QCoreApplication.installTranslator(self.translator)
                 print(f"Loaded translation: {translation_file}")
                 return True

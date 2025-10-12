@@ -1,5 +1,6 @@
 #!/bin/bash
 
+bash ./generate-gui.sh
 
 UNCOMMITED_FILES=$(git status --porcelain=v1 2>/dev/null | wc -l)
 if [[ "$UNCOMMITED_FILES" -gt 0 ]]; then

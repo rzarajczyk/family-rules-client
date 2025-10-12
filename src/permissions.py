@@ -13,8 +13,8 @@ except ImportError:
 
 
 class PermissionType(Enum):
-    ACCESSIBILITY = auto()
-    ADMINISTRATOR = auto()
+    MACOS_ACCESSIBILITY = auto()
+    WINDOWS_ADMINISTRATOR = auto()
 
 
 class PermissionStatus(Enum):
@@ -63,26 +63,22 @@ def check_administrator_privileges() -> PermissionStatus:
 
 
 def get_required_permissions() -> list[PermissionType]:
-    """
-    Get the list of permissions required for the current operating system.
-    """
+    """ Get the list of permissions required for the current operating system. """
     match get_os():
         case SupportedOs.MAC_OS:
-            return [PermissionType.ACCESSIBILITY]
+            return [PermissionType.MACOS_ACCESSIBILITY]
         case SupportedOs.WINDOWS:
-            return [PermissionType.ADMINISTRATOR]
+            return [PermissionType.WINDOWS_ADMINISTRATOR]
         case _:
             return []
 
 
 def check_permission_status(permission_type: PermissionType) -> PermissionStatus:
-    """
-    Check the status of a specific permission type.
-    """
+    """ Check the status of a specific permission type. """
     match permission_type:
-        case PermissionType.ACCESSIBILITY:
+        case PermissionType.MACOS_ACCESSIBILITY:
             return check_accessibility_permission()
-        case PermissionType.ADMINISTRATOR:
+        case PermissionType.WINDOWS_ADMINISTRATOR:
             return check_administrator_privileges()
         case _:
             return PermissionStatus.UNKNOWN
@@ -93,9 +89,9 @@ def get_permission_name(permission_type: PermissionType) -> str:
     Get a human-readable name for a permission type.
     """
     match permission_type:
-        case PermissionType.ACCESSIBILITY:
+        case PermissionType.MACOS_ACCESSIBILITY:
             return "Accessibility Permission"
-        case PermissionType.ADMINISTRATOR:
+        case PermissionType.WINDOWS_ADMINISTRATOR:
             return "Administrator Privileges"
         case _:
             return "Unknown Permission"
@@ -106,9 +102,9 @@ def get_permission_description(permission_type: PermissionType) -> str:
     Get a description of what a permission is used for.
     """
     match permission_type:
-        case PermissionType.ACCESSIBILITY:
+        case PermissionType.MACOS_ACCESSIBILITY:
             return "Required for screen blocking and input blocking functionality"
-        case PermissionType.ADMINISTRATOR:
+        case PermissionType.WINDOWS_ADMINISTRATOR:
             return "Required for system-level screen blocking and process monitoring"
         case _:
             return "Unknown permission"
@@ -121,7 +117,7 @@ def open_permission_settings(permission_type: PermissionType) -> bool:
     """
     try:
         match permission_type:
-            case PermissionType.ACCESSIBILITY:
+            case PermissionType.MACOS_ACCESSIBILITY:
                 if get_os() == SupportedOs.MAC_OS:
                     # Open System Preferences to Accessibility settings
                     subprocess.run([
@@ -130,7 +126,7 @@ def open_permission_settings(permission_type: PermissionType) -> bool:
                     ])
                     return True
                     
-            case PermissionType.ADMINISTRATOR:
+            case PermissionType.WINDOWS_ADMINISTRATOR:
                 if get_os() == SupportedOs.WINDOWS:
                     # For Windows, we can't directly grant admin privileges through settings
                     # The user needs to restart the application as administrator
@@ -147,7 +143,7 @@ def get_permission_instructions(permission_type: PermissionType) -> str:
     Get instructions for manually granting a permission.
     """
     match permission_type:
-        case PermissionType.ACCESSIBILITY:
+        case PermissionType.MACOS_ACCESSIBILITY:
             return (
                 "To grant Accessibility permission:\n"
                 "1. Open System Preferences → Security & Privacy → Privacy\n"
@@ -156,7 +152,7 @@ def get_permission_instructions(permission_type: PermissionType) -> str:
                 "4. Click the + button and add the Family Rules application\n"
                 "5. Ensure the checkbox next to the application is checked"
             )
-        case PermissionType.ADMINISTRATOR:
+        case PermissionType.WINDOWS_ADMINISTRATOR:
             return (
                 "To run with Administrator privileges:\n"
                 "1. Right-click on Command Prompt or PowerShell\n"

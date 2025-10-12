@@ -11,6 +11,9 @@ from basedir import Basedir
 from osutils import get_os, SupportedOs
 from translations import tr
 
+from guiutils import set_window_above_fullscreen
+
+
 
 class BlockScreenWindow(QWidget):
     def __init__(self):
@@ -61,10 +64,7 @@ class BlockScreenWindow(QWidget):
         
         show_on_all_desktops(self)
         
-        # Additional fullscreen support
-        if get_os() == SupportedOs.MAC_OS:
-            from guiutils import set_window_above_fullscreen
-            set_window_above_fullscreen(self)
+        set_window_above_fullscreen(self)
         
         # Timer to ensure window stays on top
         self.stay_on_top_timer = QTimer()

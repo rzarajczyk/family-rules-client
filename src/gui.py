@@ -44,8 +44,8 @@ class MainWindow(QMainWindow):
         self.check_permissions()
         
         self.ui.retranslateUi(self)
-        
-        # Update FamilyRules link with version number (after retranslateUi to avoid override)
+
+        # This must be done after retranslateUi!
         self.update_family_rules_link_with_version()
 
     def update_family_rules_link_with_version(self):

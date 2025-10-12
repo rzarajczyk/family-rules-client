@@ -78,7 +78,7 @@ class CountDownWindow(QWidget):
         try:
             match get_os():
                 case SupportedOs.MAC_OS:
-                    Popen(["afplay", self.tick_sound_path], stdout=DEVNULL, stderr=DEVNULL)
+                    Popen(["osascript", "-e", "beep"], stdout=DEVNULL, stderr=DEVNULL)
                 case SupportedOs.WINDOWS:
                     logging.warning("Playing sound not implemented on Windows")
                 case _:

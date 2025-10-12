@@ -1,7 +1,6 @@
 import logging
 import subprocess
 from enum import Enum, auto
-from playsound import playsound
 
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtWidgets import QWidget, QApplication
@@ -84,6 +83,7 @@ class CountDownWindow(QWidget):
                                stderr=subprocess.DEVNULL)
             else:
                 # Use playsound on other platforms
+                from playsound import playsound
                 playsound(self.tick_sound_path, block=False)
         except Exception as e:
             logging.warning("Unable to play a sound: %s", e)

@@ -27,6 +27,7 @@ class TranslationManager:
             # Get system locale
             system_locale = locale.getdefaultlocale()[0]
             if system_locale:
+                logging.info(f"System locale is {system_locale}")
                 # Extract language code (e.g., 'pl_PL' -> 'pl')
                 language_code = system_locale.split('_')[0].lower()
 
@@ -37,9 +38,10 @@ class TranslationManager:
                 else:
                     return 'en'
             else:
+                logging.info(f"System locale is None")
                 return 'en'
-        except Exception:
-            # Fallback to English if detection fails
+        except Exception as e:
+            logging.warning(f"Exception during detecting of the system locale", e)
             return 'en'
 
     def load_translation(self, language_code=None):

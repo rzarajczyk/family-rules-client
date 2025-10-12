@@ -15,9 +15,9 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QGridLayout, QGroupBox, QLabel,
-    QLineEdit, QMainWindow, QProgressBar, QPushButton,
-    QSizePolicy, QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QApplication, QComboBox, QGridLayout, QGroupBox,
+    QLabel, QLineEdit, QMainWindow, QProgressBar,
+    QPushButton, QSizePolicy, QVBoxLayout, QWidget)
 
 class Ui_InitialSetup(object):
     def setupUi(self, InitialSetup):
@@ -43,6 +43,27 @@ class Ui_InitialSetup(object):
         self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.verticalLayout.addWidget(self.label)
+
+        self.languageGroupBox = QGroupBox(self.centralwidget)
+        self.languageGroupBox.setObjectName(u"languageGroupBox")
+        sizePolicy1.setHeightForWidth(self.languageGroupBox.sizePolicy().hasHeightForWidth())
+        self.languageGroupBox.setSizePolicy(sizePolicy1)
+        self.languageGridLayout = QGridLayout(self.languageGroupBox)
+        self.languageGridLayout.setObjectName(u"languageGridLayout")
+        self.languageLabel = QLabel(self.languageGroupBox)
+        self.languageLabel.setObjectName(u"languageLabel")
+
+        self.languageGridLayout.addWidget(self.languageLabel, 0, 0, 1, 1)
+
+        self.languageComboBox = QComboBox(self.languageGroupBox)
+        self.languageComboBox.addItem("")
+        self.languageComboBox.addItem("")
+        self.languageComboBox.setObjectName(u"languageComboBox")
+
+        self.languageGridLayout.addWidget(self.languageComboBox, 0, 1, 1, 1)
+
+
+        self.verticalLayout.addWidget(self.languageGroupBox)
 
         self.groupBox = QGroupBox(self.centralwidget)
         self.groupBox.setObjectName(u"groupBox")
@@ -126,6 +147,11 @@ class Ui_InitialSetup(object):
     def retranslateUi(self, InitialSetup):
         InitialSetup.setWindowTitle(QCoreApplication.translate("InitialSetup", u"Family Rules Installation", None))
         self.label.setText(QCoreApplication.translate("InitialSetup", u"Family Rules Installation", None))
+        self.languageGroupBox.setTitle(QCoreApplication.translate("InitialSetup", u"Language", None))
+        self.languageLabel.setText(QCoreApplication.translate("InitialSetup", u"Select language:", None))
+        self.languageComboBox.setItemText(0, QCoreApplication.translate("InitialSetup", u"English", None))
+        self.languageComboBox.setItemText(1, QCoreApplication.translate("InitialSetup", u"Polski", None))
+
         self.groupBox.setTitle(QCoreApplication.translate("InitialSetup", u"Server Data", None))
         self.label_2.setText(QCoreApplication.translate("InitialSetup", u"Server URL:", None))
         self.serverInput.setText(QCoreApplication.translate("InitialSetup", u"https://familyrules.org", None))

@@ -172,17 +172,18 @@ class MainWindow(QMainWindow):
 class InitialSetupWorker(QThread):
     result_ready = Signal(list)
 
-    def __init__(self, server, username, password, instance):
+    def __init__(self, server, username, password, instance, language='en'):
         super().__init__()
         self.instance_name = instance
         self.password = password
         self.username = username
         self.server = server
+        self.language = language
 
     def run(self):
         response = Installer.install(self.server, self.username, self.password, self.instance_name)
         if response.status == RegisterInstanceStatus.OK:
-            Installer.save_settings(self.server, self.username, response.instance_id, self.instance_name, response.token)
+            Installer.save_settings(self.server, self.username, response.instance_id, self.instance_name, response.token, self.language)
             Installer.install_autorun()
             self.result_ready.emit([True, ""])
         else:
@@ -210,12 +211,39 @@ class InitialSetup(QMainWindow):
         self.ui = Ui_InitialSetup()
         self.ui.setupUi(self)
         # Ensure the window maintains its fixed 800px width
-        self.setFixedSize(800, 322)
+        self.setFixedSize(800, 380)  # Increased height to accommodate language selection
         self.ui.progressBar.setHidden(True)
         self.ui.installButton.clicked.connect(self.install)
         
+        # Set up language selection
+        self.ui.languageComboBox.currentIndexChanged.connect(self.on_language_changed)
+        
+        # Set initial language selection based on current translation
+        from translations import get_translation_manager
+        current_lang = get_translation_manager().get_current_language()
+        if current_lang == 'pl':
+            self.ui.languageComboBox.setCurrentIndex(1)
+        else:
+            self.ui.languageComboBox.setCurrentIndex(0)
+        
         # Retranslate UI after setup
         self.ui.retranslateUi(self)
+
+    def on_language_changed(self, index):
+        """Handle language selection change"""
+        from translations import get_translation_manager
+        
+        # Map index to language code
+        language_codes = ['en', 'pl']
+        if 0 <= index < len(language_codes):
+            language_code = language_codes[index]
+            
+            # Change language
+            translation_manager = get_translation_manager()
+            if translation_manager.change_language(language_code):
+                # Retranslate the UI
+                self.ui.retranslateUi(self)
+                print(f"Language changed to: {language_code}")
 
     def install(self):
         self.ui.progressBar.setHidden(False)
@@ -224,12 +252,18 @@ class InitialSetup(QMainWindow):
         self.ui.usernameInput.setDisabled(True)
         self.ui.passwordInput.setDisabled(True)
         self.ui.instanceName.setDisabled(True)
+        self.ui.languageComboBox.setDisabled(True)
 
         server = self.ui.serverInput.text()
         username = self.ui.usernameInput.text()
         password = self.ui.passwordInput.text()
         instance = self.ui.instanceName.text()
-        self.worker = InitialSetupWorker(server, username, password, instance)
+        
+        # Get selected language
+        language_codes = ['en', 'pl']
+        selected_language = language_codes[self.ui.languageComboBox.currentIndex()]
+        
+        self.worker = InitialSetupWorker(server, username, password, instance, selected_language)
         self.worker.result_ready.connect(self.done)
         self.worker.start()
 
@@ -271,6 +305,7 @@ class InitialSetup(QMainWindow):
         self.ui.serverInput.setDisabled(False)
         self.ui.usernameInput.setDisabled(False)
         self.ui.passwordInput.setDisabled(False)
+        self.ui.languageComboBox.setDisabled(False)
         self.ui.instanceName.setDisabled(False)
 
 

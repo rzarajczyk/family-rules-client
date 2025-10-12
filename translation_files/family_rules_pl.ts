@@ -218,6 +218,22 @@
         <source>Install!</source>
         <translation>Instaluj!</translation>
     </message>
+    <message>
+        <source>Language</source>
+        <translation>Język</translation>
+    </message>
+    <message>
+        <source>Select language:</source>
+        <translation>Wybierz język:</translation>
+    </message>
+    <message>
+        <source>English</source>
+        <translation>Angielski</translation>
+    </message>
+    <message>
+        <source>Polski</source>
+        <translation>Polski</translation>
+    </message>
 </context>
 <context>
     <name>SettingsWindow</name>
@@ -288,7 +304,6 @@
     <message>
         <source>Please grant the permission in the system settings that just opened, then click OK to restart the application.</source>
         <translation>Proszę przyznać uprawnienie w ustawieniach systemowych, które właśnie się otworzyły, a następnie kliknij OK, aby ponownie uruchomić aplikację.</translation>
-    </message>
     </message>
     <message>
         <source>OK - Restart app now</source>

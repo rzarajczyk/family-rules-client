@@ -47,7 +47,17 @@ class TranslationManager:
     def load_translation(self, language_code=None):
         """Load translation for the specified language"""
         if language_code is None:
-            language_code = self.detect_system_language()
+            # Try to load from settings first, fallback to system detection
+            try:
+                from Settings import Settings
+                if Settings.setup_completed():
+                    settings = Settings.load()
+                    language_code = settings.language
+                else:
+                    language_code = self.detect_system_language()
+            except Exception as e:
+                logging.warning(f"Failed to load language from settings: {e}")
+                language_code = self.detect_system_language()
 
         self.current_language = language_code
 
@@ -85,6 +95,20 @@ class TranslationManager:
     def is_polish(self):
         """Check if current language is Polish"""
         return self.current_language == 'pl'
+
+    def change_language(self, language_code):
+        """Change language and save to settings if available"""
+        success = self.load_translation(language_code)
+        if success:
+            # Save to settings if available
+            try:
+                from Settings import Settings
+                if Settings.setup_completed():
+                    settings = Settings.load()
+                    settings.update_language(language_code)
+            except Exception as e:
+                logging.warning(f"Failed to save language to settings: {e}")
+        return success
 
 
 # Global translation manager instance

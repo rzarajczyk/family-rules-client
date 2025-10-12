@@ -218,6 +218,22 @@
         <source>Install!</source>
         <translation>Install!</translation>
     </message>
+    <message>
+        <source>Language</source>
+        <translation>Language</translation>
+    </message>
+    <message>
+        <source>Select language:</source>
+        <translation>Select language:</translation>
+    </message>
+    <message>
+        <source>English</source>
+        <translation>English</translation>
+    </message>
+    <message>
+        <source>Polski</source>
+        <translation>Polish</translation>
+    </message>
 </context>
 <context>
     <name>SettingsWindow</name>

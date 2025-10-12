@@ -59,9 +59,6 @@
         </item>
         <item>
          <widget class="QPushButton" name="grantPermissionButton">
-          <property name="styleSheet">
-           <string>QPushButton { background-color: #1976d2; color: white; border: none; padding: 6px 12px; border-radius: 4px; } QPushButton:hover { background-color: #1565c0; }</string>
-          </property>
           <property name="text">
            <string>Grant Permission</string>
           </property>
@@ -97,6 +94,9 @@
       </item>
       <item row="3" column="2">
        <widget class="QPushButton" name="ok_button">
+        <property name="mouseTracking">
+         <bool>true</bool>
+        </property>
         <property name="text">
          <string>OK</string>
         </property>

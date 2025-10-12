@@ -6,7 +6,6 @@ from PySide6.QtWidgets import QDialog, QMainWindow, QMessageBox
 from Installer import Installer, UnregisterInstanceStatus
 from gen.ParentConfirm import Ui_ParentConfirm
 from gen.SettingsWindow import Ui_SettingsWindow
-from osutils import app_version
 from translations import tr
 
 
@@ -42,8 +41,6 @@ class SettingsWindow(QMainWindow):
         self.ui.resetButton.clicked.connect(self.parent_confirm.show)
         self.parent_confirm.accepted.connect(self.check_password)
         self.ui.progressBar.setHidden(True)
-        self.ui.versionLabel.setText(app_version())
-        
         
         # Retranslate UI after setup
         self.ui.retranslateUi(self)

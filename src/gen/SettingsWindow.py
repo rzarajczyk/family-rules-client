@@ -23,7 +23,7 @@ class Ui_SettingsWindow(object):
     def setupUi(self, SettingsWindow):
         if not SettingsWindow.objectName():
             SettingsWindow.setObjectName(u"SettingsWindow")
-        SettingsWindow.resize(534, 296)
+        SettingsWindow.resize(538, 211)
         self.centralwidget = QWidget(SettingsWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.verticalLayout = QVBoxLayout(self.centralwidget)
@@ -53,16 +53,6 @@ class Ui_SettingsWindow(object):
         self.label_2.setObjectName(u"label_2")
 
         self.gridLayout.addWidget(self.label_2, 0, 1, 1, 1)
-
-        self.label_3 = QLabel(self.groupBox_2)
-        self.label_3.setObjectName(u"label_3")
-
-        self.gridLayout.addWidget(self.label_3, 1, 0, 1, 1)
-
-        self.versionLabel = QLabel(self.groupBox_2)
-        self.versionLabel.setObjectName(u"versionLabel")
-
-        self.gridLayout.addWidget(self.versionLabel, 1, 1, 1, 1)
 
 
         self.verticalLayout.addWidget(self.groupBox_2)
@@ -94,8 +84,6 @@ class Ui_SettingsWindow(object):
         self.groupBox_2.setTitle(QCoreApplication.translate("SettingsWindow", u"About", None))
         self.label.setText(QCoreApplication.translate("SettingsWindow", u"Author:", None))
         self.label_2.setText(QCoreApplication.translate("SettingsWindow", u"Rafa\u0142 Zarajczyk, <a href=\"https://zarajczyk.pl\">https://zarajczyk.pl</a>", None))
-        self.label_3.setText(QCoreApplication.translate("SettingsWindow", u"Client version:", None))
-        self.versionLabel.setText(QCoreApplication.translate("SettingsWindow", u"v0", None))
         self.closeButton.setText(QCoreApplication.translate("SettingsWindow", u"Close", None))
     # retranslateUi
 

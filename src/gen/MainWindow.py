@@ -73,6 +73,7 @@ class Ui_MainWindow(object):
 
         self.ok_button = QPushButton(self.centralwidget)
         self.ok_button.setObjectName(u"ok_button")
+        self.ok_button.setMouseTracking(True)
 
         self.gridLayout.addWidget(self.ok_button, 3, 2, 1, 1)
 
@@ -102,7 +103,6 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"Screen Time", None))
         self.permissionWarningLabel.setStyleSheet(QCoreApplication.translate("MainWindow", u"QLabel { color: #d32f2f; font-weight: bold; }", None))
         self.permissionWarningLabel.setText(QCoreApplication.translate("MainWindow", u"Accessibility permission not granted", None))
-        self.grantPermissionButton.setStyleSheet(QCoreApplication.translate("MainWindow", u"QPushButton { background-color: #1976d2; color: white; border: none; padding: 6px 12px; border-radius: 4px; } QPushButton:hover { background-color: #1565c0; }", None))
         self.grantPermissionButton.setText(QCoreApplication.translate("MainWindow", u"Grant Permission", None))
         self.screen_time_label.setText(QCoreApplication.translate("MainWindow", u"0", None))
         self.label.setText(QCoreApplication.translate("MainWindow", u"Screen Time", None))

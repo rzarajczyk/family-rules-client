@@ -74,7 +74,7 @@ class CountDownWindow(QWidget):
         super().show()
     
     def _play_tick_sound(self):
-        playsound(Basedir.get() / 'resources' / 'tick.wav', block=False)
+        playsound(str(Basedir.get() / 'resources' / 'tick.wav'), block=False)
     
     def set_tick_sound_enabled(self, enabled: bool):
         """Enable or disable the tick sound during countdown"""

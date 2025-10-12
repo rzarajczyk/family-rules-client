@@ -18,7 +18,7 @@ from gen.MainWindow import Ui_MainWindow
 from gui_block import BlockScreenWindow
 from gui_countdown import CountDownWindow
 from gui_settings import SettingsWindow
-from osutils import is_dist, get_os, SupportedOs
+from osutils import is_dist, get_os, SupportedOs, app_version
 from permissions import (
     check_all_permissions, 
     get_required_permissions, 
@@ -44,6 +44,15 @@ class MainWindow(QMainWindow):
         self.check_permissions()
         
         self.ui.retranslateUi(self)
+        
+        # Update FamilyRules link with version number (after retranslateUi to avoid override)
+        self.update_family_rules_link_with_version()
+
+    def update_family_rules_link_with_version(self):
+        """Update the FamilyRules link to include version number"""
+        version = app_version()
+        link_text = f"[FamilyRules {version}](https://familyrules.org)"
+        self.ui.label_2.setText(link_text)
 
     def open_family_rules_website(self, link):
         """Open the FamilyRules website in the default browser"""

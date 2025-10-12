@@ -86,12 +86,6 @@ class BlockScreenWindow(QWidget):
     
     def show(self):
         """Override show to ensure proper blocking when displayed"""
-        # Check accessibility permissions first
-
-
-        # if get_os() == OperatingSystem.MAC_OS:
-        #     self._request_accessibility_permissions()
-        
         super().show()
         self.raise_()
         # Don't call activateWindow() since this window doesn't accept focus

@@ -76,13 +76,7 @@ class MainWindow(QMainWindow):
     def check_permissions(self):
         """Check permissions and show/hide the warning widget."""
         permissions = check_all_permissions()
-        required_permissions = get_required_permissions()
-        
-        if not required_permissions:
-            # No permissions required for this system
-            self.ui.permissionWarningWidget.setVisible(False)
-            return
-        
+
         # Check if all permissions are granted
         all_granted = all(status == PermissionStatus.GRANTED for status in permissions.values())
         

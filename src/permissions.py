@@ -66,7 +66,7 @@ def get_required_permissions() -> list[PermissionType]:
     """ Get the list of permissions required for the current operating system. """
     match get_os():
         case OperatingSystem.MAC_OS:
-            return [PermissionType.MACOS_ACCESSIBILITY]
+            return []
         case OperatingSystem.WINDOWS:
             return [PermissionType.WINDOWS_ADMINISTRATOR]
         case _:

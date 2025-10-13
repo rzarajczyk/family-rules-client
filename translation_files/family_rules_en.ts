@@ -20,8 +20,8 @@
         <translation>OK</translation>
     </message>
     <message>
-        <source>Accessibility permission not granted</source>
-        <translation>Accessibility permission not granted</translation>
+        <source>Missing permission</source>
+        <translation>Missing permission: </translation>
     </message>
     <message>
         <source>Grant Permission</source>

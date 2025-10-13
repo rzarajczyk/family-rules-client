@@ -5,7 +5,6 @@ from PySide6.QtWidgets import QWidget, QApplication
 
 from gen.BlockScreen import Ui_BlockScreen
 from GuiHelper import GuiHelper
-from osutils import get_os, OperatingSystem
 
 
 class BlockScreenWindow(QWidget):

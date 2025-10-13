@@ -9,26 +9,17 @@ from PySide6.QtGui import QIcon, QAction
 from PySide6.QtWidgets import QApplication, QSystemTrayIcon, QMenu, QMainWindow, \
     QTableWidgetItem, QHeaderView, QMessageBox
 
-from Installer import Installer, RegisterInstanceStatus
-from Launcher import Launcher
-from UptimeDb import UptimeDb, UsageUpdate
 from Basedir import Basedir
-from gen.InitialSetup import Ui_InitialSetup
-from gen.MainWindow import Ui_MainWindow
 from BlockScreenWindow import BlockScreenWindow
 from CountDownWindow import CountDownWindow
+from Installer import Installer, RegisterInstanceStatus
+from Launcher import Launcher
 from SettingsWindow import SettingsWindow
+from UptimeDb import UptimeDb, UsageUpdate
+from gen.InitialSetup import Ui_InitialSetup
+from gen.MainWindow import Ui_MainWindow
 from osutils import is_dist, get_os, OperatingSystem, app_version
-from permissions import (
-    check_all_permissions, 
-    get_required_permissions, 
-    get_permission_name, 
-    get_permission_description,
-    get_permission_instructions,
-    open_permission_settings,
-    PermissionStatus,
-    PermissionType
-)
+from permissions import Permissions
 from translations import tr
 
 
@@ -37,12 +28,12 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-        
+        self.permissions = Permissions.instance()
+
         self.ui.label_2.linkActivated.connect(self.open_family_rules_website)
-        self.ui.grantPermissionButton.clicked.connect(self.grant_permission)
-        
+
         self.check_permissions()
-        
+
         self.ui.retranslateUi(self)
 
         # This must be done after retranslateUi!
@@ -74,93 +65,23 @@ class MainWindow(QMainWindow):
             self.ui.table.setItem(i, 1, item_duration)
 
     def check_permissions(self):
-        """Check permissions and show/hide the warning widget."""
-        permissions = check_all_permissions()
-
-        # Check if all permissions are granted
-        all_granted = all(status == PermissionStatus.GRANTED for status in permissions.values())
-        
-        if all_granted:
-            # All permissions granted, hide warning
+        if self.permissions.all_granted():
             self.ui.permissionWarningLabel.setVisible(False)
             self.ui.grantPermissionButton.setVisible(False)
             # Set layout height to 0 to remove blank space
             self.ui.permissionWarningLayout.setContentsMargins(0, 0, 0, 0)
             self.ui.permissionWarningLayout.setSpacing(0)
         else:
-            # Missing permissions, show warning
             self.ui.permissionWarningLabel.setVisible(True)
             self.ui.grantPermissionButton.setVisible(True)
             # Restore normal margins and spacing
             self.ui.permissionWarningLayout.setContentsMargins(12, 8, 12, 8)
             self.ui.permissionWarningLayout.setSpacing(0)
-            # Update the warning text to be more specific
-            missing_permissions = []
-            for perm_type, status in permissions.items():
-                if status != PermissionStatus.GRANTED:
-                    missing_permissions.append(get_permission_name(perm_type))
-            
-            if missing_permissions:
-                warning_text = tr("Accessibility permission not granted")
-                self.ui.permissionWarningLabel.setText(warning_text)
 
-    def grant_permission(self):
-        """Attempt to grant the required permission."""
-        required_permissions = get_required_permissions()
-        permissions = check_all_permissions()
-        
-        # Find the first permission that's not granted
-        for perm_type in required_permissions:
-            if permissions.get(perm_type) != PermissionStatus.GRANTED:
-                self._handle_permission_grant(perm_type)
-                break
-
-    def _handle_permission_grant(self, permission_type: PermissionType):
-        """Handle granting a specific permission type."""
-        permission_name = get_permission_name(permission_type)
-        permission_description = get_permission_description(permission_type)
-        instructions = get_permission_instructions(permission_type)
-        
-        # Try to open system settings first
-        if open_permission_settings(permission_type):
-            msg_box = QMessageBox()
-            msg_box.setWindowTitle(tr("Permission Settings"))
-            msg_box.setText(tr("Opening system settings for {permission_name}...").format(permission_name=permission_name))
-            msg_box.setInformativeText(tr("Please grant the permission in the system settings that just opened, then click OK to restart the application."))
-            msg_box.setIcon(QMessageBox.Icon.Information)
-            msg_box.setStandardButtons(QMessageBox.StandardButton.Ok)
-            ok_button = msg_box.button(QMessageBox.StandardButton.Ok)
-            ok_button.setText(tr("OK - Restart app now"))
-            ok_button.clicked.connect(self.restart_application)
-            msg_box.exec()
-        else:
-            # Show manual instructions
-            msg_box = QMessageBox()
-            msg_box.setWindowTitle(tr("Grant {permission_name}").format(permission_name=permission_name))
-            msg_box.setText(tr("To grant {permission_name}:").format(permission_name=permission_name))
-            msg_box.setInformativeText(instructions)
-            msg_box.setDetailedText(permission_description)
-            msg_box.setIcon(QMessageBox.Icon.Information)
-            msg_box.setStandardButtons(QMessageBox.StandardButton.Ok)
-            msg_box.exec()
-
-    def restart_application(self):
-        """Restart the application."""
-        import subprocess
-        import sys
-        import os
-        
-        # Get the current script path
-        script_path = os.path.abspath(sys.argv[0])
-        
-        # Close the current application
-        QApplication.quit()
-        
-        # Start a new instance of the application
-        subprocess.Popen([sys.executable, script_path] + sys.argv[1:])
-        
-        # Exit the current process
-        sys.exit(0)
+            first_missing_permission = self.permissions.get_missing_permissions()[0]
+            warning_text = tr("Missing permission")
+            self.ui.permissionWarningLabel.setText(f"{warning_text}: {first_missing_permission.name}")
+            self.ui.grantPermissionButton.clicked.connect(lambda: first_missing_permission.grant())
 
 
 class InitialSetupWorker(QThread):
@@ -177,7 +98,8 @@ class InitialSetupWorker(QThread):
     def run(self):
         response = Installer.install(self.server, self.username, self.password, self.instance_name)
         if response.status == RegisterInstanceStatus.OK:
-            Installer.save_settings(self.server, self.username, response.instance_id, self.instance_name, response.token, self.language)
+            Installer.save_settings(self.server, self.username, response.instance_id, self.instance_name,
+                                    response.token, self.language)
             Installer.install_autorun()
             self.result_ready.emit([True, ""])
         else:
@@ -208,10 +130,10 @@ class InitialSetup(QMainWindow):
         self.setFixedSize(800, 350)  # Compact height with unified layout
         self.ui.progressBar.setHidden(True)
         self.ui.installButton.clicked.connect(self.install)
-        
+
         # Set up language selection
         self.ui.languageComboBox.currentIndexChanged.connect(self.on_language_changed)
-        
+
         # Set initial language selection based on current translation
         from translations import get_translation_manager
         current_lang = get_translation_manager().get_current_language()
@@ -219,19 +141,19 @@ class InitialSetup(QMainWindow):
             self.ui.languageComboBox.setCurrentIndex(1)
         else:
             self.ui.languageComboBox.setCurrentIndex(0)
-        
+
         # Retranslate UI after setup
         self.ui.retranslateUi(self)
 
     def on_language_changed(self, index):
         """Handle language selection change"""
         from translations import get_translation_manager
-        
+
         # Map index to language code
         language_codes = ['en', 'pl']
         if 0 <= index < len(language_codes):
             language_code = language_codes[index]
-            
+
             # Change language
             translation_manager = get_translation_manager()
             if translation_manager.change_language(language_code):
@@ -252,11 +174,11 @@ class InitialSetup(QMainWindow):
         username = self.ui.usernameInput.text()
         password = self.ui.passwordInput.text()
         instance = self.ui.instanceName.text()
-        
+
         # Get selected language
         language_codes = ['en', 'pl']
         selected_language = language_codes[self.ui.languageComboBox.currentIndex()]
-        
+
         self.worker = InitialSetupWorker(server, username, password, instance, selected_language)
         self.worker.result_ready.connect(self.done)
         self.worker.start()

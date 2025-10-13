@@ -10,7 +10,7 @@ from PySide6.QtWidgets import QApplication, QSystemTrayIcon, QMenu, QMainWindow,
     QTableWidgetItem, QHeaderView, QMessageBox
 
 from Basedir import Basedir
-from BlockScreenWindow import BlockScreenWindow
+from BlockScreenWindow import BlockScreenWindow, MultiMonitorBlockScreenManager
 from CountDownWindow import CountDownWindow
 from Installer import Installer, RegisterInstanceStatus
 from Launcher import Launcher
@@ -246,7 +246,7 @@ class Gui:
         self.app.setQuitOnLastWindowClosed(False)
 
         # self.top_wight_window = TopRightWindow()
-        self.block_access_window = BlockScreenWindow()
+        self.block_access_window = MultiMonitorBlockScreenManager()
         self.main_window = MainWindow()
         self.settings_window = SettingsWindow()
         self.count_down_window = CountDownWindow()

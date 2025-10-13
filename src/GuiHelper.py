@@ -20,6 +20,10 @@ class GuiHelper:
         """ This function should be called in a timer every 100ms! """
         pass
 
+    def create_multi_monitor_blocking_windows(self, window_class, *args, **kwargs):
+        """Create blocking windows for all monitors and return a list of window instances"""
+        pass
+
     @staticmethod
     def instance():
         match get_os():
@@ -233,6 +237,34 @@ class MacOsGuiHelper(GuiHelper):
         except Exception as e:
             logging.error(f"❌ Failed to switch to first desktop: {e}")
 
+    def create_multi_monitor_blocking_windows(self, window_class, *args, **kwargs):
+        """Create blocking windows for all monitors and return a list of window instances"""
+        from PySide6.QtWidgets import QApplication
+        
+        windows = []
+        screens = QApplication.screens()
+        
+        for i, screen in enumerate(screens):
+            # Create a new window instance for each screen
+            window = window_class(*args, **kwargs)
+            
+            # Get screen geometry
+            screen_geometry = screen.geometry()
+            
+            # Position and size the window for this specific screen
+            window.move(screen_geometry.x(), screen_geometry.y())
+            window.setFixedSize(screen_geometry.width(), screen_geometry.height())
+            
+            # Apply all the necessary settings for this window
+            self.show_on_all_desktops(window)
+            self.set_borderless(window)
+            self.set_window_above_fullscreen(window)
+            
+            windows.append(window)
+            logging.info(f"Created blocking window for monitor {i+1}: {screen_geometry.width()}x{screen_geometry.height()} at ({screen_geometry.x()}, {screen_geometry.y()})")
+        
+        return windows
+
 class WinGuiHelper(GuiHelper):
     _system_input_blocked = False
 
@@ -317,3 +349,31 @@ class WinGuiHelper(GuiHelper):
 
     def push_to_top_tick(self, window, counter):
         self.set_window_above_fullscreen(window)
+
+    def create_multi_monitor_blocking_windows(self, window_class, *args, **kwargs):
+        """Create blocking windows for all monitors and return a list of window instances"""
+        from PySide6.QtWidgets import QApplication
+        
+        windows = []
+        screens = QApplication.screens()
+        
+        for i, screen in enumerate(screens):
+            # Create a new window instance for each screen
+            window = window_class(*args, **kwargs)
+            
+            # Get screen geometry
+            screen_geometry = screen.geometry()
+            
+            # Position and size the window for this specific screen
+            window.move(screen_geometry.x(), screen_geometry.y())
+            window.setFixedSize(screen_geometry.width(), screen_geometry.height())
+            
+            # Apply all the necessary settings for this window
+            self.show_on_all_desktops(window)
+            self.set_borderless(window)
+            self.set_window_above_fullscreen(window)
+            
+            windows.append(window)
+            logging.info(f"Created blocking window for monitor {i+1}: {screen_geometry.width()}x{screen_geometry.height()} at ({screen_geometry.x()}, {screen_geometry.y()})")
+        
+        return windows

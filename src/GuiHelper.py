@@ -16,7 +16,7 @@ class GuiHelper:
     def block_system_input(self, block: bool):
         pass
 
-    def push_to_top_tick(self, window):
+    def push_to_top_tick(self, window, counter):
         """ This function should be called in a timer every 100ms! """
         pass
 
@@ -306,7 +306,6 @@ class WinGuiHelper(GuiHelper):
             try:
                 # Set window to appear on all virtual desktops and above fullscreen
                 ctypes.windll.user32.SetWindowDisplayAffinity(hwnd, 0)
-                logging.info("Windows window set above fullscreen applications")
             except Exception as e:
                 logging.warning(f"Windows fullscreen override failed: {e}")
 
@@ -314,41 +313,7 @@ class WinGuiHelper(GuiHelper):
             logging.error(f"Failed to set Windows window above fullscreen: {e}")
 
     def block_system_input(self, block: bool):
-        global _system_input_blocked
-        if WinGuiHelper._system_input_blocked == block:
-            return
+        logging.debug("System blocking input not required on Windows")
 
-        WinGuiHelper._system_input_blocked = block
-
-        try:
-            import ctypes
-            from ctypes import wintypes
-
-            if block:
-                # Block input using Windows API
-                # This is a simplified version - full implementation would require hooks
-                logging.info("System input blocking requested on Windows")
-            else:
-                # Restore input
-                logging.debug("System input restored on Windows")
-
-        except Exception as e:
-            logging.error(f"Failed to block system input on Windows: {e}")
-
-    def push_to_top_tick(self, window):
+    def push_to_top_tick(self, window, counter):
         self.set_window_above_fullscreen(window)
-        # try:
-        #     # Force window to front on Windows
-        #     hwnd = int(window.winId())
-        #     HWND_TOPMOST = -1
-        #     SWP_NOMOVE = 0x0002
-        #     SWP_NOSIZE = 0x0001
-        #     SWP_NOACTIVATE = 0x0010
-        #
-        #     import ctypes
-        #     ctypes.windll.user32.SetWindowPos(
-        #         hwnd, HWND_TOPMOST, 0, 0, 0, 0,
-        #         SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE
-        #     )
-        # except Exception as e:
-        #     logging.error(f"Failed to ensure stay on top: {e}")

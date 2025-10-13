@@ -63,7 +63,7 @@ class Settings:
             json.dump(settings_json, f, indent=4)
 
     @staticmethod
-    def create(server, username, instance_id, instance_name, instance_token, language='en'):
+    def create(server, username, instance_id, instance_name, instance_token, language):
         settings = Settings(server, username, instance_id, instance_name, instance_token, language)
         Settings.save(settings)
 

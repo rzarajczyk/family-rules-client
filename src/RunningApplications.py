@@ -1,3 +1,5 @@
+import logging
+
 from osutils import get_os, OperatingSystem
 
 
@@ -22,8 +24,12 @@ class RunningApplications:
         hwnd = win32gui.GetForegroundWindow()
         _, pid = win32process.GetWindowThreadProcessId(hwnd)
         if pid is not None:
-            name = psutil.Process(pid).exe()
-            return {name: pid}
+            try:
+                name = psutil.Process(pid).exe()
+                return {name: pid}
+            except Exception as e:
+                logging.warning(f"Error during checking the name of running application with PID {{pid}}", e)
+                return {}
         else:
             return {}
 

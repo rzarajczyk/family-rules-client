@@ -82,8 +82,8 @@ class Installer:
             return RegisterInstanceResponse(RegisterInstanceStatus.SERVER_ERROR, message=str(e))
 
     @staticmethod
-    def save_settings(server, username, instance_id, instance_name, token):
-        Settings.create(server, username, instance_id, instance_name, token)
+    def save_settings(server, username, instance_id, instance_name, token, language):
+        Settings.create(server, username, instance_id, instance_name, token, language)
 
     @staticmethod
     def install_autorun():

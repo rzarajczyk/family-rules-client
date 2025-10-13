@@ -1,5 +1,3 @@
-import logging
-from subprocess import Popen, DEVNULL
 from enum import Enum, auto
 
 from PySide6.QtCore import Qt, QTimer
@@ -9,6 +7,7 @@ from gen.CountDownWindow import Ui_CountDownWindow
 from GuiHelper import GuiHelper
 from osutils import get_os, OperatingSystem
 from Basedir import Basedir
+from Beep import Beep
 
 
 class CountDownState(Enum):
@@ -23,21 +22,15 @@ class CountDownWindow(QWidget):
         self.ui = Ui_CountDownWindow()
         self.ui.setupUi(self)
         self.guihelper = GuiHelper.instance()
+        self.beep = Beep.instance()
         
         # Retranslate UI after setup
         self.ui.retranslateUi(self)
-        
-        match get_os():
-            case OperatingSystem.MAC_OS:
-                self.setWindowFlags(
-                    Qt.Window | Qt.CustomizeWindowHint | Qt.WindowTitleHint | Qt.WindowSystemMenuHint | Qt.WindowStaysOnTopHint | Qt.FramelessWindowHint
-                )
-            case OperatingSystem.WINDOWS:
-                self.setWindowFlags(
-                    Qt.Tool | Qt.Window | Qt.CustomizeWindowHint | Qt.WindowTitleHint | Qt.WindowSystemMenuHint | Qt.WindowStaysOnTopHint | Qt.FramelessWindowHint
-                )
-            case _:
-                raise Exception("Unsupported operating system")
+
+        self.setWindowFlags(
+            Qt.Window | Qt.CustomizeWindowHint | Qt.WindowTitleHint | Qt.WindowSystemMenuHint | Qt.WindowStaysOnTopHint | Qt.FramelessWindowHint
+        )
+
         self.setAttribute(Qt.WA_TranslucentBackground)
         screen_geometry = QApplication.primaryScreen().availableGeometry()
         self.move(screen_geometry.width() - self.width(), 0)
@@ -76,26 +69,7 @@ class CountDownWindow(QWidget):
         super().show()
     
     def _play_tick_sound(self):
-        try:
-            match get_os():
-                case OperatingSystem.MAC_OS:
-                    Popen(["osascript", "-e", "beep"], stdout=DEVNULL, stderr=DEVNULL)
-                case OperatingSystem.WINDOWS:
-                    logging.warning("Playing sound not implemented on Windows")
-                case _:
-                    raise Exception("Unsupported operating system")
-                # Use playsound on other platforms
-                # from playsound import playsound
-                # playsound(self.tick_sound_path, block=False)
-        except Exception as e:
-            logging.warning("Unable to play a sound: %s", e)
-
-    # def paintEvent(self, event):
-    #     # This method is used to paint the window with a transparent background
-    #     painter = QPainter(self)
-    #     painter.setCompositionMode(QPainter.CompositionMode_Clear)
-    #     painter.fillRect(self.rect(), Qt.transparent)
-    #     painter.end()
+        self.beep.beep()
 
     def tick(self):
         if self.state.value == CountDownState.IN_PROGRESS.value:

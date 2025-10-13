@@ -10,7 +10,7 @@ from PySide6.QtWidgets import QApplication, QSystemTrayIcon, QMenu, QMainWindow,
     QTableWidgetItem, QHeaderView, QMessageBox
 
 from Basedir import Basedir
-from BlockScreenWindow import BlockScreenWindow, MultiMonitorBlockScreenManager
+from MultiMonitorBlockScreenManager import MultiMonitorBlockScreenManager
 from CountDownWindow import CountDownWindow
 from Installer import Installer, RegisterInstanceStatus
 from Launcher import Launcher

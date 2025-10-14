@@ -100,7 +100,7 @@ class InitialSetupWorker(QThread):
         if response.status == RegisterInstanceStatus.OK:
             Installer.save_settings(self.server, self.username, response.instance_id, self.instance_name,
                                     response.token, self.language)
-            Installer.install_autorun()
+            Installer.install_autorun_with_autorespawn()
             self.result_ready.emit([True, ""])
         else:
             match response.status:

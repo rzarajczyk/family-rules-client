@@ -70,7 +70,7 @@ if __name__ == "__main__":
     if not Settings.setup_completed():
         gui.setup_initial_setup_ui()
     else:
-        Installer.install_autorun()
+        Installer.install_autorun_with_autorespawn()
         gui.setup_main_ui(
             uptime_tick_interval_ms=TICK_INTERVAL_SECONDS * 1000,
             uptime_tick_function=uptime_tick,

@@ -77,7 +77,6 @@ class WindowsAutorunWithAutorespawn(AutorunWithAutorespawn):
     def install(self):
         import datetime
         import os
-        import tempfile
 
         app_path = str(dist_path().absolute())
         
@@ -151,9 +150,8 @@ Else
 End If
 '''
         
-        # Create temporary VBScript file
-        temp_dir = tempfile.gettempdir()
-        vbscript_file = os.path.join(temp_dir, "FamilyRules_Wrapper.vbs")
+        # Create VBScript file in app data directory for persistence
+        vbscript_file = path_to_str(app_data() / "FamilyRulesWatchdog.vbs")
         
         with open(vbscript_file, 'w') as f:
             f.write(vbscript_content)
@@ -183,7 +181,6 @@ End If
     def uninstall(self):
         import subprocess
         import os
-        import tempfile
         
         # Delete the scheduled task
         task_name = f"FamilyRules_{os.getenv('USERNAME')}"
@@ -195,8 +192,9 @@ End If
             logging.error(f"Failed to delete task '{task_name}'. Error: {result.stderr}")
         
         # Clean up the wrapper script
-        temp_dir = tempfile.gettempdir()
-        vbscript_file = os.path.join(temp_dir, "FamilyRules_Wrapper.vbs")
+        from pathutils import path_to_str
+        from osutils import app_data
+        vbscript_file = path_to_str(app_data() / "FamilyRulesWatchdog.vbs")
         
         try:
             if os.path.exists(vbscript_file):

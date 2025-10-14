@@ -12,7 +12,7 @@ from global_exception_handler import global_exception_handler
 from gui import Gui
 from osutils import app_data
 from pathutils import path_to_str
-from osutils import make_sure_only_one_instance_is_running
+from osutils import make_sure_only_one_instance_is_running, is_dist
 from translations import initialize_translations
 from UptimeChecker import UptimeChecker
 
@@ -25,10 +25,8 @@ Basedir.init(os.path.dirname(__file__))
 logging.basicConfig(
     level=logging.INFO,
     format='[%(asctime)s] {%(pathname)s:%(lineno)d} %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler(path_to_str(app_data() / "output.log")),
-        logging.StreamHandler(sys.stdout)
-    ]
+    handlers=[logging.FileHandler(path_to_str(app_data() / "output.log"))] +
+             ([logging.StreamHandler(sys.stdout)] if not is_dist() else [])
 )
 
 if DEBUG_HTTP_REQUESTS:

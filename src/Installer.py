@@ -83,10 +83,10 @@ class Installer:
 
     @staticmethod
     def install_autorun_with_autorespawn():
-        # if is_dist():
+        if is_dist():
             AutorunWithAutorespawn.instance().install()
-        # else:
-        #     logging.info("installing autorun skipped in non-dist version")
+        else:
+            logging.info("installing autorun skipped in non-dist version")
 
     @staticmethod
     def uninstall(username, password) -> UnregisterInstanceStatus:

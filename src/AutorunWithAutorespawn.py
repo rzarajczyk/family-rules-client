@@ -77,10 +77,12 @@ class WindowsAutorunWithAutorespawn(AutorunWithAutorespawn):
     def install(self):
         import datetime
         import os
+        import tempfile
 
         app_path = str(dist_path().absolute())
-
-        self._install_registry_run(app_path)
+        
+        # Create a wrapper script that checks if FamilyRules is already running
+        wrapper_script = self._create_wrapper_script(app_path)
 
         near_future = datetime.datetime.now() + datetime.timedelta(minutes=2)
         near_future_time_str = near_future.strftime("%H:%M")
@@ -90,7 +92,7 @@ class WindowsAutorunWithAutorespawn(AutorunWithAutorespawn):
             "schtasks",
             "/create",
             "/tn", f"FamilyRules_{os.getenv('USERNAME')}",
-            "/tr", f'"{app_path}"',
+            "/tr", f'wscript.exe "{wrapper_script}"',
             "/sc", "MINUTE",
             "/mo", "1",
             "/st", near_future_time_str,
@@ -99,16 +101,64 @@ class WindowsAutorunWithAutorespawn(AutorunWithAutorespawn):
             "/f"
         ])
 
-    def _install_registry_run(self, app_path):
-        import winreg as reg
-        key_path = r"SOFTWARE\Microsoft\Windows\CurrentVersion\Run"
+    def _create_wrapper_script(self, app_path):
+        import tempfile
+        import os
+        from pathutils import path_to_str
+        from osutils import app_data
+        
+        log_file = path_to_str(app_data() / "checker.log")
+        
+        # Create a VBScript that handles everything - checking and starting FamilyRules
+        vbscript_content = f'''Set objShell = CreateObject("WScript.Shell")
+Set objFSO = CreateObject("Scripting.FileSystemObject")
 
-        try:
-            key = reg.OpenKey(reg.HKEY_CURRENT_USER, key_path, 0, reg.KEY_SET_VALUE)
-            reg.SetValueEx(key, "FamilyRules", 0, reg.REG_SZ, f"\"{app_path}\"")
-            reg.CloseKey(key)
-        except WindowsError as e:
-            logging.error("Unable to set registry value for FamilyRules", e)
+' Log function
+Sub WriteLog(message)
+    Dim timestamp
+    timestamp = Now()
+    Dim logEntry
+    logEntry = FormatDateTime(timestamp, 2) & " " & FormatDateTime(timestamp, 3) & " - " & message
+    
+    ' Open log file for appending
+    Dim logFile
+    Set logFile = objFSO.OpenTextFile("{log_file}", 8, True)
+    logFile.WriteLine logEntry
+    logFile.Close
+End Sub
+
+' Check if FamilyRules is already running
+WriteLog "Checking if FamilyRules is running..."
+
+' Use WMI to check for running processes
+Set objWMIService = GetObject("winmgmts:\\\\.\\root\\cimv2")
+Set colProcesses = objWMIService.ExecQuery("SELECT * FROM Win32_Process WHERE Name = 'FamilyRules.exe'")
+
+If colProcesses.Count > 0 Then
+    WriteLog "FamilyRules is already running, skipping start"
+Else
+    WriteLog "FamilyRules not running, starting application..."
+    
+    ' Start FamilyRules invisibly
+    On Error Resume Next
+    objShell.Run """{app_path}""", 0, False
+    If Err.Number = 0 Then
+        WriteLog "Successfully started FamilyRules"
+    Else
+        WriteLog "Failed to start FamilyRules: " & Err.Description
+    End If
+    On Error GoTo 0
+End If
+'''
+        
+        # Create temporary VBScript file
+        temp_dir = tempfile.gettempdir()
+        vbscript_file = os.path.join(temp_dir, "FamilyRules_Wrapper.vbs")
+        
+        with open(vbscript_file, 'w') as f:
+            f.write(vbscript_content)
+        
+        return vbscript_file
 
 
     def __windows_schtasks(self, cmd):
@@ -133,6 +183,9 @@ class WindowsAutorunWithAutorespawn(AutorunWithAutorespawn):
     def uninstall(self):
         import subprocess
         import os
+        import tempfile
+        
+        # Delete the scheduled task
         task_name = f"FamilyRules_{os.getenv('USERNAME')}"
         result = subprocess.run(['schtasks', '/Delete', '/TN', task_name, '/F'],
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
@@ -140,14 +193,14 @@ class WindowsAutorunWithAutorespawn(AutorunWithAutorespawn):
             logging.info(f"Task '{task_name}' deleted successfully.")
         else:
             logging.error(f"Failed to delete task '{task_name}'. Error: {result.stderr}")
-
-        key_path = r"SOFTWARE\Microsoft\Windows\CurrentVersion\Run"
-
-        import winreg as reg
-
+        
+        # Clean up the wrapper script
+        temp_dir = tempfile.gettempdir()
+        vbscript_file = os.path.join(temp_dir, "FamilyRules_Wrapper.vbs")
+        
         try:
-            key = reg.OpenKey(reg.HKEY_CURRENT_USER, key_path, 0, reg.KEY_SET_VALUE)
-            reg.DeleteValue(key, "FamilyRules")
-            reg.CloseKey(key)
-        except WindowsError as e:
-            logging.error("Unable to remove registry value for FamilyRules", e)
+            if os.path.exists(vbscript_file):
+                os.remove(vbscript_file)
+                logging.info("VBScript wrapper removed successfully.")
+        except Exception as e:
+            logging.error(f"Failed to remove wrapper script: {e}")

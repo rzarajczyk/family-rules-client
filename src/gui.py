@@ -1,6 +1,5 @@
 import os
 import sys
-import webbrowser
 from datetime import timedelta
 
 from PySide6 import QtWidgets, QtCore, QtGui
@@ -17,71 +16,10 @@ from Launcher import Launcher
 from SettingsWindow import SettingsWindow
 from UptimeDb import UptimeDb, UsageUpdate
 from gen.InitialSetup import Ui_InitialSetup
-from gen.MainWindow import Ui_MainWindow
-from osutils import is_dist, get_os, OperatingSystem, app_version
-from permissions import Permissions
+from osutils import is_dist, get_os, OperatingSystem
+from AppDb import AppDb
+from MainWindow import MainWindow
 from translations import tr
-
-
-class MainWindow(QMainWindow):
-    def __init__(self):
-        super().__init__()
-        self.ui = Ui_MainWindow()
-        self.ui.setupUi(self)
-        self.permissions = Permissions.instance()
-
-        self.ui.label_2.linkActivated.connect(self.open_family_rules_website)
-
-        self.check_permissions()
-
-        self.ui.retranslateUi(self)
-
-        # This must be done after retranslateUi!
-        self.update_family_rules_link_with_version()
-
-    def update_family_rules_link_with_version(self):
-        """Update the FamilyRules link to include version number"""
-        version = app_version()
-        link_text = f"[FamilyRules {version}](https://familyrules.org)"
-        self.ui.label_2.setText(link_text)
-
-    def open_family_rules_website(self, link):
-        """Open the FamilyRules website in the default browser"""
-        webbrowser.open(link)
-
-    def update_screen_time(self, time: timedelta):
-        self.ui.screen_time_label.setText(str(time))
-
-    def update_applications_usage(self, apps: dict[str, timedelta]):
-        self.ui.table.setHorizontalHeaderLabels([tr("Application"), tr("Runtime")])
-        self.ui.table.setRowCount(len(apps))
-        self.ui.table.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeMode.Stretch)
-        self.ui.table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.ResizeToContents)
-        for i, app in enumerate(apps):
-            time = apps[app]
-            item_name = QTableWidgetItem(app)
-            item_duration = QTableWidgetItem(str(time))
-            self.ui.table.setItem(i, 0, item_name)
-            self.ui.table.setItem(i, 1, item_duration)
-
-    def check_permissions(self):
-        if self.permissions.all_granted():
-            self.ui.permissionWarningLabel.setVisible(False)
-            self.ui.grantPermissionButton.setVisible(False)
-            # Set layout height to 0 to remove blank space
-            self.ui.permissionWarningLayout.setContentsMargins(0, 0, 0, 0)
-            self.ui.permissionWarningLayout.setSpacing(0)
-        else:
-            self.ui.permissionWarningLabel.setVisible(True)
-            self.ui.grantPermissionButton.setVisible(True)
-            # Restore normal margins and spacing
-            self.ui.permissionWarningLayout.setContentsMargins(12, 8, 12, 8)
-            self.ui.permissionWarningLayout.setSpacing(0)
-
-            first_missing_permission = self.permissions.get_missing_permissions()[0]
-            warning_text = tr("Missing permission")
-            self.ui.permissionWarningLabel.setText(f"{warning_text}: {first_missing_permission.name}")
-            self.ui.grantPermissionButton.clicked.connect(lambda: first_missing_permission.grant())
 
 
 class InitialSetupWorker(QThread):
@@ -289,18 +227,24 @@ class Gui:
         tray_icon.activated.connect(menu_triggered)
         tray_icon.show()
 
-        db = UptimeDb()
+        uptime_db = UptimeDb()
+        app_db = AppDb()
 
         Launcher.run()
 
         def uptime_tick():
             usage_update: UsageUpdate = uptime_tick_function()
-            absolute_usage = db.update(usage_update)
+            absolute_usage = uptime_db.update(usage_update)
             self.main_window.update_screen_time(absolute_usage.screen_time)
-            self.main_window.update_applications_usage(absolute_usage.applications)
+            apps: dict[str, timedelta] = absolute_usage.applications
+            converted_apps = []
+            for app_path, time in apps.items():
+                app = app_db[app_path]
+                converted_apps.append((app, time))
+            self.main_window.update_applications_usage(converted_apps)
 
         def report_tick(first_run=False):
-            usage = db.get()
+            usage = uptime_db.get()
             report_tick_function(self, usage, first_run)
 
         uptime_tick()
@@ -314,7 +258,7 @@ class Gui:
         report_timer.start(report_tick_interval_ms)
 
         self.dont_gc += [
-            tray_icon, tray_menu, uptime_timer, report_timer, db
+            tray_icon, tray_menu, uptime_timer, report_timer, uptime_db
         ]
 
     def run(self):

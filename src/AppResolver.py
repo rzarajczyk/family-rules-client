@@ -282,7 +282,7 @@ class WinAppResolver(AppResolver):
         except Exception as e:
             logging.warn("Failed to get icon for app", e)
             return None
-    
+
     def _sanitize_filename(self, filename: str) -> str:
         """Sanitize filename for use in file system."""
         import re
@@ -291,166 +291,9 @@ class WinAppResolver(AppResolver):
         # Remove extra spaces and limit length
         sanitized = re.sub(r'\s+', '_', sanitized.strip())
         return sanitized[:50]  # Limit to 50 characters
-    
-    def _extract_icon_from_exe(self, exe_path: str, output_path: str) -> str:
-        """Extract icon from Windows executable and save as PNG."""
-        try:
-            import win32gui
-            import win32con
-            import win32api
-            import struct
-            import os
-            
-            # Get the icon from the executable
-            large_icon, small_icon = win32gui.ExtractIconEx(exe_path, 0)
-            
-            if not large_icon and not small_icon:
-                return None
-            
-            # Use the large icon if available, otherwise use small icon
-            icon_handle = large_icon[0] if large_icon else small_icon[0]
-            
-            # Get icon info
-            icon_info = win32gui.GetIconInfo(icon_handle)
-            hbm = icon_info[3]  # hbmColor
-            
-            if not hbm:
-                # Try to create a simple colored icon as fallback
-                return self._create_simple_icon(output_path)
-            
-            # Get bitmap info
-            bmp_info = win32gui.GetObject(hbm)
-            width = bmp_info.bmWidth
-            height = bmp_info.bmHeight
-            
-            # Create a device context and bitmap
-            hdc = win32gui.CreateCompatibleDC(0)
-            hdc_mem = win32gui.CreateCompatibleDC(hdc)
-            hbm_mem = win32gui.CreateCompatibleBitmap(hdc, 64, 64)
-            win32gui.SelectObject(hdc_mem, hbm_mem)
-            
-            # Draw the icon to the bitmap, scaled to 64x64
-            win32gui.DrawIconEx(hdc_mem, 0, 0, icon_handle, 64, 64, 0, 0, win32con.DI_NORMAL)
-            
-            # Save as BMP first, then convert to PNG if PIL is available
-            bmp_path = str(output_path).replace('.png', '.bmp')
-            self._save_bitmap_as_bmp(hdc_mem, hbm_mem, bmp_path)
-            
-            # Try to convert to PNG if PIL is available
-            from PIL import Image
-            img = Image.open(bmp_path)
-            img.save(output_path, 'PNG')
-            os.remove(bmp_path)  # Remove the temporary BMP file
 
-            
-            # Clean up
-            win32gui.DeleteObject(hbm_mem)
-            win32gui.DeleteObject(hbm)
-            win32gui.DeleteDC(hdc_mem)
-            win32gui.DeleteDC(hdc)
-            win32gui.DestroyIcon(icon_handle)
-            
-            return str(output_path)
-            
-        except Exception:
-            # Fallback: create a simple colored icon
-            try:
-                return self._create_simple_icon(output_path)
-            except Exception:
-                return None
-    
-    def _save_bitmap_as_bmp(self, hdc, hbm, bmp_path: str) -> None:
-        """Save a bitmap to BMP file."""
-        try:
-            import win32gui
-            import win32con
-            import win32api
-            import struct
-            
-            # Get bitmap info
-            bmp_info = win32gui.GetObject(hbm)
-            
-            # Create BMP file header
-            bmp_header = struct.pack('<2sIHHI', b'BM', 0, 0, 0, 54)  # File header
-            dib_header = struct.pack('<IIIHHIIIIII', 40, 64, 64, 1, 32, 0, 0, 0, 0, 0, 0)  # DIB header
-            
-            # Get bitmap bits
-            bmp_data = win32gui.GetBitmapBits(hbm, bmp_info.bmWidthBytes * bmp_info.bmHeight)
-            
-            # Write BMP file
-            with open(bmp_path, 'wb') as f:
-                f.write(bmp_header)
-                f.write(dib_header)
-                f.write(bmp_data)
-                
-        except Exception:
-            pass
-    
-    def _create_simple_icon(self, output_path: str) -> str:
-        """Create a simple colored icon as fallback."""
-        try:
-            # Try to use PIL if available
-            try:
-                from PIL import Image, ImageDraw
-                
-                # Create a simple 64x64 icon with a colored background
-                img = Image.new('RGBA', (64, 64), (100, 150, 200, 255))
-                draw = ImageDraw.Draw(img)
-                
-                # Draw a simple pattern
-                draw.rectangle([8, 8, 56, 56], fill=(255, 255, 255, 255))
-                draw.rectangle([16, 16, 48, 48], fill=(50, 100, 150, 255))
-                
-                img.save(output_path, 'PNG')
-                return str(output_path)
-                
-            except ImportError:
-                # If PIL is not available, create a simple BMP file
-                return self._create_simple_bmp_icon(output_path)
-                
-        except Exception:
-            return None
-    
-    def _create_simple_bmp_icon(self, output_path: str) -> str:
-        """Create a simple BMP icon without PIL."""
-        try:
-            import struct
-            
-            # Create a simple 64x64 BMP with a blue background
-            width, height = 64, 64
-            bmp_data = b''
-            
-            # Create pixel data (BGR format for BMP)
-            for y in range(height):
-                row = b''
-                for x in range(width):
-                    # Simple pattern: blue background with white square
-                    if 8 <= x < 56 and 8 <= y < 56:
-                        if 16 <= x < 48 and 16 <= y < 48:
-                            row += struct.pack('<BBB', 150, 100, 50)  # Brown square
-                        else:
-                            row += struct.pack('<BBB', 255, 255, 255)  # White
-                    else:
-                        row += struct.pack('<BBB', 200, 150, 100)  # Blue background
-                bmp_data += row
-            
-            # BMP file header
-            file_size = 54 + len(bmp_data)
-            bmp_header = struct.pack('<2sIHHI', b'BM', file_size, 0, 0, 54)
-            
-            # DIB header
-            dib_header = struct.pack('<IIIHHIIIIII', 40, width, height, 1, 24, 0, len(bmp_data), 0, 0, 0, 0)
-            
-            # Write BMP file
-            with open(output_path, 'wb') as f:
-                f.write(bmp_header)
-                f.write(dib_header)
-                f.write(bmp_data)
-            
-            return str(output_path)
-            
-        except Exception:
-            return None
+    def _extract_icon_from_exe(self, exe_path: str, output_path: str) -> str:
+        pass
 
 class MacAppResolver(AppResolver):
     def get_name(self, app_path: str) -> str:

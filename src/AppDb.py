@@ -38,9 +38,11 @@ class AppDb:
     def __getitem__(self, app_path: str) -> App:
         return self.get(app_path)
 
-    def __iter__(self):
-        """Iterator that yields App instances for all known apps"""
-        for app_path, app_data in self.cache.items():
-            app_name = app_data.get("app_name", "Unknown App")
-            icon_path = app_data.get("icon_path")
-            yield App(app_path, app_name, icon_path)
+def __iter__(self):
+    """Iterator that yields App instances for all known apps (skips entries without app_name)"""
+    for app_path, app_data in self.cache.items():
+        app_name = app_data.get("app_name")
+        if not app_name:
+            continue
+        icon_path = app_data.get("icon_path")
+        yield App(app_path, app_name, icon_path)

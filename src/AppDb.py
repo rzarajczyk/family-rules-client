@@ -3,9 +3,10 @@ from osutils import app_data
 
 
 class App:
-    def __init__(self, app_path: str, app_name: str):
+    def __init__(self, app_path: str, app_name: str, icon_path: str = None):
         self.app_path = app_path
         self.app_name = app_name
+        self.icon_path = icon_path
 
 class AppDb:
     def __init__(self):
@@ -22,12 +23,17 @@ class AppDb:
     def get(self, app_path: str) -> App:
         if app_path not in self.cache:
             app_name = self.resolver.get_name(app_path)
-            self.cache[app_path] = {"app_name": app_name}
+            icon_path = self.resolver.get_icon(app_path)
+            self.cache[app_path] = {
+                "app_name": app_name,
+                "icon_path": icon_path
+            }
             with self.file.open("w", encoding="utf-8") as f:
                 import json
                 json.dump(self.cache, f, indent=4)
 
-        return App(app_path, self.cache[app_path]["app_name"])
+        cache_entry = self.cache[app_path]
+        return App(app_path, cache_entry["app_name"], cache_entry.get("icon_path"))
 
     def __getitem__(self, app_path: str) -> App:
         return self.get(app_path)

@@ -336,11 +336,8 @@ class MacAppResolver(AppResolver):
                     return name.strip()
             except Exception:
                 continue
-        
-        # Final fallback to basename
-        import os
-        basename = os.path.basename(app_path)
-        return basename
+
+        return None
     
     def _find_app_bundle_from_executable(self, executable_path: str) -> str:
         """

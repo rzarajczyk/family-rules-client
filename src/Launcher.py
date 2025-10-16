@@ -1,11 +1,14 @@
 import logging
 import time
+from base64 import b64encode
+from pathlib import Path
 
 import requests
 from requests.auth import HTTPBasicAuth
 
 from Settings import Settings
 from osutils import app_version
+from AppDb import AppDb
 
 
 class Launcher:
@@ -15,10 +18,33 @@ class Launcher:
         settings = Settings.load()
         try:
             server = settings.server
+            
+            # Get all known apps from AppDb and format them for the API
+            app_db = AppDb()
+            known_apps = {}
+            
+            for app in app_db:
+                # Convert icon to base64 if it exists
+                icon_base64 = None
+                if app.icon_path and Path(app.icon_path).exists():
+                    try:
+                        with open(app.icon_path, "rb") as icon_file:
+                            icon_data = icon_file.read()
+                            icon_base64 = b64encode(icon_data).decode('utf-8')
+                    except Exception:
+                        # If we can't read the icon, just skip it
+                        icon_base64 = None
+                
+                known_apps[app.app_path] = {
+                    "app_name": app.app_name,
+                    "icon_base64_png": icon_base64
+                }
+            
             response = requests.post(
                 url=f"{server}/api/v2/launch",
                 json={
                     'version': app_version(),
+                    'knownApps': known_apps,
                     'availableStates': [
                         {
                             "deviceState": "ACTIVE",

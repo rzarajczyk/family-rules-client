@@ -53,11 +53,11 @@ class Ui_MainWindow(object):
         self.gridLayout.addLayout(self.permissionWarningLayout, 1, 0, 1, 3)
 
         self.table = QTableWidget(self.centralwidget)
-        if (self.table.columnCount() < 2):
-            self.table.setColumnCount(2)
+        if (self.table.columnCount() < 3):
+            self.table.setColumnCount(3)
         self.table.setObjectName(u"table")
         self.table.setSortingEnabled(True)
-        self.table.setColumnCount(2)
+        self.table.setColumnCount(3)
 
         self.gridLayout.addWidget(self.table, 2, 0, 1, 3)
 

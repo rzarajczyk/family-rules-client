@@ -1,4 +1,5 @@
 import webbrowser
+import os
 from datetime import timedelta
 
 from gen.MainWindow import Ui_MainWindow
@@ -8,6 +9,8 @@ from AppDb import App
 from translations import tr
 
 from PySide6.QtWidgets import QMainWindow, QTableWidgetItem, QHeaderView
+from PySide6.QtGui import QIcon, QPixmap
+from PySide6.QtCore import Qt
 
 
 class MainWindow(QMainWindow):
@@ -40,15 +43,29 @@ class MainWindow(QMainWindow):
         self.ui.screen_time_label.setText(str(time))
 
     def update_applications_usage(self, apps: list[tuple[App, timedelta]]):
-        self.ui.table.setHorizontalHeaderLabels([tr("Application"), tr("Runtime")])
+        self.ui.table.setHorizontalHeaderLabels([tr("Icon"), tr("Application"), tr("Runtime")])
         self.ui.table.setRowCount(len(apps))
-        self.ui.table.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeMode.Stretch)
-        self.ui.table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.ResizeToContents)
+        self.ui.table.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeMode.ResizeToContents)
+        self.ui.table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)
+        self.ui.table.horizontalHeader().setSectionResizeMode(2, QHeaderView.ResizeMode.ResizeToContents)
         for i, (app, time) in enumerate(apps):
+            # Icon column
+            icon_item = QTableWidgetItem()
+            if app.icon_path and os.path.exists(app.icon_path):
+                pixmap = QPixmap(app.icon_path)
+                if not pixmap.isNull():
+                    # Scale the icon to a reasonable size (32x32)
+                    scaled_pixmap = pixmap.scaled(32, 32, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
+                    icon_item.setIcon(QIcon(scaled_pixmap))
+            self.ui.table.setItem(i, 0, icon_item)
+            
+            # Application name column
             item_name = QTableWidgetItem(f"{app.app_name} - {app.app_path}")
+            self.ui.table.setItem(i, 1, item_name)
+            
+            # Runtime column
             item_duration = QTableWidgetItem(str(time))
-            self.ui.table.setItem(i, 0, item_name)
-            self.ui.table.setItem(i, 1, item_duration)
+            self.ui.table.setItem(i, 2, item_duration)
 
     def check_permissions(self):
         if self.permissions.all_granted():

@@ -16,6 +16,10 @@
         <translation>Runtime</translation>
     </message>
     <message>
+        <source>Icon</source>
+        <translation>Icon</translation>
+    </message>
+    <message>
         <source>OK</source>
         <translation>OK</translation>
     </message>

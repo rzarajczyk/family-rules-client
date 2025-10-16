@@ -16,6 +16,10 @@
         <translation>Czas działania</translation>
     </message>
     <message>
+        <source>Icon</source>
+        <translation>Ikona</translation>
+    </message>
+    <message>
         <source>OK</source>
         <translation>OK</translation>
     </message>

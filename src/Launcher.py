@@ -36,8 +36,8 @@ class Launcher:
                         icon_base64 = None
                 
                 known_apps[app.app_path] = {
-                    "app_name": app.app_name,
-                    "icon_base64_png": icon_base64
+                    "appName": app.app_name,
+                    "iconBase64Png": icon_base64
                 }
             
             response = requests.post(

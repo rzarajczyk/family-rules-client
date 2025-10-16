@@ -6,5 +6,5 @@ pyobjc; sys_platform == 'darwin'
 psutil; sys_platform == 'win32'
 pywin32; sys_platform == 'win32'
 click~=8.1.7
-playsound==1.2.2
-Pillow~=10.0.0
+Pillow~=10.0.0; sys_platform == 'win32'
+icoextract; sys_platform == 'win32'

@@ -293,7 +293,23 @@ class WinAppResolver(AppResolver):
         return sanitized[:50]  # Limit to 50 characters
 
     def _extract_icon_from_exe(self, exe_path: str, output_path: str) -> str:
-        pass
+        from icoextract import IconExtractor, IconExtractorError
+        from PIL import Image
+        import os
+        try:
+            extractor = IconExtractor(exe_path)
+            data = extractor.get_icon(num=0)
+            im = Image.open(data)
+            im.save(output_path, format='PNG', size=(64, 64))
+
+            # Verify the file was created
+            if not os.path.exists(output_path):
+                raise Exception(f"Failed to save icon to {output_path}")
+
+            return output_path
+        except IconExtractorError as e:
+            logging.warn(f"Icon extraction failed for {exe_path}", e)
+            return None
 
 class MacAppResolver(AppResolver):
     def get_name(self, app_path: str) -> str:

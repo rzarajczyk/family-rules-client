@@ -25,10 +25,10 @@ class RunningApplications:
         _, pid = win32process.GetWindowThreadProcessId(hwnd)
         if pid is not None:
             try:
-                name = psutil.Process(pid).exe()
-                return {name: pid}
+                path = psutil.Process(pid).exe()
+                return {path: pid}
             except Exception as e:
-                logging.warning(f"Error during checking the name of running application with PID {{pid}}", e)
+                logging.warning(f"Error during checking the path of running application with PID {{pid}}", e)
                 return {}
         else:
             return {}
@@ -37,10 +37,11 @@ class RunningApplications:
     def __get_running_apps_mac_os():
         from AppKit import NSWorkspace
         app = NSWorkspace.sharedWorkspace().frontmostApplication()
-        name = app.localizedName()
+        # name = app.localizedName()
+        path = app.executableURL().path()
         pid = app.processIdentifier()
 
-        if name is not None and pid is not None:
-            return {name: pid}
+        if path is not None and pid is not None:
+            return {path: pid}
         else:
             return {}

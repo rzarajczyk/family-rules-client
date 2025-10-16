@@ -1,0 +1,4 @@
+---
+alwaysApply: true
+---
+ - prefer existing PIP packages over manual implementation

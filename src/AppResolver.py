@@ -301,7 +301,7 @@ class WinAppResolver(AppResolver):
             data = extractor.get_icon(num=0)
             img = Image.open(data)
             img = img.resize((64, 64))
-            img.save(output_path, format='png')
+            img.save(output_path, 'png')
 
             # Verify the file was created
             if not os.path.exists(output_path):

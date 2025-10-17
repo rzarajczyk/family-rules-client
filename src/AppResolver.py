@@ -10,7 +10,7 @@ class AppResolver:
     def get_icon(self, app_path: str) -> str:
         """
         Get the icon path for an application.
-        Returns the path to a cached PNG icon file, or None if no icon is available.
+        Returns the path to a cached png icon file, or None if no icon is available.
         """
         pass
 
@@ -252,7 +252,7 @@ class WinAppResolver(AppResolver):
     def get_icon(self, app_path: str) -> str:
         """
         Get the icon path for a Windows application.
-        Extracts icon from exe file, converts to 64x64 PNG, and caches it.
+        Extracts icon from exe file, converts to 64x64 png, and caches it.
         """
         try:
             from osutils import app_data
@@ -299,8 +299,9 @@ class WinAppResolver(AppResolver):
         try:
             extractor = IconExtractor(exe_path)
             data = extractor.get_icon(num=0)
-            im = Image.open(data)
-            im.save(output_path, format='PNG', size=(64, 64))
+            img = Image.open(data)
+            img = img.resize((64, 64))
+            img.save(output_path, format='png')
 
             # Verify the file was created
             if not os.path.exists(output_path):
@@ -563,7 +564,7 @@ class MacAppResolver(AppResolver):
         """
         Get the icon path for a macOS application.
         app_path is the path to the executable, not the .app bundle.
-        Extracts icon from app bundle, converts to 64x64 PNG, and caches it.
+        Extracts icon from app bundle, converts to 64x64 png, and caches it.
         """
         try:
             from osutils import app_data
@@ -610,7 +611,7 @@ class MacAppResolver(AppResolver):
         return sanitized[:50]  # Limit to 50 characters
 
     def _extract_icon_from_app_bundle(self, app_bundle_path: str, output_path: str) -> str:
-        """Extract icon from macOS app bundle and save as PNG."""
+        """Extract icon from macOS app bundle and save as png."""
         try:
             import os
             
@@ -658,8 +659,8 @@ class MacAppResolver(AppResolver):
                 if os.path.exists(icon_path):
                     try:
                         img = Image.open(icon_path)
-                        img = img.resize((64, 64), Image.Resampling.LANCZOS)
-                        img.save(output_path, 'PNG')
+                        img = img.resize((64, 64))
+                        img.save(output_path, 'png')
                         
                         # Verify the file was created
                         if os.path.exists(output_path):
@@ -702,10 +703,10 @@ class MacAppResolver(AppResolver):
                     img = Image.open(io.BytesIO(tiff_data))
                     
                     # Resize to 64x64
-                    img = img.resize((64, 64), Image.Resampling.LANCZOS)
+                    img = img.resize((64, 64))
                     
-                    # Save as PNG
-                    img.save(output_path, 'PNG')
+                    # Save as png
+                    img.save(output_path, 'png')
                     
                     return output_path
                     

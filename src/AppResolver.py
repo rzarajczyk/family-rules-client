@@ -1,5 +1,6 @@
 from osutils import OperatingSystem, get_os
 import logging
+from PilLite import Image
 
 
 class AppResolver:
@@ -294,7 +295,6 @@ class WinAppResolver(AppResolver):
 
     def _extract_icon_from_exe(self, exe_path: str, output_path: str) -> str:
         from icoextract import IconExtractor, IconExtractorError
-        from PIL import Image
         import os
         try:
             extractor = IconExtractor(exe_path)
@@ -613,7 +613,6 @@ class MacAppResolver(AppResolver):
         """Extract icon from macOS app bundle and save as PNG."""
         try:
             import os
-            from PIL import Image
             
             # Check if it's an app bundle
             if not app_bundle_path or not app_bundle_path.endswith('.app'):
@@ -694,7 +693,6 @@ class MacAppResolver(AppResolver):
             
             if icon:
                 # Convert NSImage to PIL Image
-                from PIL import Image
                 import io
                 
                 # Get image data

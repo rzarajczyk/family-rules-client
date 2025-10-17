@@ -1,7 +1,6 @@
 from osutils import OperatingSystem, get_os
 import logging
-from PilLite import Image
-
+from image import resize_to_64x64_png
 
 class AppResolver:
     def get_name(self, app_path: str) -> str:
@@ -299,9 +298,7 @@ class WinAppResolver(AppResolver):
         try:
             extractor = IconExtractor(exe_path)
             data = extractor.get_icon(num=0)
-            img = Image.open(data)
-            img = img.resize((64, 64))
-            img.save(output_path, 'png')
+            resize_to_64x64_png(data, output_path)
 
             # Verify the file was created
             if not os.path.exists(output_path):
@@ -658,9 +655,7 @@ class MacAppResolver(AppResolver):
             for icon_path in icon_paths:
                 if os.path.exists(icon_path):
                     try:
-                        img = Image.open(icon_path)
-                        img = img.resize((64, 64))
-                        img.save(output_path, 'png')
+                        resize_to_64x64_png(icon_paths, output_path)
                         
                         # Verify the file was created
                         if os.path.exists(output_path):
@@ -699,15 +694,8 @@ class MacAppResolver(AppResolver):
                 # Get image data
                 tiff_data = icon.TIFFRepresentation()
                 if tiff_data:
-                    # Convert to PIL Image
-                    img = Image.open(io.BytesIO(tiff_data))
-                    
-                    # Resize to 64x64
-                    img = img.resize((64, 64))
-                    
-                    # Save as png
-                    img.save(output_path, 'png')
-                    
+                    resize_to_64x64_png(io.BytesIO(tiff_data), output_path)
+
                     return output_path
                     
         except Exception as e:

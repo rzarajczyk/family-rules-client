@@ -6,6 +6,6 @@ pyobjc; sys_platform == 'darwin'
 psutil; sys_platform == 'win32'
 pywin32; sys_platform == 'win32'
 click~=8.1.7
-Pil-Lite
+Pillow
 icoextract; sys_platform == 'win32'
 pytest~=8.0.0

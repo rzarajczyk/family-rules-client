@@ -658,15 +658,9 @@ class MacAppResolver(AppResolver):
             for icon_path in icon_paths:
                 if os.path.exists(icon_path):
                     try:
-                        # Handle different icon formats
-                        if icon_path.endswith('.icns'):
-                            # Convert ICNS to PNG
-                            self._convert_icns_to_png(icon_path, output_path)
-                        elif icon_path.endswith('.png'):
-                            # Resize PNG to 64x64
-                            img = Image.open(icon_path)
-                            img = img.resize((64, 64), Image.Resampling.LANCZOS)
-                            img.save(output_path, 'PNG')
+                        img = Image.open(icon_path)
+                        img = img.resize((64, 64), Image.Resampling.LANCZOS)
+                        img.save(output_path, 'PNG')
                         
                         # Verify the file was created
                         if os.path.exists(output_path):
@@ -681,26 +675,6 @@ class MacAppResolver(AppResolver):
             
         except Exception as e:
             logging.warning(f"Icon extraction failed for {app_bundle_path}: {e}")
-            return None
-    
-    def _convert_icns_to_png(self, icns_path: str, output_path: str) -> str:
-        """Convert ICNS file to PNG."""
-        try:
-            from PIL import Image
-            
-            # Open ICNS file
-            img = Image.open(icns_path)
-            
-            # Resize to 64x64
-            img = img.resize((64, 64), Image.Resampling.LANCZOS)
-            
-            # Save as PNG
-            img.save(output_path, 'PNG')
-            
-            return output_path
-            
-        except Exception as e:
-            logging.warning(f"Failed to convert ICNS {icns_path}: {e}")
             return None
     
     def _get_system_icon(self, app_bundle_path: str, output_path: str) -> str:

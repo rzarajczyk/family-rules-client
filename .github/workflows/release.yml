@@ -7,7 +7,7 @@ on:
 
 jobs:
   build-mac:
-    runs-on: macos-14 # Use Apple Silicon runner for universal binary
+    runs-on: macos-13 # The last using x86_64
     steps:
       - uses: actions/checkout@v5
 

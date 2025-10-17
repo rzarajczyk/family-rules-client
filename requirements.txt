@@ -7,4 +7,5 @@ psutil; sys_platform == 'win32'
 pywin32; sys_platform == 'win32'
 click~=8.1.7
 Pil-Lite
+cffi
 icoextract; sys_platform == 'win32'

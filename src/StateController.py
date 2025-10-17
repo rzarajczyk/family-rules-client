@@ -4,7 +4,7 @@ import sys
 from gui import Gui
 from CountDownWindow import CountDownState
 from osutils import get_os, OperatingSystem
-from Installer import Installer
+from AutorunWithAutorespawn import AutorunWithAutorespawn
 
 
 class State:
@@ -72,7 +72,7 @@ class StateController:
                     self.__logout()
             case "APP_DISABLED":
                 logging.warning("Received state APP_DISABLED: uninstalling autorun and closing the app!")
-                Installer.uninstall_autorun()
+                AutorunWithAutorespawn.instance().uninstall()
                 sys.exit(0)
             case _:
                 logging.error(f"unsupported state: {state.device_state} - the app will be ACTIVE")

@@ -1,0 +1,39 @@
+name: Test App
+
+on:
+  push:
+    tags:
+      - '*'
+  workflow_dispatch:
+
+jobs:
+  test-mac:
+    runs-on: macos-14 # Use Apple Silicon runner for universal binary
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+          cache: 'pip'
+
+      - run: pip install --upgrade setuptools wheel
+      - run: pip install -r requirements.txt
+
+      - run: echo "testing"
+
+  test-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+          cache: 'pip'
+
+      - run: pip install --upgrade setuptools wheel
+      - run: pip install -r requirements.txt
+
+      - shell: cmd
+        run: echo "testing"

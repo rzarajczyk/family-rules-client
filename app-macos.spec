@@ -9,7 +9,7 @@ a = Analysis(
         ('src/resources', 'resources'),
         ('src/gen/translation_files', 'gen/translation_files')
     ],
-    hiddenimports=[],
+    hiddenimports=['_cffi_backend'],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],

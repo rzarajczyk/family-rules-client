@@ -34,6 +34,29 @@
     <item>
      <widget class="QGroupBox" name="groupBox_2">
       <property name="title">
+       <string>Data Management</string>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_3">
+       <item>
+        <widget class="QPushButton" name="openAppDataButton">
+         <property name="text">
+          <string>Open App Data Folder</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="clearAppDbButton">
+         <property name="text">
+          <string>Regenerate App Database</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QGroupBox" name="groupBox_3">
+      <property name="title">
        <string>About</string>
       </property>
       <layout class="QGridLayout" name="gridLayout">

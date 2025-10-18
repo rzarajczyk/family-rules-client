@@ -42,20 +42,37 @@ class Ui_SettingsWindow(object):
 
         self.groupBox_2 = QGroupBox(self.centralwidget)
         self.groupBox_2.setObjectName(u"groupBox_2")
-        self.gridLayout = QGridLayout(self.groupBox_2)
+        self.verticalLayout_3 = QVBoxLayout(self.groupBox_2)
+        self.verticalLayout_3.setObjectName(u"verticalLayout_3")
+        self.openAppDataButton = QPushButton(self.groupBox_2)
+        self.openAppDataButton.setObjectName(u"openAppDataButton")
+
+        self.verticalLayout_3.addWidget(self.openAppDataButton)
+
+        self.clearAppDbButton = QPushButton(self.groupBox_2)
+        self.clearAppDbButton.setObjectName(u"clearAppDbButton")
+
+        self.verticalLayout_3.addWidget(self.clearAppDbButton)
+
+
+        self.verticalLayout.addWidget(self.groupBox_2)
+
+        self.groupBox_3 = QGroupBox(self.centralwidget)
+        self.groupBox_3.setObjectName(u"groupBox_3")
+        self.gridLayout = QGridLayout(self.groupBox_3)
         self.gridLayout.setObjectName(u"gridLayout")
-        self.label = QLabel(self.groupBox_2)
+        self.label = QLabel(self.groupBox_3)
         self.label.setObjectName(u"label")
 
         self.gridLayout.addWidget(self.label, 0, 0, 1, 1)
 
-        self.label_2 = QLabel(self.groupBox_2)
+        self.label_2 = QLabel(self.groupBox_3)
         self.label_2.setObjectName(u"label_2")
 
         self.gridLayout.addWidget(self.label_2, 0, 1, 1, 1)
 
 
-        self.verticalLayout.addWidget(self.groupBox_2)
+        self.verticalLayout.addWidget(self.groupBox_3)
 
         self.progressBar = QProgressBar(self.centralwidget)
         self.progressBar.setObjectName(u"progressBar")
@@ -81,7 +98,10 @@ class Ui_SettingsWindow(object):
         SettingsWindow.setWindowTitle(QCoreApplication.translate("SettingsWindow", u"Parent Settings", None))
         self.groupBox.setTitle(QCoreApplication.translate("SettingsWindow", u"Uninstall", None))
         self.resetButton.setText(QCoreApplication.translate("SettingsWindow", u"Reset application and remove from autorun", None))
-        self.groupBox_2.setTitle(QCoreApplication.translate("SettingsWindow", u"About", None))
+        self.groupBox_2.setTitle(QCoreApplication.translate("SettingsWindow", u"Data Management", None))
+        self.openAppDataButton.setText(QCoreApplication.translate("SettingsWindow", u"Open App Data Folder", None))
+        self.clearAppDbButton.setText(QCoreApplication.translate("SettingsWindow", u"Regenerate App Database", None))
+        self.groupBox_3.setTitle(QCoreApplication.translate("SettingsWindow", u"About", None))
         self.label.setText(QCoreApplication.translate("SettingsWindow", u"Author:", None))
         self.label_2.setText(QCoreApplication.translate("SettingsWindow", u"Rafa\u0142 Zarajczyk, <a href=\"https://zarajczyk.pl\">https://zarajczyk.pl</a>", None))
         self.closeButton.setText(QCoreApplication.translate("SettingsWindow", u"Close", None))

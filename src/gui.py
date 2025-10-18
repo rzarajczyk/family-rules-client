@@ -6,14 +6,13 @@ from datetime import timedelta
 from PySide6 import QtWidgets, QtCore, QtGui
 from PySide6.QtCore import QTimer, QThread, Signal
 from PySide6.QtGui import QIcon, QAction
-from PySide6.QtWidgets import QApplication, QSystemTrayIcon, QMenu, QMainWindow, \
-    QTableWidgetItem, QHeaderView, QMessageBox
+from PySide6.QtWidgets import QApplication, QSystemTrayIcon, QMenu, QMainWindow, QMessageBox
 
 from Basedir import Basedir
 from MultiMonitorBlockScreenManager import MultiMonitorBlockScreenManager
 from CountDownWindow import CountDownWindow
 from Installer import Installer, RegisterInstanceStatus
-from Launcher import Launcher
+from ClientInfoUpdater import ClientInfoUpdater
 from SettingsWindow import SettingsWindow
 from UptimeDb import UptimeDb, UsageUpdate
 from gen.InitialSetup import Ui_InitialSetup
@@ -231,12 +230,12 @@ class Gui:
         uptime_db = UptimeDb()
         app_db = AppDb()
 
-        Launcher.run()
+        ClientInfoUpdater.run()
 
         def launcher_tick():
             """Periodic launcher request every 10 minutes"""
             logging.info("Sending periodic launcher request")
-            Launcher.run()
+            ClientInfoUpdater.run()
 
         def uptime_tick():
             usage_update: UsageUpdate = uptime_tick_function()

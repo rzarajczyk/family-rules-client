@@ -11,6 +11,7 @@ from Installer import Installer, UnregisterInstanceStatus
 from gen.ParentConfirm import Ui_ParentConfirm
 from gen.SettingsWindow import Ui_SettingsWindow
 from osutils import app_data
+from src.osutils import open_folder
 
 
 class CheckPasswordWorker(QThread):
@@ -79,13 +80,7 @@ class SettingsWindow(QMainWindow):
     def open_app_data_folder(self):
         """Open the app data folder in the system file explorer"""
         try:
-            app_data_path = app_data()
-            if platform.system() == "Windows":
-                subprocess.run(["explorer", str(app_data_path)], check=True)
-            elif platform.system() == "Darwin":  # macOS
-                subprocess.run(["open", str(app_data_path)], check=True)
-            else:  # Linux and other Unix-like systems
-                subprocess.run(["xdg-open", str(app_data_path)], check=True)
+            open_folder(app_data())
         except Exception as e:
             msg_box = QMessageBox()
             msg_box.setWindowTitle("Error")

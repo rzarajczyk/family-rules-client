@@ -102,3 +102,12 @@ def make_sure_only_one_instance_is_running():
                     sys.exit(0)
             case _:
                 raise Exception("Unsupported operating system")
+
+def open_folder(path: Path):
+    match get_os():
+        case OperatingSystem.MAC_OS:
+            os.system(f'open "{path}"')
+        case OperatingSystem.WINDOWS:
+            os.startfile(path)
+        case _:
+            raise Exception("Unsupported operating system")

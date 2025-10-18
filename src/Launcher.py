@@ -12,8 +12,33 @@ from AppDb import AppDb
 
 
 class Launcher:
+    _previous_app_paths = None
+    
+    @classmethod
+    def _get_current_app_paths(cls):
+        """Get current app paths from AppDb"""
+        app_db = AppDb()
+        return {app.app_path for app in app_db}
+    
+    @classmethod
+    def _should_send_request(cls):
+        """Check if we should send a request based on app list changes"""
+        current_paths = cls._get_current_app_paths()
+        
+        # If this is the first run or app list has changed, send request
+        if cls._previous_app_paths is None or current_paths != cls._previous_app_paths:
+            cls._previous_app_paths = current_paths
+            return True
+        
+        return False
+    
     @staticmethod
     def run():
+        # Check if we need to send a request
+        if not Launcher._should_send_request():
+            logging.info("App list unchanged, skipping launcher request")
+            return
+        
         logging.info("Sending launch request")
         settings = Settings.load()
         try:

@@ -234,7 +234,7 @@ class Gui:
         Launcher.run()
 
         def launcher_tick():
-            """Periodic launcher request every 2 hours"""
+            """Periodic launcher request every 10 minutes"""
             logging.info("Sending periodic launcher request")
             Launcher.run()
 
@@ -263,10 +263,10 @@ class Gui:
         report_timer.timeout.connect(report_tick)
         report_timer.start(report_tick_interval_ms)
 
-        # Set up periodic launcher timer (every 2 hours = 2 * 60 * 60 * 1000 ms)
+        # Set up periodic launcher timer (every 10 minutes = 10 * 60 * 1000 ms)
         launcher_timer = QTimer()
         launcher_timer.timeout.connect(launcher_tick)
-        launcher_timer.start(2 * 60 * 60 * 1000)  # 2 hours in milliseconds
+        launcher_timer.start(10 * 60 * 1000)  # 10 minutes in milliseconds
 
         self.dont_gc += [
             tray_icon, tray_menu, uptime_timer, report_timer, launcher_timer, uptime_db
